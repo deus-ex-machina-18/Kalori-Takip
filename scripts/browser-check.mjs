@@ -46,6 +46,10 @@ try {
   await page.keyboard.press('Enter');
   await page.waitForURL('**/#/kayitlar');
   assert.equal(await page.locator('h1').evaluate(el => el === document.activeElement), true);
+  await page.locator('.skip-link').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('main').evaluate(el => el === document.activeElement),true);
+  assert.match(page.url(),/#\/kayitlar$/);
   await page.goBack();
   await page.waitForURL('**/#/bugun');
   await page.goForward();

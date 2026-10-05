@@ -260,3 +260,9 @@ test('IndexedDB getter erişim hatası açılışı çökertmez',async()=>{
   const app=await launch('/planim',false,'denied-getter');
   try {assert.deepEqual(app.errors,[]);assert.ok(app.document.querySelector('.error-message'));assert.equal(app.document.querySelector('#profile-form'),null);}finally{app.dom.window.close();}
 });
+
+test('içeriğe geç bağlantısı Kayıtlar ekranını değiştirmeden main odağına geçer',async()=>{
+  const app=await launch('/kayitlar');
+  try{app.document.querySelector('.skip-link').click();assert.equal(app.window.location.hash,'#/kayitlar');assert.equal(app.document.activeElement.id,'main');}
+  finally{app.dom.window.close();}
+});

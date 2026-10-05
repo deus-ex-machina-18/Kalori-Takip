@@ -90,6 +90,11 @@ function render(moveFocus = false): void {
   }
 }
 window.addEventListener("hashchange", () => render(true));
+document.querySelector('.skip-link')?.addEventListener('click', event => {
+  event.preventDefault();
+  const main = document.querySelector<HTMLElement>('#main');
+  if (main) { main.tabIndex = -1; main.focus(); }
+});
 render();
 void tracker.load();
 setInterval(() => tracker.checkMidnight(), 30_000);
