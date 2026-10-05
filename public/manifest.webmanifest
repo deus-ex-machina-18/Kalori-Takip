@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Kedi Kalori",
+  "short_name": "Kedi Kalori",
+  "lang": "tr",
+  "start_url": "./#/bugun",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ec",
+  "theme_color": "#f7f4ec",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "kalori-takip",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "npm run build && npm run test:unit && npm run test:ui",
+    "check": "npm test",
+    "dev:lan": "vite --host 0.0.0.0",
+    "test:unit": "node --experimental-strip-types --test tests/*.test.ts",
+    "test:ui": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "jsdom": "^26.1.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.0"
+  }
+}
