@@ -22,6 +22,14 @@ npm run preview
 
 `check`: TypeScript, üretim derlemesi, yerel tarih ve DOM navigasyon testleri. DOM testleri gerçek tarayıcı layout kontrolü değildir. `dist/` statik çıktıdır; hash yolları özel sunucu rewrite istemez. Testlerde Node'un TypeScript type stripping desteği kullanılır.
 
+Gerçek Chromium kontrolü GitHub Actions üzerinden çalışır; başarılı işin `browser-check` artifact'ı ekran görüntüleri ve raporu içerir. Kontrolün eklenmesi başarılı çalıştığı anlamına gelmez; güncel durum `HANDOFF.md` içinde tutulur. Yerelde tarayıcı ve loopback erişimi destekleniyorsa:
+
+```bash
+npx playwright install chromium
+npm run build
+node scripts/browser-check.mjs
+```
+
 ## Mevcut çıktı
 
 Bugün, Kayıtlar, Planım, İlerlemem ve Ayarlar arasında geçiş; mobil alt menü, klavye odağı ve hareket azaltma ayarı. Ekranlar gerçek kayıt yokken boş durum gösterir. Gelecek işlemler açık raund etiketiyle kapalıdır. Kedi çizimi **2D taslak**; gerçek 3D değildir.

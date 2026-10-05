@@ -11,6 +11,14 @@ Başlangıç: boş depo; AGENTS.md veya önceki uygulama yok. İlk depo commit'i
 
 **Raund 1 kodu hazır; gerçek tarayıcı/mobil görsel kabul kontrolü ortam engeli nedeniyle açık.** Raund 2 başlamadan bu kontrol yapılmalı. Herkese açık yayın yapılmadı; repo kullanıcı tarafından public oluşturulmuş.
 
+### Son kontrol girişimi — 5 Ekim 2026
+
+- `aee9ee7cc63f66bcb0abbe41d409b68579e0247b` commit'i, Playwright geliştirme bağımlılığı, `.github/workflows/verify.yml` ve `scripts/browser-check.mjs` ekler. Uygulama davranışı değişmedi; Raund 2 henüz uygulanmadı.
+- Yerel `npm ci` ve `npm run check`: build, TypeScript ve 8 test başarılı. Vite başladı; loopback HTTP erişimi yine başarısız. Chromium indirmesi kullanılabilir ZIP döndürmedi; yerel gerçek tarayıcı kontrolü yapılmış sayılmaz.
+- Chromium CI kontrolü 320/360/390/768/1280px beş ekranı, taşmayı, son kontrollerin alt navigasyon tarafından örtülmemesini, Tab/Enter ve başlık odağını, geri/ileri navigasyonu ve reduced-motion tercihini kontrol eder. 640px reflow testi 1280px ekranın %200 zoom eşdeğeridir; gerçek tarayıcı zoom/Android testi değildir.
+- İlk Actions işi: https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37371407074 — son gözlenen durum **queued**; başarı veya ekran görüntüsü henüz yok. İş tamamlandığında `browser-check` artifact'ındaki 25 ekran görüntüsünü ve `report.json` dosyasını incele. Otomatik layout kontrolü görsel incelemenin yerine geçmez.
+- Sonraki tek iş: en yeni Actions kontrolünün sonucunu ve görsellerini doğrula; hataları düzelt. Görsel kabul tamamlanırsa aşağıdaki Raund 2'ye geç. Yayın yapılmadı.
+
 ## Teslim edilenler
 
 - TypeScript + Vite mobil web iskeleti; beş ekran, hash navigasyonu, görünür odak, içeriğe geç bağlantısı, oturum içi hareket azaltma.

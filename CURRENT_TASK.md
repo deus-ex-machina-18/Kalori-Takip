@@ -1,5 +1,7 @@
 # Güncel görev — Raund 1
 
+5 Ekim devam oturumu: tek çıktı, açık mobil kabul kontrolü için Chromium CI altyapısı. `.github/workflows/verify.yml`, `scripts/browser-check.mjs` ve Playwright geliştirme bağımlılığı eklendi. TypeScript/build ve 8 mevcut test geçti. Actions sonucu son kontrolde kuyrukta; gerçek tarayıcı kabulü açık olduğundan Raund 2 başlamadı. Ayrıntı ve kontrol bağlantısı HANDOFF.md'de.
+
 Tek çıktı: belirtilen GitHub deposunda çalışır mobil uygulama iskeleti ve Raund 2 sözleşmeleri.
 
 ## Sınırlandırılmış dosyalar
