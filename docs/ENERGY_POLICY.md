@@ -1,6 +1,6 @@
 # Enerji hesabı ve güvenlik politikası — tasarım v1
 
-Kontrol tarihi: 5 Ekim 2026. **Bu raund hesap motoru veya kişisel diyet hedefi üretmez.** Aşağıdaki kararlar R2/R3 için sözleşmedir. Kaynakların tanımladığı yöntem ile ürünün seçtiği ihtiyatlı sınırlar ayrıdır.
+Kontrol tarihi: 5 Ekim 2026. R2 başlangıç motoru `src/domain/tracking.ts` içinde uygulanmıştır. Aşağıdaki kararlar bu motorun ve R3 devamının sözleşmesidir. Kaynakların tanımladığı yöntem ile ürünün seçtiği ihtiyatlı sınırlar ayrıdır.
 
 ## Kaynakta doğrulanan yöntemler
 
@@ -28,7 +28,7 @@ Aktivite kaydının kcal bilgisi **bilgi amaçlıdır**, koruma tahminine veya g
 - Üst sınır: herkese ortak “en yüksek güvenli kalori” yok. Kilo verme hedefi koruma tahminini aşamaz; koruma hedefi tahmine bağlıdır. REE×PAL sonuçları ve girdiler tutarsızsa plan üretilmez. Manuel düzenleme aynı kapıları ve kapsamı korur; sınırsız serbest hedef alanı açılmaz.
 - Kayıt sistemi gerçekte alınan çok düşük/yüksek kaloriyi saklayabilir; bu değerleri yazmak ile böyle bir hedef önermek ayrı. Çok düşük kayıt, plan aralığının altı veya >%20/>500 tahmini açık kutlama üretmez; care sonucu normal kutlamayı bastırır. Eksik günlere açık/başarı üretilmez.
 
-R2'de runtime giriş doğrulaması, uygunluk soruları, açıklamalı hedef önizlemesi ve kapsam dışı yollar uygulanacak. Klinik güvenlik doğrulaması tamamlanmış iddiası yok; küçük pilot öncesi sağlık uzmanı incelemesi açık bağımlılıktır. LLM bu sayıları hesaplamaz.
+R2'de runtime giriş doğrulaması, uygunluk soruları, açıklamalı hedef önizlemesi ve kapsam dışı yollar uygulandı. Klinik güvenlik doğrulaması tamamlanmış iddiası yok; küçük pilot öncesi sağlık uzmanı incelemesi açık bağımlılıktır. LLM bu sayıları hesaplamaz.
 
 ## Sonraki motor için zorunlu örnekler
 
@@ -37,3 +37,7 @@ R2'de runtime giriş doğrulaması, uygunluk soruları, açıklamalı hedef öni
 - missing ve partial → kesin günlük enerji dengesi yok.
 - Inclusive PAL + ek bisiklet kaydı: enerji dengesine ikinci harcama eklenmez.
 - Düşük tüketim ve büyük açık → kutlama/ödül değil bakım; bir günlük enerji hesabından gözlenen kilo değişimi çıkarılmaz.
+
+## Uygulanan aralık ve doğrulama
+
+`POLICY` motorun tek sabit kaynağıdır. Kilo verme alt hedefi M − min(500, %20 × M), üst hedefi %90 × M; koruma M–M. Aralık ters dönüyorsa veya altı 1300'den düşükse sessiz sıkıştırma yapılmaz; kapsam dışı sonuç gösterilir. Boy 100–250 cm ve kilo 20–400 kg teknik giriş sınırlarıdır, sağlık uygunluğu onayı değildir. Kapsam/yaş/BMI/formül bilgisi kontrolleri ayrıca yapılır. Aralık önizlemede yuvarlanır, hesapta yuvarlanmaz. UI sınırsız manuel kcal hedefi sunmaz.

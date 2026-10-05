@@ -1,6 +1,6 @@
 # Veri sözleşmesi v1
 
-Bu belge, `src/domain/models.ts` ve `contracts.ts` davranışını açıklar. Raund 1'de depolama/hesap motoru uygulanmamıştır.
+Bu belge, `src/domain/models.ts` ve `contracts.ts` davranışını açıklar. Raund 2'de profil/plan/gün/kilo kapsamı IndexedDB v1 ile uygulanmıştır; diğer kayıt türleri sonraki raundlar içindir.
 
 ## Birimler, tarih ve kimlik
 
@@ -27,7 +27,7 @@ PlanVersion append-only. Aynı kullanıcı ve effectiveFrom için çakışma red
 
 Range min/max kapsayıcıdır. Hedef farkı: aralık içi 0; üstünde intake-max pozitif; altında intake-min negatif. Tahmini açık = estimatedMaintenance-intake; pozitif açık, negatif koruma üstü tüketim. Hareket zaten inclusive PAL içindedir ve bu değere tekrar eklenmez.
 
-Örnek sözleşme testi (henüz motor yok): koruma 2700, aralık 2200–2200, tamamlanmış tüketim 2400 → hedef farkı +200, tahmini açık +300. Kilo alma iddiası yok. Eksik/kısmi günlerde complete sonucu üretilemez. Gözlenen kilo değişimi enerji hesabından ayrı tutulur.
+Motorun doğrulanmış örnek testi: koruma 2700, aralık 2200–2200, tamamlanmış tüketim 2400 → hedef farkı +200, tahmini açık +300. Kilo alma iddiası yok. Eksik/kısmi günlerde complete sonucu üretilemez. Gözlenen kilo değişimi enerji hesabından ayrı tutulur.
 
 ## Kilo, hareket, kedi ve bildirim
 
@@ -37,10 +37,23 @@ Range min/max kapsayıcıdır. Hedef farkı: aralık içi 0; üstünde intake-ma
 - RewardLedger: `(userId,eventKey)` benzersiz. Kalori açığı büyüklüğü veya tekrar tamamlama ödül gerekçesi değildir.
 - Bildirim: HH:mm yerel saat; IANA zone. Gece yarısını geçen sessiz aralık, izin iptali, tamamlanmış gün ve benzersiz olay kontrolü R5'te uygulanır. R1 izin istemez.
 
-## IndexedDB v1 planı — R2
+## IndexedDB v1 adaptörü — R2
 
 Store'lar: profiles(userId), plans(id; userId+effectiveFrom unique), days(id; userId+date unique), activities(id; userId+date), weights(id; userId+date), catPreferences(userId), rewards(id; userId+eventKey unique), notifications(userId), operations(operationId; userId). Export schemaVersion=1; derived totals dışa aktarılacak asıl kaynak değildir.
 
 Adaptör runtime doğrulama ve tek transaction ile kayıt+operationId yazacak. Aynı operationId ve aynı payload önceki sonucu döndürür; farklı payload conflict. expectedRevision uyuşmazsa conflict, sessiz son-yazan-kazan yok. Retry UI aynı operationId kullanır. Kota/IndexedDB erişim hatası storage sonucu ve kullanıcıya hata üretir; belleğe sessiz fallback yapılmaz. Şema sürümü yükselirse migrasyon ve hata yolu gerekir.
 
 Buluta taşınırken aynı arayüz kullanılır; istemci store ayrımı sunucu yetkilendirmesinin yerine geçmez. Export ve tam silme R6 kullanıcı akışıdır; arayüzleri şimdiden tanımlı.
+
+## R2 uygulama kararları
+
+- Adaptör DataRepository'nin profil okuma, plan listeleme, gün/kilo yazma/listeleme alt kümesini uygular. Kapsam dışı metotlara sahte başarı döndürmez. `saveSetup` profil + isteğe bağlı plan + başlangıç ölçümünü tek transaction içinde kaydeder; profil CAS token'ı `expectedProfileUpdatedAt` değeridir.
+- Profile uygunluk sorusuna her plan düzenlemesinde açık cevap gerekir. Ayrıntılı sağlık bilgisi tutulmaz. Kapsam dışı profile yeni günler plansız bağlanır; geçmiş bağlı günlerin planları değişmez.
+- İlk profilin planı bugün başlar. Düzenleme varsayılan yarın; ileri tarihli bir sürüm zaten varsa onun ertesi günü başlar. Aynı effectiveFrom ikinci kez kullanılmaz, sürümler güncellenmez. UI serbest/sınırsız kalori hedefi açmaz; yeni plan profil ve hedef seçimiyle yeniden hesaplanır.
+- Önizleme geri dönüşü girilen taslağı korur. Onay tek atomik işlemdir; profile/plan/başlangıç ölçümünün yalnız bir kısmı kaydedilemez.
+- Boş total modunun sayısal temsili yoktur: boşaltma `missing + calories:null` olur; boş entries listesi `partial` olabilir. İki durumda da provisional toplam null ve tamamlama kapalıdır. Açık 0 girişi farklıdır.
+- Gün düzenlemesinde expectedRevision zorunlu; yeni gün expectedRevision=0/revision=1. Aynı gün kimliği/saat dilimi/planı sabittir. Düzenlenen tamamlanmış gün önce partial olur. Depo sınırı gerçek takvim, UUID, UTC anı, sayısal aralık ve ayrık kalori kaynağını doğrular.
+- Başarısız saklama için arayüz aynı closure/payload/operationId ile tekrar dener. Conflict tekrar denenmez; güncel veriyi yükleme seçeneği ve görünür hata sunulur. Değişiklik sessizce ezilmez.
+- R2 kilo ölçümleri append-only; düzeltme aynı gün yeni ölçümdür. measuredAt, kullanıcının ölçümü kaydettiği UTC andır; seçtiği yerel ölçüm günü ayrı tutulur. Profildeki kilo plan girdisidir; sonraki ölçüm eski planı yeniden hesaplamaz.
+- Yerel gün değişimi 30 saniyelik kontrol ve görünürlük dönüşünde fark edilir. Açık formun submit closure'ı gösterilen güne bağlı kalır; kullanıcı “Yeni güne geç” düğmesine basınca veya yeni Bugün ekranını açınca yeni yerel günü görür. Önceki günün verisi yeni güne taşınmaz.
+- Koruma/kilo verme hedef önizlemesi UI'da yuvarlanır; kayıtlı hesap değerleri yuvarlanmaz. İlerlemem günlük son kilo temsilcisini ve tamamlanan/kısmi gün adetlerini gösterir; haftalık motor R3'tür.

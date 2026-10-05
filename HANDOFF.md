@@ -1,44 +1,45 @@
-# Raund 1 — devir teslim
+# Raund 2 — devir teslim
 
 Repo: https://github.com/deus-ex-machina-18/Kalori-Takip
-Dal: main · sürüm 0.1.0 · 5 Ekim 2026
-Kod commit'i: 7197e4b4fcd6b979dfbcdb6d91b0b80414f70bc2
-Doğrulanmış kod: https://github.com/deus-ex-machina-18/Kalori-Takip/commit/7197e4b4fcd6b979dfbcdb6d91b0b80414f70bc2
-Bu belgeyi güncelleyen sonraki commit yalnız devir teslimi kaydeder; kod aynı kalır.
-Başlangıç: boş depo; AGENTS.md veya önceki uygulama yok. İlk depo commit'i b5363a2f3e8cac7bfe699f4332eb8f3bf91eccfb.
+Dal: main · sürüm 0.2.0 · 5–6 Ekim 2026
+Son uygulama kodu: e50ef519827ede5bd5a12adca7602d2e86504a39
+Doğrulanmış son kod + tarayıcı test düzeltmesi: cfb3f548cc6db2e1f17ecd0060e8ffa61da2e359
+Bu belgeleri kaydeden sonraki commit uygulama kodunu değiştirmez.
 
 ## Durum
 
-**Raund 1 kodu hazır; gerçek tarayıcı/mobil görsel kabul kontrolü ortam engeli nedeniyle açık.** Raund 2 başlamadan bu kontrol yapılmalı. Herkese açık yayın yapılmadı; repo kullanıcı tarafından public oluşturulmuş.
+**Raund 1'in açık Chromium kabulü kapandı; Raund 2 tamamlandı ve main'de.** TypeScript, üretim build'i, **35 test (21 domain/depo + 14 DOM)** ve gerçek Chromium akış/yerleşim kontrolü GitHub'da geçti. Herkese açık yayın yapılmadı.
 
-### Son kontrol girişimi — 5 Ekim 2026
+## Teslim edilen akış
 
-- `aee9ee7cc63f66bcb0abbe41d409b68579e0247b` commit'i, Playwright geliştirme bağımlılığı, `.github/workflows/verify.yml` ve `scripts/browser-check.mjs` ekler. Uygulama davranışı değişmedi; Raund 2 henüz uygulanmadı.
-- Yerel `npm ci` ve `npm run check`: build, TypeScript ve 8 test başarılı. Vite başladı; loopback HTTP erişimi yine başarısız. Chromium indirmesi kullanılabilir ZIP döndürmedi; yerel gerçek tarayıcı kontrolü yapılmış sayılmaz.
-- Chromium CI kontrolü 320/360/390/768/1280px beş ekranı, taşmayı, son kontrollerin alt navigasyon tarafından örtülmemesini, Tab/Enter ve başlık odağını, geri/ileri navigasyonu ve reduced-motion tercihini kontrol eder. 640px reflow testi 1280px ekranın %200 zoom eşdeğeridir; gerçek tarayıcı zoom/Android testi değildir.
-- İlk Actions işi: https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37371407074 — son gözlenen durum **queued**; başarı veya ekran görüntüsü henüz yok. İş tamamlandığında `browser-check` artifact'ındaki 25 ekran görüntüsünü ve `report.json` dosyasını incele. Otomatik layout kontrolü görsel incelemenin yerine geçmez.
-- Sonraki tek iş: en yeni Actions kontrolünün sonucunu ve görsellerini doğrula; hataları düzelt. Görsel kabul tamamlanırsa aşağıdaki Raund 2'ye geç. Yayın yapılmadı.
+- Mevcut beş ekran, framework ve görsel tokenlar korunur. Profil/plan formu ve önizleme; kapsam dışı profile plansız takip.
+- Mifflin × inclusive PAL başlangıç motoru ve sürümlü planlar; düzenleme ileri tarihten başlar. Eski plan ve gün bağlantıları değişmez.
+- Toplam veya parçalı kcal, parça ekleme/düzeltme/silme, mod dönüşümü/boşaltma/iptal, gün tamamlama ve geçmiş gün seçimi.
+- Düzenlenen gün kısmi olur ve tekrar onay gerekir. Eksik gün sıfır değildir. Hedef farkı ve koruma tahmini farkı ayrı gösterilir.
+- Kilo ölçümü ve geçmişi; tüm ölçümler korunur, son günlük ölçüm temsilcidir. Kilo kaydı eski planı değiştirmez.
+- Gerçek IndexedDB v1 cihaz deposu; tek transaction ile veri+operasyon makbuzu. Profil/plan/ilk ölçüm atomiktir. OperationId tekrar denemede sabit, gün revision ve profil updatedAt ile kayıp güncelleme engellenir.
+- Saklama/okuma hataları görünür; bellek fallback'i yok. Başarısız saklamada aynı işlem tekrar denenir; conflict güncel veri yükleme gerektirir. Açılışta IndexedDB getter hatası yakalanır.
+- Yerel gece yarısında açık form tarihi korunur; “Yeni güne geç” yeni tarihi açar. Açık form yeni güne sessizce taşınmaz.
 
-## Teslim edilenler
+## Doğrulama
 
-- TypeScript + Vite mobil web iskeleti; beş ekran, hash navigasyonu, görünür odak, içeriğe geç bağlantısı, oturum içi hareket azaltma.
-- Dürüst boş durumlar: kalori/plan/kilo/ilerleme verisi yok; boş gün sıfır değil. Gelecek işlem düğmeleri etiketli ve kapalı.
-- Açıkça 2D olan taslak kedi; gerçek model gereksinim ve lisans şartnamesi.
-- V1 profil/plan/gün/hareket/kilo/kedi/ödül/bildirim tipleri; yerel tarih yardımcıları; repository, PlanEngine ve CatScene arayüzleri.
-- PROJECT/CURRENT_TASK ve veri/enerji/3D belgeleri. Güncel enerji kaynakları doğrulandı; kişisel hedef üretilmedi.
+`npm ci` ve `npm run check` başarılı. Son yerel kontrol Node 24.19.0 / npm 11.9.0.
 
-## Kontroller
+Zorunlu örnekler: 650+800+500=1950; 2700 koruma/2200 hedef/2400 tüketim → hedef +200, tahmini açık +300; tek kaynağa mod dönüşümü; eksik/kısmi güne kesin sonuç yok; tamamlanmış güne düzenleme tekrar onay ister; IndexedDB yeniden açılış kalıcılığı; aynı operationId tek kayıt; farklı payload conflict; iki sekme CAS; profile/plan/ölçüm rollback; yerel gece yarısı; geçmiş plan korunması. Kapsam dışı profil ve depo erişim hatası UI testleri geçti.
 
-- `npm ci`: başarılı. Node 24.19.0 / npm 11.9.0.
-- `npm run check`: TypeScript + üretim build + 3 yerel tarih testi + 5 DOM testinin tamamı başarılı.
-- Tarihler: İstanbul gece yarısı, artık gün, geçersiz tarih, New York yaz saati ve geçersiz zone.
-- DOM: beş ekran linki, active nav, başlık odağı, boş gün/plan, yanlış rota dönüşü, hareket tercihi, içeriğe geç bağlantısı. Bunlar jsdom kontrolleridir; layout/gerçek dokunma testi değildir.
-- `npm run dev`: Vite yerel 127.0.0.1:5173 adresinde başlatma mesajı verdi. Ortam loopback bağlantısını engellediği için HTTP sayfa erişimi doğrulanamadı.
-- Varsayılan `0.0.0.0` dev başlangıcı ortamın networkInterfaces kısıtına takıldı; varsayılan 127.0.0.1 yapıldı, ağ erişimi için `npm run dev:lan` ayrıldı. Gerçek kullanıcı ortamında LAN komutu denenmeli.
-- agent-browser: daemon socket bind **Operation not permitted**; Chrome kurulumu TLS UnknownIssuer hatası. Gerçek tarayıcı screenshot, 320/360/390px taşma, klavye ve dokunma kontrolü yapılmış sayılmıyor. Başka bir makinede tamamlanmalı.
-- Lint ayrı yapılandırılmadı; typecheck mevcut. Gerçek Android ve ekran okuyucu testleri henüz yapılmadı.
+### R1 + R2 gerçek Chromium kabulü — başarılı
 
-## Çalıştırma
+Başarılı koşu: https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37375600559
+Doğrulanan commit: cfb3f548cc6db2e1f17ecd0060e8ffa61da2e359
+Artifact: browser-check, ID 11371421641; 56 PNG + report.json, errors=[].
+
+- 320/360/390/768/1280px beş boş ve beş kayıtlı ekran: yatay taşma yok. R1 son kontrolleri alt navigasyonun üstünde erişilebilir; profil düzenleyici de her genişlikte kontrol edildi.
+- Tab/Enter, başlık odağı, mevcut ekranı koruyan İçeriğe geç, geri/ileri navigasyonu, reduced-motion ve 200% eşdeğer reflow geçti. Test artık URL yanında hash render/odak durumunu da bekler.
+- Tarayıcının gerçek IndexedDB'sinde profil onayı, 650+800+500, tamamlama, reload, mod iptal/dönüşüm, saklama hatası sonrası aynı işlem retry ve kilo yenileme kalıcılığı geçti. Hiç pageerror yok.
+- 320px kayıtlı beş ekran ve profil düzenleyici, 390px profil önizlemesi ve 1280px Kayıtlar görsel olarak incelendi; kabulü engelleyen sorun görülmedi. Önceki R1 320px beş ekranı da incelendi.
+- 640px reflow, 1280px %200 zoom eşdeğeridir; fiziksel Android veya gerçek tarayıcı zoom testi değildir.
+
+## Çalıştırma ve veri
 
 ```bash
 npm ci
@@ -46,18 +47,16 @@ npm run check
 npm run dev
 ```
 
-Yerel adres: http://127.0.0.1:5173/#/bugun
-Telefon: `npm run dev:lan`, aynı ağda bilgisayarın IP'si:5173.
-Üretim: `npm run build`; çıktı dist. Yerel üretim önizleme: `npm run preview`.
+http://127.0.0.1:5173/#/bugun; üretim dist; tarayıcı kontrolü `npx playwright install chromium`, build ve `node scripts/browser-check.mjs`.
+
+Tek cihaz/origin, tek yerel UUID profil. Oturum açma, güvenli çok kullanıcı izolasyonu, bulut senkronizasyonu ve yedekleme yok. Origin/site verisi temizliği veriyi silebilir. R3–6 store'ları şemada hazır ama işlevleri sahte başarıyla uygulanmış sayılmaz; adaptör yalnız R2 alt kümesini ve atomik saveSetup'ı uygular.
 
 ## Açık bağımlılıklar
 
-1. Gerçek tarayıcıda 320/360/390/768/1280px beş ekran: yatay taşma yok; alt menü içeriği örtmüyor; 200% zoom, Tab/Enter, geri/ileri ve reduced-motion kontrolü. Kod bunu hedefler; test edilmiş iddiası yok.
-2. Kimlik/depolama henüz kurulmadı. R2 tek cihaz IndexedDB pilotu; gerçek güvenli çok kullanıcı/senkronizasyon tamamlanmış sayılamaz. Davetli bulut pilotu ayrı sunucu kimlik/yetki bağımlılığı.
-3. Hosting/domain bağlantısı yok. Manifest tam PWA/offline/push değildir. Yayın bu raundun kapsamı dışı.
-4. Nihai isim/kedi estetiği, lisanslı GLB ve Android cihaz ölçümü yok.
-5. Klinik güvenlik incelemesi yapılmadı. Ürün sınırları kaynak rehberlerin tüm kişilere aynı reçetesi değildir; tam NICE sayfası yayın öncesi yeniden kontrol edilmeli.
+- Fiziksel Android, gerçek %200 zoom ve ekran okuyucu pilot öncesi kontrol edilmedi.
+- Klinik güvenlik incelemesi, tam NICE sayfası kontrolü, hosting/domain ve bulut kimliği/yetki ayrı bağımlılıklardır.
+- Kedi 2D taslaktır; nihai görsel yön ve lisanslı GLB yok. Manifest tam offline/PWA/push değildir.
 
-## Sonraki tek görev — Raund 2
+## Sonraki tek görev
 
-Önce yukarıdaki açık görsel kabul kontrolünü tamamla; sorun varsa yalnız iskeleti düzelt. Ardından PROJECT.md, CURRENT_TASK.md, docs/DATA_CONTRACT.md ve docs/ENERGY_POLICY.md üzerinden profil + başlangıç planı + manuel kalori + tamamlama/geçmiş düzenleme + kilo + **kalıcı IndexedDB** akışını uygula. Framework'ü/ekranları yeniden başlatma. Cihaz kapsamını açık tut. 650+800+500, 2700/2200/2400, mod değişimi, yenileme, tekrar deneme, yerel gece yarısı ve geçmiş plan testleri zorunlu. R3–6 özellikleri ekleme.
+R2 kabulü tamamlandı. **Sonraki tek görev yalnız Raund 3**: mevcut sözleşmelerle aktivite kaydı ve uygun haftalık plan değerlendirmesi; inclusive PAL içinde egzersizi tekrar enerji dengesine ekleme. Önce PROJECT, CURRENT_TASK, DATA_CONTRACT ve ENERGY_POLICY belgelerini oku. Framework'ü veya beş ekranı yeniden başlatma. R4–6 ekleme.

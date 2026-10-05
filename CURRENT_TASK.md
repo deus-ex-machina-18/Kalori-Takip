@@ -1,27 +1,24 @@
-# Güncel görev — Raund 1
+# Güncel görev — Raund 2
 
-5 Ekim devam oturumu: tek çıktı, açık mobil kabul kontrolü için Chromium CI altyapısı. `.github/workflows/verify.yml`, `scripts/browser-check.mjs` ve Playwright geliştirme bağımlılığı eklendi. TypeScript/build ve 8 mevcut test geçti. Actions sonucu son kontrolde kuyrukta; gerçek tarayıcı kabulü açık olduğundan Raund 2 başlamadı. Ayrıntı ve kontrol bağlantısı HANDOFF.md'de.
+Tek çıktı: mevcut beş ekran üzerinde profil + başlangıç planı + manuel kalori + gün tamamlama/geçmiş düzenleme + kilo + kalıcı IndexedDB takibi.
 
-Tek çıktı: belirtilen GitHub deposunda çalışır mobil uygulama iskeleti ve Raund 2 sözleşmeleri.
+## Yetki ve sınır
 
-## Sınırlandırılmış dosyalar
+Dosyalar: `src/domain/dates.ts`, `contracts.ts`, yeni `tracking.ts`; `src/data/indexeddb.ts`; `src/ui/tracker.ts`; `src/main.ts`, `styles.css`; ilgili testler, browser-check, paket kilidi ve bu devir belgeleri. Mevcut Vite/TypeScript ve beş ekran korunur.
 
-`src/main.ts`, `src/styles.css`, `src/icons.ts`, `src/domain/*`, `public/*`, `index.html`, Vite/TypeScript/npm yapılandırması, `tests/dates.test.ts`, `tests/ui.test.mjs`, `docs/*`, README/PROJECT/CURRENT_TASK/HANDOFF. Başlangıç deposu boştu; yeniden kullanılacak bileşen veya AGENTS.md yoktu.
+## Tamamlanan kapsam
 
-## Yapılan değişiklikler
-
-Beş ekran ve hash navigasyonu; tokenlar, mobil alt navigasyon, boş kayıt durumları; 2D taslak kedi; yerel gün yardımcı fonksiyonları; ayrık kayıt modu tipleri; repository/hesap/kedi arayüzleri; veri, enerji ve 3D şartnamesi. Tek cihaz yerel pilot veri stratejisi seçildi.
-
-## Dokunulmayanlar
-
-R2 kişisel profil/kalori/kilo yazma, R3 aktivite/plan motoru, R4 gerçek 3D model, R5 ödül/bildirim, R6 pilot yayın. Başka repo/veri yok. Ücretli servis açılmadı, hosting kurulmadı.
+- Uygunluk sorulu profil; saat dilimi, boy/kilo/doğum tarihi/formül/PAL; açıklamalı önizleme ve onay. Kapsam dışı profil plansız kayıt yapabilir.
+- Deterministik Mifflin × inclusive PAL planı; koruma veya kilo verme; immutable geçmiş ve ileri tarihli plan düzenlemesi.
+- Toplam veya parçalı kcal; ekleme/düzeltme/silme; mod değişimi için dönüşüm/boşaltma/iptal. Kalori düzenlemesi günü yeniden açar.
+- Gün onayı ve geçmiş gün seçimi. Eksik/kısmi günler kesin enerji dengesi üretmez; hedef farkı ile koruma farkı ayrıdır.
+- Ondalık kilo ve bütün ölçümlerin korunması; günlük son ölçüm temsilcisi.
+- IndexedDB v1; atomik profil/plan/başlangıç kilosu, atomik kayıt/işlem makbuzu; tekrar deneme kimliği, gün sürümü ve profil sürümü kontrolü; görünür hata, sessiz bellek fallback'i yok.
 
 ## Kabul kriterleri
 
-- npm ci; npm run dev ve npm run build çalışır.
-- Beş ekrana gidilir; telefon genişliğinde taşma yok; klavye odak ve içeriğe geç bağlantısı mevcut.
-- Hayali kişisel veriler yok; boş gün sıfır değil; sonraki raund özellikleri devre dışı ve etiketli.
-- Tarih/şema/plan/kimlik ve hesap sözleşmeleri belgeli; npm run check geçer.
-- Gerçek Android, kimlik/hosting/3D eksikleri ve sonraki tek görev HANDOFF'a yazılır.
+650+800+500=1950; 2700/2200/2400 → hedef +200, açık +300; mod dönüşümü çift saymaz; düzenleme tekrar onay ister; yeniden açılış kayıtları korur; tekrarlanan yazma tek kayıt üretir; iki sekme değişikliği ezmez; yerel gece yarısı tarih hesabı ve geçmiş plan bağlantısı doğru; TypeScript/build/test ve Chromium genişlik/akış kontrolü geçer.
 
-Durum: kod/dokümanlar ve otomatik kontroller hazır. Gerçek tarayıcı/mobil görsel kabul kontrolü ortam engeli nedeniyle açık; ayrıntılar HANDOFF.md içinde. Sonraki iş yalnız Raund 2.
+R3 hareket/haftalık motor, R4 gerçek 3D, R5 ödül/bildirim, R6 export/silme/hosting/bulut bu raundun dışında. Yayın yapılmadı. Kontrolün güncel sonucu HANDOFF.md'de.
+
+Durum: tamamlandı. Yerel ve GitHub kontrollerinde 35 test + gerçek Chromium kabulü geçti; 56 görüntü ve hatasız rapor oluştu. Sonraki tek görev Raund 3. Başarılı koşu ve kaynak commit HANDOFF.md'de.
