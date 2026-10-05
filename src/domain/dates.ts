@@ -21,3 +21,16 @@ export function localDateAt(instant: Date, timeZone: string): LocalDate {
     parts.find((p) => p.type === type)?.value ?? "";
   return parseLocalDate(`${part("year")}-${part("month")}-${part("day")}`);
 }
+
+export function addLocalDays(date: LocalDate, days: number): LocalDate {
+  const value = new Date(`${parseLocalDate(date)}T12:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return parseLocalDate(value.toISOString().slice(0, 10));
+}
+
+export function ageOn(birthDate: LocalDate, date: LocalDate): number {
+  parseLocalDate(birthDate);
+  parseLocalDate(date);
+  return Number(date.slice(0, 4)) - Number(birthDate.slice(0, 4)) -
+    (date.slice(5) < birthDate.slice(5) ? 1 : 0);
+}

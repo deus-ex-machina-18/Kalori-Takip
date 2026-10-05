@@ -97,8 +97,14 @@ export interface PlanEngine {
   createInitialPlan(
     profile: Profile,
     effectiveFrom: LocalDate,
+    options?: PlanOptions,
   ): Result<PlanVersion>;
   summarizeDay(day: DayLog, plan: PlanVersion | null): Result<DaySummary>;
+}
+export interface PlanOptions {
+  goal: "lose" | "maintain";
+  targetWeightKg: number | null;
+  calorieRangeKcal?: { min: number; max: number };
 }
 export interface CatScene {
   setState(state: DaySummary): void;

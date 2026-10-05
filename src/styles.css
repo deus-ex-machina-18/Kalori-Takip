@@ -775,3 +775,36 @@ html[data-reduced-motion="true"] *:before {
     padding: 18px;
   }
 }
+
+/* R2 forms share the R1 visual tokens. */
+.tracking-form { display: grid; gap: var(--space-md); margin-top: 18px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+.field { display: grid; gap: 7px; font-size: 13px; min-width: 0; }
+.field input, .field select { width: 100%; min-width: 0; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; }
+select { font: inherit; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.mode-tabs .button { flex: 1; }
+.entry-form { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: end; margin-top: 14px; }
+.entry-form .button { padding: 12px; }
+.confirm-box { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; margin-top: 16px; padding: 16px; }
+.confirm-box p, .eligibility p { font-size: 13px; margin-top: 8px; }
+.eligibility { min-width: 0; border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 0; }
+.eligibility legend { font-size: 14px; font-weight: 650; }
+.eligibility label { display: flex; gap: 10px; align-items: center; min-height: 48px; font-size: 14px; }
+.eligibility input { width: 20px; height: 20px; }
+.history-list { margin-top: 14px; }
+.history-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink); padding: 14px 0; text-align: left; font-size: 14px; min-height: 48px; }
+.history-row small { display: block; color: var(--muted); font-size: 11px; }
+.history-row strong { text-align: right; }
+.error-message { background: var(--peach); border-radius: 14px; padding: 14px; margin-bottom: 16px; font-size: 14px; }
+.tracker-notice:not(:empty) { border-radius: 14px; padding: 14px; margin-bottom: 16px; background: var(--sage); font-size: 14px; }
+#tracker-feedback > .button { margin: 0 8px 16px 0; }
+.plan-summary { margin-bottom: 16px; }
+.calorie-value, .metric-row strong, .history-row strong { overflow-wrap: anywhere; min-width: 0; }
+.record-editor > .hint { margin-bottom: 26px; }
+@media (max-width: 720px) { .form-grid { grid-template-columns: 1fr; } }
+@media (max-width: 350px) {
+  .entry-form { grid-template-columns: minmax(0, 1fr) 1fr; }
+  .entry-form .field { grid-column: 1 / -1; }
+  .mode-tabs .button { padding: 12px 8px; gap: 4px; }
+}
