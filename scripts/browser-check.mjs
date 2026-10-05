@@ -20,6 +20,7 @@ try {
     await page.setViewportSize({ width, height: 850 });
     for (const screen of ['bugun', 'kayitlar', 'planim', 'ilerlemem', 'ayarlar']) {
       await page.goto(`http://127.0.0.1:4173/#/${screen}`);
+      await page.locator(`nav a[aria-current="page"][href="#/${screen}"]`).waitFor();
       await page.locator('h1').waitFor();
       if (await page.locator('main[data-ready]').count()) await page.locator('main[data-ready="true"]').waitFor();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${screen}: overflow`);
@@ -45,6 +46,7 @@ try {
   await page.locator('nav a[href="#/kayitlar"]').focus();
   await page.keyboard.press('Enter');
   await page.waitForURL('**/#/kayitlar');
+  await page.waitForFunction(() => document.activeElement?.id === 'page-title');
   assert.equal(await page.locator('h1').evaluate(el => el === document.activeElement), true);
   await page.locator('.skip-link').focus();
   await page.keyboard.press('Enter');
@@ -57,6 +59,7 @@ try {
   // Half-size viewport checks reflow equivalent to 200% browser zoom.
   await page.setViewportSize({ width: 640, height: 425 });
   await page.reload();
+  await page.locator('main[data-ready="true"]').waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   assert.equal(await page.locator('html').getAttribute('data-reduced-motion'), 'true');
   assert.deepEqual(errors, []);
@@ -65,6 +68,8 @@ try {
   await page.setViewportSize({ width: 390, height: 850 });
   await page.goto('http://127.0.0.1:4173/#/planim');
   await page.locator('main[data-ready="true"]').waitFor();
+  await page.locator('nav a[aria-current="page"][href="#/planim"]').waitFor();
+  assert.equal(await page.locator('#profile-form').count(),1,'R2 initial profile form must exist');
   if (await page.locator('#profile-form').count()) {
     for (const [id,value] of Object.entries({ 'birth-date':'2000-08-21','height-cm':'180','profile-weight':'91','time-zone':'Europe/Istanbul','target-weight':'80' })) await page.locator(`#${id}`).fill(value);
     for (const [id,value] of Object.entries({ 'formula-sex':'male',pal:'1.4',goal:'lose' })) await page.locator(`#${id}`).selectOption(value);
@@ -121,11 +126,13 @@ try {
       await page.setViewportSize({width,height:850});
       for (const screen of ['bugun','kayitlar','planim','ilerlemem','ayarlar']) {
         await page.goto(`http://127.0.0.1:4173/#/${screen}`);
+        await page.locator(`nav a[aria-current="page"][href="#/${screen}"]`).waitFor();
         await page.locator('main[data-ready="true"]').waitFor();
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true,`populated ${width}/${screen}: overflow`);
         await page.screenshot({path:`browser-results/populated-${width}-${screen}.png`,fullPage:true});
       }
       await page.goto('http://127.0.0.1:4173/#/planim');
+      await page.locator('nav a[aria-current="page"][href="#/planim"]').waitFor();
       await page.locator('[data-action="edit-profile"]').click();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true,`profile editor ${width}: overflow`);
       await page.screenshot({path:`browser-results/profile-editor-${width}.png`,fullPage:true});
