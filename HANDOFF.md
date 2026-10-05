@@ -2,7 +2,9 @@
 
 Repo: https://github.com/deus-ex-machina-18/Kalori-Takip
 Dal: main · sürüm 0.1.0 · 5 Ekim 2026
-Kod commit'i: bu belgenin son güncellemesinde kaydedilecek.
+Kod commit'i: 7197e4b4fcd6b979dfbcdb6d91b0b80414f70bc2
+Doğrulanmış kod: https://github.com/deus-ex-machina-18/Kalori-Takip/commit/7197e4b4fcd6b979dfbcdb6d91b0b80414f70bc2
+Bu belgeyi güncelleyen sonraki commit yalnız devir teslimi kaydeder; kod aynı kalır.
 Başlangıç: boş depo; AGENTS.md veya önceki uygulama yok. İlk depo commit'i b5363a2f3e8cac7bfe699f4332eb8f3bf91eccfb.
 
 ## Durum
