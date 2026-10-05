@@ -2,9 +2,17 @@ import type { DayLog, LocalDate, PlanVersion, Profile, UTCInstant, WeightMeasure
 import type { PlanEngine, PlanOptions, Result } from './contracts.ts';
 import { ageOn, parseLocalDate } from './dates.ts';
 
-export const POLICY = Object.freeze({ pals: [1.4, 1.6, 1.8, 2], minAge: 19, maxAge: 59, minBmi: 18.5, floorKcal: 1300, minDeficit: .1, maxDeficit: .2, maxDeficitKcal: 500 });
+export const PAL_OPTIONS = Object.freeze([{pal:1.4,label:'Çoğunlukla oturarak'},{pal:1.6,label:'Hafif hareketli'},{pal:1.8,label:'Hareketli'},{pal:2,label:'Çok hareketli'}]);
+export const POLICY = Object.freeze({ pals: PAL_OPTIONS.map(option=>option.pal), minAge: 19, maxAge: 59, minBmi: 18.5, floorKcal: 1300, minDeficit: .1, maxDeficit: .2, maxDeficitKcal: 500 });
 export const nowUTC = (): UTCInstant => new Date().toISOString() as UTCInstant;
-export const uuid = (): string => crypto.randomUUID();
+export function uuid(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  // LAN HTTP previews may lack randomUUID; getRandomValues still gives v4 entropy.
+  const bytes=crypto.getRandomValues(new Uint8Array(16));
+  bytes[6]=(bytes[6]! & 15) | 64; bytes[8]=(bytes[8]! & 63) | 128;
+  const hex=[...bytes].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+}
 export const success = <T>(value: T): Result<T> => ({ ok: true, value });
 export const failure = <T = never>(code: Extract<Result<T>, { ok: false }>['code'], message: string): Result<T> => ({ ok: false, code, message });
 export function requireValue<T>(result: Result<T>): T {

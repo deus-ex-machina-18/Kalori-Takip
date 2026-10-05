@@ -22,11 +22,12 @@ export class IndexedDbRepository implements CoreRepository {
   private database: Promise<IDBDatabase> | null = null;
   private factory: IDBFactory | undefined;
   private databaseName: string;
-  constructor(factory: IDBFactory | undefined = globalThis.indexedDB, databaseName = 'kedi-kalori-v1') { this.factory = factory; this.databaseName = databaseName; }
+  constructor(factory?: IDBFactory, databaseName = 'kedi-kalori-v1') { this.factory = factory; this.databaseName = databaseName; }
   private open(): Promise<IDBDatabase> {
     if (!this.database) this.database = new Promise<IDBDatabase>((resolve,reject) => {
-      if (!this.factory) { reject(new Error('Bu tarayıcıda IndexedDB kullanılamıyor.')); return; }
-      const req = this.factory.open(this.databaseName, 1);
+      const factory = this.factory ?? globalThis.indexedDB;
+      if (!factory) { reject(new Error('Bu tarayıcıda IndexedDB kullanılamıyor.')); return; }
+      const req = factory.open(this.databaseName, 1);
       let expired = false;
       const timer = setTimeout(() => { expired = true; reject(new Error('Veri deposu açılamadı. Diğer sekmeleri kapatıp tekrar dene.')); }, 5000);
       req.onupgradeneeded = () => {

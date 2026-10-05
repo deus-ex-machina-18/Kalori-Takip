@@ -43,7 +43,7 @@ async function launch(hash = "/bugun", reducedMotion = false, factory = new IDBF
     pretendToBeVisual: true,
     virtualConsole,
   });
-  Object.defineProperty(dom.window, "indexedDB", { value: factory, configurable: true });
+  Object.defineProperty(dom.window, "indexedDB", factory === 'denied-getter' ? { get(){throw new DOMException('denied','SecurityError');}, configurable:true } : { value: factory, configurable: true });
   Object.defineProperty(dom.window, "crypto", { value: webcrypto });
   dom.window.matchMedia = () => ({ matches: reducedMotion });
   dom.window.scrollTo = () => {};
@@ -238,4 +238,25 @@ test('profil önizlemesinden geri dönmek girilen bilgileri korur',async()=>{
     app.document.querySelector('#profile-form').requestSubmit();assert.ok(app.document.querySelector('.preview-card'));
     app.document.querySelector('[data-action="cancel-profile"]').click();assert.equal(app.document.querySelector('#goal').value,'lose');assert.equal(app.document.querySelector('#target-weight').value,'80');assert.equal(app.document.querySelector('#height-cm').value,'180');
   }finally{app.dom.window.close();}
+});
+
+test('yerel gece yarısında açık form korunur; Yeni güne geç gerçekten yeni tarihi açar',async()=>{
+  const app=await launch('/planim');
+  try{
+    await createProfile(app);await navigate(app.window,app.document.querySelector('nav a[href="#/bugun"]'));
+    const date=app.document.querySelector('.calorie-editor').dataset.date;
+    fill(app,'kcal','1950');
+    const NativeDate=app.window.Date,clock=new NativeDate(`${date}T21:00:01Z`);
+    app.window.Date=class extends NativeDate { constructor(...args){ super(...(args.length?args:[clock.getTime()])); } static now(){return clock.getTime();} };
+    app.document.dispatchEvent(new app.window.Event('visibilitychange'));
+    assert.ok(app.document.querySelector('[data-action="new-day"]'));
+    assert.equal(app.document.querySelector('#kcal').value,'1950');assert.equal(app.document.querySelector('.calorie-editor').dataset.date,date);
+    app.document.querySelector('[data-action="new-day"]').click();
+    assert.notEqual(app.document.querySelector('.calorie-editor').dataset.date,date);assert.equal(app.document.querySelector('#kcal').value,'');
+  }finally{app.dom.window.close();}
+});
+
+test('IndexedDB getter erişim hatası açılışı çökertmez',async()=>{
+  const app=await launch('/planim',false,'denied-getter');
+  try {assert.deepEqual(app.errors,[]);assert.ok(app.document.querySelector('.error-message'));assert.equal(app.document.querySelector('#profile-form'),null);}finally{app.dom.window.close();}
 });

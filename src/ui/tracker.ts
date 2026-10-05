@@ -3,7 +3,7 @@ import type { SetupWrite } from '../data/indexeddb.ts';
 import type { DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
 import type { Result } from '../domain/contracts.ts';
 import { addLocalDays, localDateAt, parseLocalDate } from '../domain/dates.ts';
-import { changeDay, engine, intake, newDay, nowUTC, planFor, representativeWeights, requireValue, uuid, validateProfile } from '../domain/tracking.ts';
+import { PAL_OPTIONS, changeDay, engine, intake, newDay, nowUTC, planFor, representativeWeights, requireValue, uuid, validateProfile } from '../domain/tracking.ts';
 import type { DayChange } from '../domain/tracking.ts';
 
 export const escape = (value: unknown): string => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]!);
@@ -32,6 +32,7 @@ export class Tracker {
   private lastToday: LocalDate | null = null;
   private refreshEpoch = 0;
   private loadFailed = false;
+  private rolloverPending = false;
   private lastView = '';
   private draft: { profile: Profile; goal: 'lose' | 'maintain'; target: string } | null = null;
   private rerender: () => void;
@@ -59,9 +60,9 @@ export class Tracker {
   checkMidnight(): void {
     if (!this.ready || this.busy || this.lastToday === this.today()) return;
     this.lastToday = this.today();
-    this.notice = 'Yerel gün değişti. Yeni kayıt için Bugün ekranını yeniden açabilirsin; açık formun tarihi korunuyor.';
-    const region = document.querySelector('#tracker-message');
-    if (region) region.textContent = this.notice;
+    this.rolloverPending = true;
+    this.notice = 'Yerel gün değişti. Açık kalori formunun tarihi korunuyor. Hazırsan yeni güne geç.';
+    this.showMessages(false);
     // Do not replace a filled form at midnight. Its submit closure retains its date.
   }
   private day(date: LocalDate): DayLog | null { return this.days.find(day => day.date === date) ?? null; }
@@ -69,7 +70,7 @@ export class Tracker {
     return day ? this.plans.find(p => p.id === day.planVersionId) ?? null : this.profile?.automaticPlanEligibility === 'eligible' ? planFor(this.plans,date) : null;
   }
   messages(): string {
-    return `<div id="tracker-message" tabindex="-1" role="${this.error ? 'alert' : 'status'}" class="${this.error ? 'error-message' : 'tracker-notice'}">${escape(this.error || this.notice)}</div>${this.retry ? button('retry','Aynı işlemi tekrar dene',true) : ''}${this.loadFailed || this.error ? button('reload','Güncel kayıtları yükle',true) : ''}`;
+    return `<div id="tracker-message" tabindex="-1" role="${this.error ? 'alert' : 'status'}" class="${this.error ? 'error-message' : 'tracker-notice'}">${escape(this.error || this.notice)}</div>${this.retry ? button('retry','Aynı işlemi tekrar dene',true) : ''}${this.loadFailed || this.error ? button('reload','Güncel kayıtları yükle',true) : ''}${this.rolloverPending ? button('new-day','Yeni güne geç',true) : ''}`;
   }
   private prerequisites(): string {
     if (!this.ready) return `<p class="muted">${this.loadFailed ? 'Veri deposuna erişilemedi. Kayıt yapılamıyor.' : 'Kayıtların yükleniyor…'}</p>`;
@@ -115,7 +116,7 @@ export class Tracker {
   private profileForm(): string {
     const p = this.draft?.profile ?? this.profile, latest = [...this.plans].sort((a,b) => b.effectiveFrom.localeCompare(a.effectiveFrom))[0];
     const selected = (value: unknown, desired: unknown) => value === desired ? 'selected' : '';
-    return `<section class="card"><h2>${p ? 'Profil ve plan düzenlemesi' : 'Seni tanıyalım'}</h2><p class="hint">Bu cihazda tek profil tutulur. Bilgilerini başka cihaza aktarma veya hesapla giriş henüz yok.</p><form id="profile-form" class="tracking-form"><div class="form-grid">${field('birth-date','Doğum tarihi','date',p?.birthDate ?? '',`min="1900-01-01" max="${this.today()}"`)}${field('height-cm','Boy (cm)','number',p?.heightCm ?? '','min="100" max="250" step="any" inputmode="decimal"')}${field('profile-weight','Güncel kilo (kg)','number',p?.weightKg ?? '','min="20" max="400" step="any" inputmode="decimal"')}<label class="field" for="formula-sex"><span>Hesap formülü için cinsiyet</span><select id="formula-sex" name="formula-sex" required><option value="">Seç</option><option value="male" ${selected(p?.formulaSex,'male')}>Erkek formülü</option><option value="female" ${selected(p?.formulaSex,'female')}>Kadın formülü</option><option value="not-provided" ${selected(p?.formulaSex,'not-provided')}>Vermek istemiyorum</option></select></label><label class="field" for="pal"><span>Günlük hareket (olağan egzersiz dahil)</span><select id="pal" name="pal" required><option value="">Seç</option>${[[1.4,'Çoğunlukla oturarak'],[1.6,'Hafif hareketli'],[1.8,'Hareketli'],[2,'Çok hareketli']].map(([v,l])=>`<option value="${v}" ${selected(p?.baseline.pal,v)}>${l}</option>`).join('')}</select></label>${field('time-zone','Saat dilimi','text',p?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,'autocomplete="off"')}<label class="field" for="goal"><span>Hedefin</span><select id="goal" name="goal" required><option value="maintain" ${selected(this.draft?.goal ?? latest?.goal ?? 'maintain','maintain')}>Kilomu korumak</option><option value="lose" ${selected(this.draft?.goal ?? latest?.goal,'lose')}>Kilo vermek</option></select></label><label class="field" for="target-weight"><span>Hedef kilo (yalnız kilo verme)</span><input id="target-weight" name="target-weight" type="number" value="${escape(this.draft?.target ?? latest?.targetWeightKg ?? '')}" min="20" max="400" step="any" inputmode="decimal"></label></div><fieldset class="eligibility"><legend>Otomatik plan uygunluğu</legend><p>Gebelik/emzirme, yeme bozukluğu öyküsü veya riski, özel tıbbi beslenme ihtiyacı, ilgili tedavi ya da metabolizmayı etkileyen bir durum var mı?</p><label><input type="radio" name="eligibility" value="eligible" ${this.draft?.profile.automaticPlanEligibility === 'eligible' ? 'checked' : ''} required> Hayır</label><label><input type="radio" name="eligibility" value="out-of-scope" ${this.draft?.profile.automaticPlanEligibility === 'out-of-scope' ? 'checked' : ''} required> Evet / emin değilim</label><p class="hint">Ayrıntılı sağlık bilgisi saklanmaz. Otomatik plan 19–59 yaşla sınırlıdır; diğer durumlarda plansız kayıt açıktır.</p></fieldset><button type="submit" class="button primary">Önizlemeyi göster</button>${p ? button('close-profile','Düzenlemeyi kapat',true) : ''}</form></section>`;
+    return `<section class="card"><h2>${p ? 'Profil ve plan düzenlemesi' : 'Seni tanıyalım'}</h2><p class="hint">Bu cihazda tek profil tutulur. Bilgilerini başka cihaza aktarma veya hesapla giriş henüz yok.</p><form id="profile-form" class="tracking-form"><div class="form-grid">${field('birth-date','Doğum tarihi','date',p?.birthDate ?? '',`min="1900-01-01" max="${this.today()}"`)}${field('height-cm','Boy (cm)','number',p?.heightCm ?? '','min="100" max="250" step="any" inputmode="decimal"')}${field('profile-weight','Güncel kilo (kg)','number',p?.weightKg ?? '','min="20" max="400" step="any" inputmode="decimal"')}<label class="field" for="formula-sex"><span>Hesap formülü için cinsiyet</span><select id="formula-sex" name="formula-sex" required><option value="">Seç</option><option value="male" ${selected(p?.formulaSex,'male')}>Erkek formülü</option><option value="female" ${selected(p?.formulaSex,'female')}>Kadın formülü</option><option value="not-provided" ${selected(p?.formulaSex,'not-provided')}>Vermek istemiyorum</option></select></label><label class="field" for="pal"><span>Günlük hareket (olağan egzersiz dahil)</span><select id="pal" name="pal" required><option value="">Seç</option>${PAL_OPTIONS.map(({pal:v,label:l})=>`<option value="${v}" ${selected(p?.baseline.pal,v)}>${l}</option>`).join('')}</select></label>${field('time-zone','Saat dilimi','text',p?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,'autocomplete="off"')}<label class="field" for="goal"><span>Hedefin</span><select id="goal" name="goal" required><option value="maintain" ${selected(this.draft?.goal ?? latest?.goal ?? 'maintain','maintain')}>Kilomu korumak</option><option value="lose" ${selected(this.draft?.goal ?? latest?.goal,'lose')}>Kilo vermek</option></select></label><label class="field" for="target-weight"><span>Hedef kilo (yalnız kilo verme)</span><input id="target-weight" name="target-weight" type="number" value="${escape(this.draft?.target ?? latest?.targetWeightKg ?? '')}" min="20" max="400" step="any" inputmode="decimal"></label></div><fieldset class="eligibility"><legend>Otomatik plan uygunluğu</legend><p>Gebelik/emzirme, yeme bozukluğu öyküsü veya riski, özel tıbbi beslenme ihtiyacı, ilgili tedavi ya da metabolizmayı etkileyen bir durum var mı?</p><label><input type="radio" name="eligibility" value="eligible" ${this.draft?.profile.automaticPlanEligibility === 'eligible' ? 'checked' : ''} required> Hayır</label><label><input type="radio" name="eligibility" value="out-of-scope" ${this.draft?.profile.automaticPlanEligibility === 'out-of-scope' ? 'checked' : ''} required> Evet / emin değilim</label><p class="hint">Ayrıntılı sağlık bilgisi saklanmaz. Otomatik plan 19–59 yaşla sınırlıdır; diğer durumlarda plansız kayıt açıktır.</p></fieldset><button type="submit" class="button primary">Önizlemeyi göster</button>${p ? button('close-profile','Düzenlemeyi kapat',true) : ''}</form></section>`;
   }
   progress(): string {
     const weights = representativeWeights(this.weights), completed = this.days.filter(d=>d.status==='completed');
@@ -144,11 +145,12 @@ export class Tracker {
     });
     document.querySelector('main')?.setAttribute('aria-busy',String(busy));
   }
-  private showMessages(): void {
+  private showMessages(moveFocus = true): void {
     const region = document.querySelector('#tracker-feedback');
-    if (region) { region.innerHTML = this.messages(); this.bindMessages(); document.querySelector<HTMLElement>('#tracker-message')?.focus({preventScroll:true}); }
+    if (region) { region.innerHTML = this.messages(); this.bindMessages(); if(moveFocus)document.querySelector<HTMLElement>('#tracker-message')?.focus({preventScroll:true}); }
   }
   private bindMessages(): void {
+    document.querySelector('[data-action="new-day"]')?.addEventListener('click',()=>{ if(!this.busy){this.selectedDate=null;this.switchTo=null;this.rolloverPending=false;this.notice='Yeni yerel gün açıldı.';if(location.hash!=='#/bugun')location.hash='#/bugun';else this.rerender();} });
     document.querySelector('[data-action="retry"]')?.addEventListener('click',()=>void this.retry?.());
     document.querySelector('[data-action="reload"]')?.addEventListener('click',()=>{ if (!this.busy) { this.error=''; this.notice='Güncel kayıtlar yüklendi; önceki değişiklik saklanmadıysa tekrar gir.'; this.retry=null; this.preview=null; void this.load(); } });
   }
