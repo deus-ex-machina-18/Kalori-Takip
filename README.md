@@ -27,7 +27,7 @@ npm run build
 node scripts/browser-check.mjs
 ```
 
-GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Modelin başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37419540200): 56 test, R2/R3 regresyonları ve R4 gerçek GLB/WebGL2/IndexedDB/etkileşim/hata yolu kabulü geçti. Son statik poster ve lifecycle kontrolünün koşusu HANDOFF.md’de güncellenecek. Ayrıntı HANDOFF.md'de.
+GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Modelin başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37420124824): 56 test, R2/R3 regresyonları ve R4 gerçek GLB/WebGL2/IndexedDB/etkileşim/hata yolu kabulü geçti. Statik poster, görünmez kartta durma ve yapay düşük FPS yedeği de geçti; 70 PNG ve hatasız rapor oluştu. Ayrıntı HANDOFF.md'de.
 
 ## Kullanım
 

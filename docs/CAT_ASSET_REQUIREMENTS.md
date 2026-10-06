@@ -1,6 +1,6 @@
 # Raund 4 için gerçek 3D kedi varlık şartnamesi
 
-R1'deki inline SVG iki boyutlu taslak. Model, animasyon veya döndürülebilir 3D varlık temin edilmedi. İsim/nihai estetik kullanıcı onayı bekler. Ücretli asset satın alınmadı.
+R1'deki inline SVG iki boyutlu taslaktı. R4'te kullanıcı 1. yumuşak oyuncak yönünü gri-beyaz seçti; gerçek mesh/rig/animasyon ve aynı modelin statik render'ı aşağıdaki envanterle teslim edildi. Kedi adı Ayarlar'dan değişir. Ücretli asset satın alınmadı.
 
 ## Gereksinimler
 
@@ -31,4 +31,4 @@ Kullanıcı üç referanstan 1. yumuşak oyuncak yönünü gri-beyaz seçti. Yen
 
 Fiziksel orta sınıf Android cihazda ≥30 FPS ve <3 sn ilk sahne kabulü henüz ölçülmedi. GitHub Chromium SwiftShader yazılım renderer akış doğrulaması, fiziksel cihaz kabulü değildir. Modelin referans yönünü izlemesi otomatik birebir kürk/detay eşitliği anlamına gelmez.
 
-Gerçek modelin nötr kamera görüntüsü `public/models/cat-poster.png` olarak saklanır; son modelin Chromium render'ından alınmıştır. Statik modda ve sahne hatasında aynı görüntü gösterilir. SVG erken teknik yedek çizimi olarak kalır; aktif UI PNG kullanır. Gölge 512² tek map; son Chromium sayaçları gölge geçişi dahil 40.580 çizilen üçgen ve 22 draw call verdi. Yerel preview yükleme ölçümü 222 ms; ağ/Android ilk yükleme sonucu değildir.
+Gerçek modelin nötr kamera görüntüsü `public/models/cat-poster.png` olarak saklanır; son modelin Chromium render'ından alınmıştır. Statik modda ve sahne hatasında aynı görüntü gösterilir. SVG erken teknik yedek çizimi olarak kalır; aktif UI PNG kullanır. Gölge 512² tek map; son Chromium sayaçları gölge geçişi dahil 40.580 çizilen üçgen ve 22 draw call verdi. Yerel preview yükleme ölçümü 213 ms; ağ/Android ilk yükleme sonucu değildir.

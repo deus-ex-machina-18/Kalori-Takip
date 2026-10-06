@@ -6,37 +6,51 @@ Başlangıç: R3 teslim ef2df0b65ab10372e5dc89cb259439aa08389cb0.
 
 ## Durum
 
-R4 uygulandı; yerel TypeScript, üretim build'i, 56 test ve GLB doğrulaması geçti. **Son GLB modeli gerçek Chromium kabulünü geçti. Statik PNG ve ek lifecycle testleri son koşuya hazırlanıyor.** Yayın yapılmadı.
+**Raund 4 uygulama ve gerçek Chromium kabulü tamamlandı; main’de.** 56 test, TypeScript, üretim build'i ve GLB doğrulaması başarılı. Fiziksel Android performansı ölçülmedi. Yayın yapılmadı.
 
-## Seçim ve uygulama
+Doğrulanmış son kod: 1971754eb0de3d3b37697a28b84f85d4e5615f45. Bu belgenin sonraki commit'i yalnız devir belgelerini günceller.
 
-Kullanıcı üç ayrı örnekten “1 hocam ama rengi gri-beyaz olsun” dedi. Yumuşak oyuncak yönünde özgün gerçek 3D mesh/skin üretildi; referans görüntü GLB olarak sunulmadı. Baş/kulak/kuyruk/pati/göz/yüz kemikleri; idle/happy/stretch/play/sleep/care klipleri; tek sade oda.
+## Kullanıcı seçimi
 
-Gerçek asset `public/models/grey-white-kitten.glb`, kaynak `scripts/build-cat.mjs`, manifest/hash/lisans aynı dizinde. MIT, özgün prosedürel eser; dış mesh/doku/ses yok. 19.936 üçgen, 14 kemik, 997.724 bayt; validator sıfır hata/uyarı. Oda ek küçük geometrilerle oluşturulur. Kaynak çalıştırılınca asset ve manifest yeniden üretilir.
+Üç ayrı örnek sunuldu; kullanıcı “1 hocam ama rengi gri-beyaz olsun” dedi. Yumuşak oyuncak yönü gri-beyaz, mobil için sadeleştirilmiş gerçek geometriyle uygulandı. Ayrıntılı kürk yok; referans PNG gerçek 3D model diye sunulmadı. Kedi adı Ayarlar'dan değiştirilebilir.
 
-Three.js sahnesi dinamik yüklenir. Yatay sürükleme/dokunma/dikey scroll ayrımı, erişilebilir döndürme/sıfırlama/oyun/gerinme/uyku düğmeleri; geçişler 0,25 sn. Care kutlamayı/oyunu bastırır; kedi gövdesi kalorilere göre değişmez. Kalori/plan/hareket/hafta hesap kodları yeniden yazılmadı.
+## Tamamlananlar
 
-Kedi adı, reducedMotion, sceneMode mevcut IndexedDB v1 CatPreferences store'unda; profil zorunlu, makbuz+ayar atomik, aynı işlem retry, tam snapshot CAS. Şema yükseltilmedi. Ses varsayılan kapalı ve ses dosyası yok.
+- Gerçek GLB/glTF 2.0 mesh ve skin; 14 kemik, 19.936 üçgen, 997.724 bayt, doku yok. Baş, iki kulak, kuyruk, patiler, göz ve ağız bağımsız animasyon izlerine sahip. idle/happy/stretch/play/sleep/care; loop/one-shot ve 0,25 sn geçiş. Basit tek oda.
+- Özgün prosedürel kaynak `scripts/build-cat.mjs`; GLB, SHA-256/klip envanteri ve tam MIT lisans metni `public/models/` içinde. Ticari kullanım/değiştirme/web dağıtımı lisansla izinlidir. Dış mesh, doku veya ses kullanılmadı. Ses kapalı.
+- Three.js/GLTFLoader/AnimationMixer dinamik yüklenir. Dokunma, yatay döndürme ve dikey kaydırma ayrılır; klavye düğmeleri, açı sıfırlama, oyun, gerinme ve uyku. Erişilebilir kedi adı/durum/metin, canvas dışı kontroller.
+- Kedi durumu mevcut enerji motorundan gelir. Care kutlamayı/oyunu bastırır; kedinin beden boyutu kalorilerle değişmez. Kalori/plan/hareket/haftalık hesaplar ve beş ekran korunur.
+- İsim/reducedMotion/sceneMode mevcut IndexedDB v1 CatPreferences store'unda. Profil zorunlu; aynı transaction'da ayar+makbuz, aynı işlem retry ve tam snapshot CAS. Şema migrasyonu yok. Profil öncesi cihazın hareket tercihi kullanılır.
+- Statik PNG, aynı gerçek modelin nötr render'ıdır. Auto/statik seçim kalıcıdır; WebGL yokluğu, model 404/12 sn timeout, context kaybı veya düşük FPS'te yedek görünüm. Sahne hatası kalori formunu kapatmaz.
+- DPR≤1.5, yaklaşık 30 FPS döngü, tek 512² gölge. Görünmez kart/sekmede döngü durur. Görünür 4 sn örnekte <20 FPS statik moda geçer. Gerçek Android FPS/yükleme kabulü ayrı açık gereksinimdir.
 
-3D model 404/timeout/context-loss/WebGL yokluğu/düşük FPS: statik yedek; kalori formu çalışmayı sürdürür. DPR≤1.5, yaklaşık 30 FPS döngü; görünmez sekme veya kartta animasyon durur. <20 FPS ölçümü statik yedeğe geçirir. Gerçek Android ölçümü yapılmadı.
+## Kontroller — başarılı
 
-## Kontroller
+- Yerel `npm run check`: TypeScript + üretim build + 36 domain/depo + 20 DOM testi. R2/R3 regresyonları, kedi CAS/reload/retry, isim HTML güvenliği ve care önceliği geçti. GLB validator sıfır hata ve uyarı; bütçe ve bağımsız kemik animasyon izleri doğrulandı.
+- Son gerçek Chromium koşusu: https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37420124824
+- Commit: 1971754eb0de3d3b37697a28b84f85d4e5615f45; artifact browser-check ID 11392532655; 70 PNG + report.json + r4-metrics.json; errors=[].
+- Native IndexedDB ile R2/R3 ve R4 tercih retry/reload geçti. Gerçek GLB/WebGL2, döndürme/sürükleme/reset, play/stretch/sleep, care önceliği, yeniden kısmi/nötr gün, 404 ve gerçek WEBGL_lose_context, WebGL yokluğu, kalıcı statik/reduced motion, görünmez kartta durma/dönüşte devam ve yapay yavaş RAF'te düşük FPS yedeği geçti.
+- 320/360/390/768/1280px boş/kayıtlı/3D ekranlar ve mevcut klavye/odak/reflow akışları geçti. 320px gerçek 3D ve 390px statik ekran son artifact'tan görsel olarak incelendi. Kontroller kaydırmayla erişilebilir; sabit alt navigasyon tam sayfa ekran görüntüsünde orta akışın üzerine çizilir.
+- Chromium SwiftShader yazılım renderer: gölge geçişi dahil 40.580 çizilen üçgen, 22 draw call; yerel preview ilk render 213 ms. Bu internet bağlantısı veya fiziksel Android sonucu değildir. 640px reflow gerçek %200 zoom değildir.
 
-Yerel: `npm run check` → TypeScript + build + 36 domain/depo + 20 DOM test ve gerçek GLB validator/bütçe kontrolü başarılı. R2/R3 regresyonları, preference CAS/reload/retry, HTML isim güvenliği ve care önceliği kontrol edildi.
+Yerel Chromium indirmesi geçerli ZIP dönmedi; gerçek tarayıcı kabulü GitHub Actions'ta yapıldı. Bir ara koşu yalnız test betiğinin çoklu sekme context kurulumu yüzünden başarısız oldu; açık browser context ile düzeltildi, son koşu bütünüyle geçti.
 
-Yerel Chromium indirmesi ağ ortamında geçerli ZIP dönmedi. GitHub Actions tarayıcı betiği R4 skin/klip/döndürme/drag/reset/play/stretch/sleep/care, native ayar retry/reload, 404/context kaybı/WebGL yokluğu/statik/reduced motion ve beş genişlikle genişletildi. Chromium SwiftShader yazılım WebGL2 kullanır; ilk koşu 37419100800 / commit 374337be18fd397a74f8a56d70e44950cd4b6df3 başarılı (artifact 11391354111, errors=[]). Gerçek görüntüler incelendi, yüz/kuyruk birleşimleri iyileştirildi. Son model için yeni kabul koşusu ve statik poster teslimi bekleniyor.
+## Çalıştırma
+
+```bash
+npm ci
+npm run check
+npm run dev
+```
+
+http://127.0.0.1:5173/#/bugun. GLB tekrar üretim: `npm run assets:cat`; validator: `npm run test:assets`. Gerçek tarayıcı: build sonrası `node scripts/browser-check.mjs` (Playwright Chromium gerekir). Kaynak geometri değişirse statik poster de güncel gerçek render'dan alınmalı.
+
+## Açık bağımlılıklar
+
+Fiziksel orta sınıf Android ≥30 FPS ve <3 sn ilk sahne hedefi, gerçek %200 zoom, ekran okuyucu ve klinik inceleme pilot öncesi açık. Tek cihaz/origin/yerel profil; login/yetki/senkronizasyon/yedekleme/hosting yok. Manifest tam offline/push değildir. MET belirsizliği kişisel ölçüm veya güven aralığı değildir. Ücretli hizmet açılmadı.
 
 ## Sonraki tek görev
 
-Önce R4 Chromium koşusunu ve `browser-check` artifact'ındaki gerçek model görüntülerini incele; hata varsa düzelt ve tekrar doğrula. Sonra bu deviri doğrulanmış commit/koşu ile kapat. R5'e erken geçme.
+**Yalnız Raund 5 — kalıcı haftalık geri bildirim, ödüller ve hatırlatmalar.** PROJECT/CURRENT_TASK/DATA_CONTRACT/ENERGY_POLICY okunmalı; mevcut motorlar ve 3D sahne yeniden yazılmaz. Kalori açığının büyüklüğü ödül gerekçesi olamaz, care kutlamayı bastırır, eksik günler sıfır değildir; `(userId,eventKey)` idempotent ödül anahtarı korunur. Push/HTTPS/arka plan bağımlılıkları gerçekten kurulmadan push çalışıyor denmez. R6 export/silme/hosting kapsamı eklenmedi.
 
-Fiziksel Android FPS/yükleme, gerçek %200 zoom, ekran okuyucu ve klinik inceleme pilot öncesi açık. Hosting/login/senkronizasyon/yedekleme yok. R5 kalıcı hafta geri bildirimi/ödüller/bildirim ve R6 veri/yayın işlemleri eklenmedi.
-
-Yeni görsel/3D yön değişikliğinde önce üç örnek şartı korunur; seçilmiş gri-beyaz 1. yön için kullanıcı yetkisi mevcut.
-
-### Son model kabulü — başarılı
-
-- Commit dcdd5da33ac9864e1fde23ff714906d90cdcabbe; koşu https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37419540200; artifact 11392780930. Rapor errors=[].
-- Yüz tek kaplamalı geometri, kuyruk iki kemik arasında ağırlıklarla kesintisiz; 19.936 kedi üçgeni, 997.724 bayt. GLB validator sıfır hata/uyarı. Altı klip, care önceliği, gerçek context kaybı ve tüm diğer R4 akışları geçti.
-- Gerçek 320px Bugün ve 720px nötr model render'ı görsel olarak incelendi. İsim/kontroller/form sığıyor. Render bütçe sayacı gölge geçişi dahil 40.580 üçgen / 22 draw call. Lokal preview yükleme 222 ms; bu internet bağlantısı/Android ölçümü değildir.
-- `cat-poster.png` bu modelin gerçek render'ından alındı; statik yedek aynı kediye bağlanır. Bu dosya ve görünmez kart/düşük FPS testleri için son koşu bekleniyor.
+Yeni görsel veya 3D yön için önce üç örnek ve kullanıcı seçimi şartı sürer. Mevcut gri-beyaz 1. yön için yetki zaten vardır.

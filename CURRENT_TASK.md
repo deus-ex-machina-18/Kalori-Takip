@@ -23,4 +23,4 @@ Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve ve
 - Görünmez sekme/kartta animasyon durur; DPR ≤1.5, 30 FPS hedefli döngü; fiziksel Android ölçümü ayrı açık gereksinimdir.
 - R2/R3 regresyonları, DOM ve gerçek Chromium akış/genişlik kabulü. Yazılım WebGL testi gerçek Android performansı sayılmaz.
 
-Durum: uygulama ve yerel doğrulama sürüyor; gerçek Chromium kabulü henüz kapanmadı. Tamamlanma durumu HANDOFF.md'de güncellenecek.
+Durum: tamamlandı. 56 test + TypeScript/build + GLB validator ve son gerçek Chromium kabulü başarılı. Son kod/koşu/artifact HANDOFF.md'de. Fiziksel Android performansı pilot öncesi açık; yayın yapılmadı. Sonraki tek görev Raund 5.
