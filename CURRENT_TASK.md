@@ -23,4 +23,4 @@ Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve ve
 - Görünmez sekme/kartta animasyon durur; DPR ≤1.5, 30 FPS hedefli döngü; fiziksel Android ölçümü ayrı açık gereksinimdir.
 - R2/R3 regresyonları, DOM ve gerçek Chromium akış/genişlik kabulü. Yazılım WebGL testi gerçek Android performansı sayılmaz.
 
-Durum: görsel kalite kabulü açık; uygulama teknik kontrolleri referans kalitesine ulaşmak anlamına gelmez. `r4-visual-quality` dalı bağlantı kesintisi sonrası yeniden oluşturulan kaynakları ve materyali korur. Gerçek render incelenmeden ve kullanıcı görseli kabul etmeden tamamlandı denmez. Fiziksel Android performansı ve yayın açık.
+Durum: sürüm 3 görsel revizyonu uygulandı; yüzey kesilmeleri, ters tüy normalleri ve ince gövde/pati düzeltildi. Görsel kalite kabulü açık; uygulama teknik kontrolleri referans kalitesine ulaşmak anlamına gelmez. `r4-visual-quality` dalı bağlantı kesintisi sonrası yeniden oluşturulan kaynakları ve materyali korur. Gerçek render incelenmeden ve kullanıcı görseli kabul etmeden tamamlandı denmez. Fiziksel Android performansı ve yayın açık.

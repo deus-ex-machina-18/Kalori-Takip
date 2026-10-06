@@ -1,14 +1,14 @@
 {
   "asset": "grey-white-kitten.glb",
-  "version": 2,
+  "version": 3,
   "author": "Kalori-Takip project contributors (procedural generation)",
   "license": "MIT",
   "source": "scripts/build-cat.mjs",
   "date": "2026-10-06",
-  "sha256": "97b8d788643da55c542a51acf775dd0b72db4e0752c0363dfd0f2fd54a42c51c",
-  "bytes": 4325772,
-  "triangles": 49800,
-  "baseTriangles": 27300,
+  "sha256": "4110bd47ce54579a57341cc1dda67edc76663466e946ef5de2a0e9ca1811d4f0",
+  "bytes": 4197636,
+  "triangles": 45512,
+  "baseTriangles": 23012,
   "furTriangles": 22500,
   "furStrands": 22500,
   "textures": 0,
@@ -83,11 +83,11 @@
       "role": "albedo"
     }
   ],
-  "initialBytes": 4702994,
+  "initialBytes": 4574858,
   "validation": {
     "numErrors": 0,
     "numWarnings": 0,
-    "numInfos": 12,
+    "numInfos": 11,
     "numHints": 0,
     "messages": [
       {
@@ -149,12 +149,6 @@
         "message": "This object may be unused.",
         "severity": 2,
         "pointer": "/meshes/0/primitives/9/attributes/TEXCOORD_0"
-      },
-      {
-        "code": "UNUSED_OBJECT",
-        "message": "This object may be unused.",
-        "severity": 2,
-        "pointer": "/meshes/0/primitives/10/attributes/TEXCOORD_0"
       },
       {
         "code": "UNUSED_OBJECT",

@@ -4,7 +4,7 @@ import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js';
 import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const clamp=T.MathUtils.clamp, smooth=T.MathUtils.smoothstep;
-const grey=new T.Color('#818996'), white=new T.Color('#f2eee5');
+const grey=new T.Color('#7e8897'), white=new T.Color('#faf5ec');
 const ellipsoid=(p,c,s)=>{const q=p.map((v,i)=>(v-c[i])/s[i]), k0=Math.hypot(...q),k1=Math.hypot(...q.map((v,i)=>v/s[i]));return k1?k0*(k0-1)/k1:-Math.min(...s);};
 const union=(a,b,k)=>{const h=clamp(.5+.5*(b-a)/k,0,1);return T.MathUtils.lerp(b,a,h)-k*h*(1-h);};
 function coat(p,head=false){
@@ -18,7 +18,7 @@ function coat(p,head=false){
 export function makeKittenGeometry(scene,bones,lookup){
   const standard=(name,color,roughness=.9,extra={})=>new T.MeshStandardMaterial({name,color,roughness,...extra});
   const physical=(name,color,roughness,clearcoat=1)=>new T.MeshPhysicalMaterial({name,color,roughness,clearcoat,clearcoatRoughness:.08});
-  const materials=[standard('FurGrey','#818996',.93),standard('FurWhite','#ffffff',.95,{vertexColors:true}),standard('InnerEar','#deb8b4',.86),physical('Nose','#c99596',.34,.35),physical('Eye','#1a1614',.09),new T.MeshBasicMaterial({name:'EyeGlint',color:'#fffdf7'}),standard('Whisker','#eee9dd',.72),physical('Iris','#ffffff',.19),standard('Sclera','#ece6db',.26),standard('FaceCrease','#9b7e72',.8),standard('FurFibres','#ffffff',1,{vertexColors:true,side:T.DoubleSide}),standard('PawCrease','#cac6bd',1)];
+  const materials=[standard('FurGrey','#7e8897',.93),standard('FurWhite','#ffffff',.95,{vertexColors:true}),standard('InnerEar','#e9bdb9',.86),physical('Nose','#d8a09b',.42,.2),physical('Eye','#211a16',.13,.65),new T.MeshBasicMaterial({name:'EyeGlint',color:'#fffdf7'}),standard('Whisker','#eee9dd',.72),physical('Iris','#ffffff',.18,.65),standard('Sclera','#f5eee3',.32),standard('FaceCrease','#766054',.8),standard('FurFibres','#ffffff',1,{vertexColors:true,side:T.DoubleSide}),standard('PawCrease','#cac6bd',1)];
   materials[7].vertexColors=true;
   const pieces=[],pieceMaterials=[];
   const jointIndex=name=>bones.indexOf(lookup[name]);
@@ -28,6 +28,8 @@ export function makeKittenGeometry(scene,bones,lookup){
     const clean=[];for(let i=0;i<geometry.index.count;i+=3){const a=geometry.index.getX(i),b=geometry.index.getX(i+1),c=geometry.index.getX(i+2);if(a!==b&&b!==c&&a!==c)clean.push(a,b,c);}geometry.setIndex(clean);
     if(!geometry.attributes.color)geometry.setAttribute('color',new T.Float32BufferAttribute(new Float32Array(geometry.attributes.position.count*3).fill(1),3));
     geometry.applyMatrix4(new T.Matrix4().compose(new T.Vector3(...position),new T.Quaternion().setFromEuler(new T.Euler(...rotation)),new T.Vector3(...scale)));
+    // Lower the entire face assembly with its rig; the cheeks meet the shoulders.
+    if(['Head','EarL','EarR','EyeL','EyeR','Mouth'].includes(joint))geometry.translate(0,-.075,0);
     const n=geometry.attributes.position.count,indices=new Uint8Array(n*4),weights=new Uint8Array(n*4);
     for(let i=0;i<n;i++){
       const p=[geometry.attributes.position.getX(i),geometry.attributes.position.getY(i),geometry.attributes.position.getZ(i)];
@@ -52,33 +54,36 @@ export function makeKittenGeometry(scene,bones,lookup){
     add(g,joint,1,[0,0,0],[1,1,1],[0,0,0],skin);mc.geometry.dispose();
   }
   const body=p=>{
-    let d=ellipsoid(p,[0,.425,-.055],[.285,.35,.258]);d=union(d,ellipsoid(p,[0,.69,.035],[.175,.18,.17]),.13);
-    for(const s of [-1,1]){d=union(d,ellipsoid(p,[s*.225,.24,-.04],[.17,.212,.183]),.09);d=union(d,ellipsoid(p,[s*.246,.094,.091],[.141,.074,.18]),.065);d=union(d,ellipsoid(p,[s*.139,.287,.179],[.084,.237,.092]),.035);d=union(d,ellipsoid(p,[s*.145,.086,.24],[.101,.068,.133]),.031);}return d;
+    let d=ellipsoid(p,[0,.37,-.055],[.315,.31,.285]);d=union(d,ellipsoid(p,[0,.625,.035],[.205,.18,.20]),.13);
+    for(const s of [-1,1]){d=union(d,ellipsoid(p,[s*.245,.235,-.055],[.19,.21,.21]),.095);d=union(d,ellipsoid(p,[s*.25,.091,.07],[.15,.078,.20]),.055);d=union(d,ellipsoid(p,[s*.142,.29,.20],[.113,.225,.117]),.045);d=union(d,ellipsoid(p,[s*.143,.085,.26],[.132,.077,.15]),.036);}return d;
   };
   const bodySkin=([x,y,z])=>{const front=smooth(z,.075,.16)*(1-smooth(Math.abs(x),.19,.24)),paw=front*(1-smooth(y,.3,.57)),hind=(1-front)*(1-smooth(y,.21,.43))*smooth(Math.abs(x),.1,.22),w=clamp(paw+hind,0,1);return [[(paw>hind?'Paw':'Hind')+(x<0?'L':'R'),w],['Body',1-w]];};
-  sculpt(body,[-.45,-.02,-.36],[.45,.92,.44],32,'Body',false,bodySkin);
-  const head=p=>{let d=ellipsoid(p,[0,1.04,.034],[.375,.325,.292]);for(const s of [-1,1]){d=union(d,ellipsoid(p,[s*.205,.96,.14],[.194,.194,.212]),.12);d=union(d,ellipsoid(p,[s*.061,.915,.31],[.098,.068,.063]),.022);}return union(d,ellipsoid(p,[0,.865,.292],[.118,.065,.08]),.035);};
-  sculpt(head,[-.46,.73,-.29],[.46,1.41,.426],34,'Head',true);
+  // MarchingCubes omits its two outer sample cells. Pad beyond the full SDF surface.
+  sculpt(body,[-.55,-.08,-.42],[.55,.92,.52],30,'Body',false,bodySkin);
+  const head=p=>{let d=ellipsoid(p,[0,1.04,.034],[.395,.32,.30]);for(const s of [-1,1]){d=union(d,ellipsoid(p,[s*.215,.965,.13],[.211,.205,.224]),.13);d=union(d,ellipsoid(p,[s*.07,.911,.335],[.103,.081,.070]),.03);}return union(d,ellipsoid(p,[0,.858,.316],[.137,.065,.084]),.045);};
+  sculpt(head,[-.54,.67,-.35],[.54,1.45,.53],32,'Head',true);
   for(const side of [-1,1]){
     const joint=side<0?'EarL':'EarR',shape=new T.Shape();shape.moveTo(-.12,0);shape.bezierCurveTo(-.12,.12,-.09,.265,-.043,.285);shape.bezierCurveTo(.003,.298,.128,.102,.12,0);shape.quadraticCurveTo(0,-.045,-.12,0);
     const g=new T.ExtrudeGeometry(shape,{depth:.07,bevelEnabled:true,bevelThickness:.038,bevelSize:.023,bevelSegments:4,curveSegments:12,steps:1});
-    add(g.clone(),joint,0,[side*.24,1.20,-.047],[1,1,1],[0,0,-side*.27]);
-    add(g,joint,2,[side*.241,1.225,.054],[.68,.73,.27],[0,0,-side*.27]);
+    add(g.clone(),joint,0,[side*.25,1.20,-.047],[1.1,.93,1],[0,0,-side*.34]);
+    add(g,joint,2,[side*.251,1.225,.054],[.73,.65,.27],[0,0,-side*.34]);
   }
   for(const side of [-1,1]){
-    const joint=side<0?'EyeL':'EyeR';sphere(joint,9,[side*.151,1.028,.286],[.111,.123,.069]);sphere(joint,8,[side*.151,1.031,.3],[.105,.114,.064]);
-    const g=new T.SphereGeometry(1,32,16),colors=[];
-    for(let i=0;i<g.attributes.position.count;i++){const x=g.attributes.position.getX(i),y=g.attributes.position.getY(i),z=g.attributes.position.getZ(i),angle=Math.atan2(y,x),r=Math.hypot(x,y),f=(Math.sin(angle*63+r*24)+Math.sin(angle*117-r*20))*.07,c=new T.Color('#63472e').lerp(new T.Color('#9b7651'),clamp(.52*smooth(r,.2,.92)+f,0,1)).multiplyScalar(.9+.1*z);colors.push(c.r,c.g,c.b);}
-    g.setAttribute('color',new T.Float32BufferAttribute(colors,3));add(g,joint,7,[side*.149,1.032,.335],[.078,.092,.042]);
-    sphere(joint,4,[side*.143,1.037,.363],[.054,.069,.02]);sphere(joint,5,[side*.143-.022,1.074,.382],[.012,.016,.004],8);sphere(joint,5,[side*.143+.027,1.005,.382],[.0045,.006,.002],8);
+    const joint=side<0?'EyeL':'EyeR';sphere(joint,8,[side*.163,1.044,.292],[.108,.113,.069]);
+    const g=new T.SphereGeometry(1,40,24),colors=[];
+    for(let i=0;i<g.attributes.position.count;i++){const x=g.attributes.position.getX(i),y=g.attributes.position.getY(i),z=g.attributes.position.getZ(i),angle=Math.atan2(y,x),r=Math.hypot(x,y),f=(Math.sin(angle*63+r*24)+Math.sin(angle*117-r*20))*.05,c=new T.Color('#513922').lerp(new T.Color('#a58156'),clamp(.62*smooth(r,.2,.87)+f,0,1)).multiplyScalar(.9+.1*z);c.lerp(new T.Color('#171413'),1-smooth(r,.57,.68));colors.push(c.r,c.g,c.b);}
+    g.setAttribute('color',new T.Float32BufferAttribute(colors,3));add(g,joint,7,[side*.161,1.045,.343],[.095,.102,.028]);
+    sphere(joint,5,[side*.156-.025,1.089,.369],[.011,.015,.002],12);sphere(joint,5,[side*.156+.028,1.021,.369],[.003,.004,.001],8);
+    // A thin upper lid follows the eye; no full brown socket ring.
+    tube(joint,9,[[side*.163-.101,1.06,.322],[side*.163-.068,1.13,.324],[side*.163,1.159,.325],[side*.163+.07,1.13,.324],[side*.163+.101,1.059,.322]],.003,24);
   }
   const nose=new T.Shape();nose.moveTo(-.021,.005);nose.quadraticCurveTo(0,.016,.021,.005);nose.quadraticCurveTo(.022,-.005,.003,-.022);nose.quadraticCurveTo(0,-.026,-.003,-.022);nose.quadraticCurveTo(-.022,-.005,-.021,.005);
-  add(new T.ExtrudeGeometry(nose,{depth:.008,bevelEnabled:true,bevelThickness:.008,bevelSize:.004,bevelSegments:3,curveSegments:8,steps:1}),'Mouth',3,[0,.943,.37]);
-  tube('Mouth',9,[[0,.922,.385],[0,.9,.383],[-.026,.889,.379],[-.051,.901,.367]],.0019);tube('Mouth',9,[[0,.9,.383],[.026,.889,.379],[.051,.901,.367]],.0019);
+  add(new T.ExtrudeGeometry(nose,{depth:.008,bevelEnabled:true,bevelThickness:.008,bevelSize:.004,bevelSegments:3,curveSegments:8,steps:1}),'Mouth',3,[0,.949,.406],[1.2,1.12,1]);
+  tube('Mouth',9,[[0,.926,.411],[0,.899,.41],[-.028,.886,.407],[-.059,.9,.395]],.0015);tube('Mouth',9,[[0,.899,.41],[.028,.886,.407],[.059,.9,.395]],.0015);
   for(const s of [-1,1]){
-    for(const dy of [-.026,0,.026])tube('Head',6,[[s*.112,.916+dy,.346],[s*.25,.926+dy,.344],[s*.43,.93+dy*2,.29]],.0009);
+    for(const dy of [-.024,0,.024])tube('Head',6,[[s*.12,.916+dy,.382],[s*.29,.947+dy,.375],[s*.48,.946+dy*2,.32]],.00065);
     tube('Head',0,[[s*.103,1.187,.266],[s*.142,1.204,.259],[s*.183,1.197,.239]],.006);
-    for(const offset of [-.025,.025])tube(s<0?'PawL':'PawR',11,[[s*.145+offset,.113,.358],[s*.145+offset,.132,.345],[s*.145+offset,.135,.325]],.0008,10);
+    for(const offset of [-.036,.036])tube(s<0?'PawL':'PawR',11,[[s*.143+offset,.104,.4],[s*.143+offset,.134,.375],[s*.143+offset,.141,.35]],.0008,10);
   }
   tube('TailBase',0,[[-.25,.26,-.12],[-.4,.19,-.1],[-.54,.28,-.07],[-.57,.49,-.04],[-.58,.65,-.04],[-.56,.76,-.055]],.074,32,([,y])=>{const b=smooth(y,.42,.68);return [['TailBase',1-b],['TailTip',b]];});
   sphere('TailTip',1,[-.56,.76,-.055],[.073,.092,.076],24);
@@ -92,10 +97,10 @@ export function makeKittenGeometry(scene,bones,lookup){
     const target=random()*area;let lo=0,high=surfaces.length-1;while(lo<high){const mid=(lo+high)>>1;if(surfaces[mid].limit<target)lo=mid+1;else high=mid;}const {g,ids,grey:isGrey}=surfaces[lo];
     const root=Math.sqrt(random()),v=random(),bary=[1-root,root*(1-v),root*v],p=new T.Vector3(),n=new T.Vector3(),color=new T.Color(0,0,0),bindings=new Map();
     ids.forEach((id,j)=>{const w=bary[j];p.addScaledVector(new T.Vector3().fromBufferAttribute(g.attributes.position,id),w);n.addScaledVector(new T.Vector3().fromBufferAttribute(g.attributes.normal,id),w);const c=isGrey?grey:new T.Color(g.attributes.color.getX(id),g.attributes.color.getY(id),g.attributes.color.getZ(id));color.r+=c.r*w;color.g+=c.g*w;color.b+=c.b*w;for(let k=0;k<4;k++){const wi=g.attributes.skinWeight.array[id*4+k]/255,bi=g.attributes.skinIndex.array[id*4+k];if(wi)bindings.set(bi,(bindings.get(bi)??0)+wi*w);}});n.normalize();
-    const face=p.y>.84&&p.y<1.16&&p.z>.23,length=(.006+random()*.008)*(face?.4:1),tangent=new T.Vector3(random()-.5,random()-.5,random()-.5).cross(n).normalize(),width=(.00026+random()*.0003)*(face?.65:1),base=p.clone().addScaledVector(n,-.0007),tip=p.clone().addScaledVector(n,length).add(new T.Vector3(0,-length*.32,0));
+    const face=p.y>.76&&p.y<1.10&&p.z>.23,length=(.0035+random()*.006)*(face?.45:1),tangent=new T.Vector3(random()-.5,random()-.5,random()-.5).cross(n).normalize(),width=(.0003+random()*.0003)*(face?.6:1),base=p.clone().addScaledVector(n,-.0006),tip=p.clone().addScaledVector(n,length).add(new T.Vector3(0,-length*.5,0));
     const pairs=[...bindings].sort((a,b)=>b[1]-a[1]).slice(0,4),sum=pairs.reduce((s,[,w])=>s+w,0),indices=[],weights=[];let remaining=255;
     pairs.forEach(([bi,w],j)=>{const wi=j===pairs.length-1?remaining:Math.min(remaining,Math.round(w/sum*255));indices.push(wi?bi:0);weights.push(wi);remaining-=wi;});while(indices.length<4){indices.push(0);weights.push(0);}
-    [base.clone().addScaledVector(tangent,-width),base.clone().addScaledVector(tangent,width),tip].forEach((point,j)=>{hp.push(...point.toArray());hn.push(...n.toArray());const c=color.clone().multiplyScalar(j===2?1.01+random()*.025:.965+random()*.025);hc.push(c.r,c.g,c.b);hu.push(.5+j*.25,j===2?1:0);hi.push(...indices);hw.push(...weights);hairIndices.push(hairIndices.length);});
+    [base.clone().addScaledVector(tangent,-width),base.clone().addScaledVector(tangent,width),tip].forEach((point,j)=>{hp.push(...point.toArray());hn.push(...n.toArray());const c=color.clone().multiplyScalar(.975+random()*.025);hc.push(c.r,c.g,c.b);hu.push(.5+j*.25,j===2?1:0);hi.push(...indices);hw.push(...weights);hairIndices.push(hairIndices.length);});
   }
   const hairs=new T.BufferGeometry();hairs.setAttribute('position',new T.Float32BufferAttribute(hp,3));hairs.setAttribute('normal',new T.Float32BufferAttribute(hn,3));hairs.setAttribute('color',new T.Float32BufferAttribute(hc,3));hairs.setAttribute('uv',new T.Float32BufferAttribute(hu,2));hairs.setAttribute('skinIndex',new T.Uint8BufferAttribute(hi,4));hairs.setAttribute('skinWeight',new T.Uint8BufferAttribute(hw,4,true));hairs.setIndex(hairIndices);
   const ordered=pieces.map((g,i)=>({g,material:pieceMaterials[i]})).sort((a,b)=>a.material-b.material),merged=mergeGeometries(ordered.map(p=>p.g),true),groups=[];

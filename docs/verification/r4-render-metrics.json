@@ -6,9 +6,9 @@
     "quality": "full",
     "angle": "-0.22",
     "clip": "idle",
-    "triangles": "80222",
-    "drawCalls": "32",
-    "loadMs": "4036"
+    "triangles": "71916",
+    "drawCalls": "34",
+    "loadMs": "6297"
   },
   "errors": []
 }

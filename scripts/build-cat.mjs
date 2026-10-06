@@ -19,7 +19,7 @@ function bone(name, position, parent) {
 }
 bone('Root', [0,0,0]);
 bone('Body', [0,.44,0], 'Root');
-bone('Head', [0,.57,.035], 'Body');
+bone('Head', [0,.495,.035], 'Body');
 bone('EarL', [-.245,.24,0], 'Head'); bone('EarR', [.245,.24,0], 'Head');
 bone('TailBase', [-.28,-.16,-.08], 'Body'); bone('TailTip', [-.25,.23,0], 'TailBase');
 bone('PawL', [-.145,-.15,.16], 'Body'); bone('PawR', [.145,-.15,.16], 'Body');
@@ -70,7 +70,7 @@ const validation=await validator.validateBytes(bytes,{uri:'grey-white-kitten.glb
 if(validation.issues.numErrors || validation.issues.numWarnings) throw new Error(JSON.stringify(validation.issues.messages.slice(0,5)));
 const fur=await readFile('public/models/white-fur-v1.jpg');
 const report={
-  asset:'grey-white-kitten.glb',version:2,author:'Kalori-Takip project contributors (procedural generation)',
+  asset:'grey-white-kitten.glb',version:3,author:'Kalori-Takip project contributors (procedural generation)',
   license:'MIT',source:'scripts/build-cat.mjs',date:'2026-10-06',
   sha256:createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length,
   triangles:(merged.index.count+hairs.index.count)/3,baseTriangles:merged.index.count/3,furTriangles:hairs.index.count/3,furStrands:22500,textures:0,bones:bones.map(b=>b.name),

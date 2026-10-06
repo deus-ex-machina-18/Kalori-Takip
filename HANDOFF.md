@@ -1,31 +1,30 @@
-# Raund 4 — görsel kalite revizyonu açık
+# Raund 4 — görsel revizyon 3, kabul açık
 
 Repo: https://github.com/deus-ex-machina-18/Kalori-Takip
-Dal: r4-visual-quality · sürüm 0.4.0 · 6 Ekim 2026
-Main çalışan eski R4 sürümünü korur (467546af37e12bf4ea043d89454829de9574aeec). Yayın yapılmadı; R5'e geçilmedi.
+Dal: r4-visual-quality · 6 Ekim 2026 · mevcut taslak PR #1
+Başlangıç checkpoint: f619af1778c4869a18d243ec6430f956daf77ef1. Main eski R4 sürümündedir; bu değişiklikler görsel revizyon dalındadır. Yayın yapılmadı, R5'e geçilmedi.
 
-## Kullanıcının kabulü
+## Güncel durum
 
-Üç örnekten 1. yön seçildi: gri-beyaz, yumuşak bebek kedi. Kullanıcı mevcut modelin ucuz göründüğünü ve gönderdiği ince kürklü, büyük kahverengi gözlü referans seviyesini istediğini bildirdi. **Teknik kontroller geçti; referans görsel kalitesi henüz sağlandı diye raporlanmaz. Görsel kabul açık.** Aynı seçilen yönü geliştirmek için yeniden seçim istenmez; yeni görsel/3D yön olursa üç örnek kuralı sürer.
+ZIP paketi güncel dal ile karşılaştırıldı ve aynı kaynakları içerdiği doğrulandı. Bu turda model oranları, göz yüzeyi ve kürk ışıklanması geliştirildi; SDF kesilmelerinden gelen pati/ağız açıklıkları giderildi. Gerçek uygulama render'ı `public/models/cat-poster.png` içinde. **Referanstaki yoğun ve doğal kürk kalitesine tam ulaşıldığı iddia edilmez. Kullanıcının görsel kabulü hâlâ açık.**
 
-## Bu dalda yeniden kurulan değişiklik
+## Değişiklikler
 
-Bağlantı kesintisi sonrası yerel çalışma alanı sıfırlandı; önceki kaydedilmemiş kaynaklar kurtarılamadı. Üretilmiş beyaz kürk materyali Git blob'undan kurtarıldı. Bu daldaki geometri/sahne yeniden yazılıp tekrar test edildi; eski kaydedilmemiş test sonuçları kanıt olarak kullanılmadı.
+- Gövde, arka bacak ve patiler dolgunlaştırıldı; kafa/rig birlikte aşağı alındı. İris ve pupil tek yüzeyde, göz çevresindeki kalın halka kaldırıldı; burun/ağız/bıyık konumu güncellendi.
+- MarchingCubes kenar hücrelerini atladığı için yüzey örnekleme alanı genişletildi. Önceki geometrinin ön pati, yan yüzey ve ağız açıklıkları kapandı. `test:assets` artık exported FurWhite kaplamanın açık kenarı olmadığını da doğrular; format validator'ı tek başına bu kusuru bulmuyordu.
+- Kısa tüyler fiziksel sahne ışıklarını kullanır; iki yüzde dışa bakan kaplama normali korunur. Ters normalden gelen benekler kaldırıldı. Albedo ve bump aynı kürk kaynağından; kontrolsüz beyazlama önlendi. Sıcak ışık/doldurma, VSM zemin gölgesi, temas gölgesi ve oda yüzeyi örneklemesi ayarlandı.
+- Aynı gerçek GLB render'ı statik yedeğe kaydedildi. Üretilmiş konsept resmi 3D model diye kullanılmadı; yeni ücretli veya stock asset yok.
+- Kalori/aktivite/plan/haftalık motorlar, IndexedDB şeması, kayıt formu ve beş ekran değişmedi. Mevcut care önceliği, altı animasyon, tercih saklama, low-FPS balanced→statik ve hata yedeği korunur.
 
-- Geometri SDF yumuşak birleşimli gövde/yüz, yumuşak renk geçişleri, ayrıntılı iris/sclera/nose, kısa gerçek tüyler. Kaynak `scripts/build-cat.mjs` ve `scripts/cat-geometry.mjs`; stock mesh yok.
-- GLB 4.325.772 bayt; 27.300 temel + 22.500 tüy = 49.800 üçgen; 14 kemik ve idle/happy/stretch/play/sleep/care. Model+albedo 4.702.994 bayt. Validator sıfır hata/uyarı; 12 kullanılmayan UV bilgilendirmesi, runtime bu UV'leri kullanır.
-- Imagegen kaynak/prompt `assets/cat/`; Sharp yalnız boyut/encoding dönüşümü yapar. JPEG albedo 1024px/377.222 bayt. Bump ve oda yüzeyleri prosedürel. Hash/boyut/klip envanteri manifest'te. Gerçek modelin nötr tarayıcı render'ı aktif statik PNG'dir.
-- Three.js RoomEnvironment, yansıma, sıcak ana ışık/doldurma/kenar ışığı, temas gölgesi. Three.js MIT metni `public/THIRD_PARTY_NOTICES.txt`; özgün varlık + üretilen materyal MIT metni `public/models/LICENSE.txt`.
-- DPR≤1.5; 4s örnekte <26 FPS önce DPR1/gölgesiz/yarım tüy; sonraki örnekte <20 FPS statik. Gizli sekme/kartta durma. Model/albedo hata ve timeout, WebGL yok veya context kaybında statik yedek; kalori formu bağımsız.
-- İsim/tercihler, atomic receipt/CAS/retry, IndexedDB v1 şema ve kalori/aktivite/plan/haftalık motorlar korunur. Care oyun/kutlamadan öncelikli; kedinin gövdesi kalorilerle değişmez. Ücretli hizmet/asset/ses açılmadı.
+Boyut/hash/üçgen/kemik/klip sayılarının tek kaynağı `public/models/asset-manifest.json` (sürüm 3); kaynak ve lisanslar aynı dizin yapısında. Model+albedo ilk yüklemesi bütçe içinde, önceki revizyondan daha küçüktür.
 
-## Yeni yerel kontroller
+## Doğrulama
 
-- `npm run check`: TypeScript, build, 36 domain/depo + 20 DOM testi, GLB ve model+albedo bütçe/hash/rig kontrolleri geçti.
-- Chromium153 SwiftShader: native IDB, R2/R3 akışları, beş genişlik, tam boy gerçek model+albedo stilleri, döndürme/sürükleme/reset ve shader hata kontrolü geçti. `docs/verification/r4-browser-report.json` errors=[].
-- play/stretch/sleep ve görünmezken durma/geri dönüş animasyon mekanikleri 160px software backbuffer'da kontrol edildi. Tam boy stiller ve bu mekanik kontrol farklı kontrollerdir; Android FPS kabulü denmez. Yavaş RAF'te tam boy balanced→statik, model/albedo404 ve gerçek WEBGL_lose_context kalori formunu korudu.
-- Tam boy yerel sahne sayacı 80.222 üçgen (gölge dahil), 32 draw call, yükleme 5.623ms. Fiziksel Android değil; <3s hedefi karşılandı denmez. Son texture tiling ayarı sonrası gerçek poster ayrıca shader/page hatası olmadan yeniden render edilir. Rapor `docs/verification/` içinde.
-- Önceki main teknik kabulü Actions37420124824/commit1971754eb0de3d3b37697a28b84f85d4e5615f45; bu revizyonun CI kabulü değildir. Yeni dal CI sonucu ayrı kontrol edilmeli.
+- TypeScript, üretim build'i, 36 domain/depo + 20 DOM testi geçti. GLB validator sıfır hata/uyarı; hash, ≤5 MiB, geometri bütçesi, rig/klip ve kapalı kaplama kontrolü başarılı.
+- Tamamlanmış gerçek Chromium raporu `docs/verification/r4-browser-report.json`: errors=[]; 320/360/390/768/1280px beş ekran, klavye/odak, native IndexedDB R2/R3, tam boy WebGL görünümü ve döndürme/sürükleme/reset geçti.
+- play/stretch/sleep ve görünmezken durma/dönüş mekanikleri 160px software backbuffer'da geçti. Tam boy yavaş RAF balanced→statik; model/albedo 404, WebGL yokluğu ve context-loss kayıt formunu korudu.
+- `r4-browser-metrics.json` ve `r4-render-metrics.json` farklı yerel Software Chromium koşularını içerir. Bunlar fiziksel Android veya internet performansı kabulü değildir. Yerel ilk yükleme 2.1–6.3 sn arasında değişti; <3 sn hedefi sağlandı diye genellenmez.
+- Terminal push kimliği yoktu; kod/varlıklar GitHub bağlantısıyla aynı dalın ileri güncellemesi olarak kaydedildi. Ana dal birleştirilmedi. Bu sürümün GitHub CI sonucu PR'dan ayrıca izlenmelidir; önceki dal koşusu yeni commit'in CI kanıtı değildir.
 
 ## Çalıştırma
 
@@ -33,17 +32,12 @@ Bağlantı kesintisi sonrası yerel çalışma alanı sıfırlandı; önceki kay
 npm ci
 npm run check
 npm run dev
-# model + albedo tekrar üretim:
-npm run assets:cat
-# build sonrası gerçek tarayıcı kabulü ve poster:
-node scripts/browser-check.mjs
-node scripts/render-cat-poster.mjs
 ```
 
-Yerel farklı Chromium için `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` kullanılabilir. CI Playwright Chromium kurar. Gerçek render `public/models/cat-poster.png`.
+Model/material tekrar üretimi `npm run assets:cat`. Build sonrası gerçek render `node scripts/render-cat-poster.mjs`; tam tarayıcı kabulü `node scripts/browser-check.mjs`. Playwright Chromium gerekir; farklı binary için `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` desteklenir. Model veya sahne değişirse poster yenilenir.
 
 ## Sonraki tek iş
 
-**R4 referans kalite farkını gerçek render'da kapat ve kullanıcı görsel kabulünü al.** Hazır model araştırması `docs/CAT_ASSET_RESEARCH.md`; incelenen ücretli adayda FBX kürksüz ve ham dosyanın public repo dağıtımı doğrulanmamış. Hiçbiri satın alınmadı/kopyalanmadı. Sırf testler geçti diye R5'e geçilmez.
+Gri-beyaz seçilen yönün gerçek render'ını kullanıcıyla değerlendirmek; referans farkını kapatacak sonraki görsel işi bunun üzerinden sınırlamak. R5 eklenmez. Yeni bir görsel/3D yön seçilecekse üç örnek şartı sürer; mevcut yön için yeniden seçim gerekmez.
 
-Fiziksel orta sınıf Android ≥30 FPS / <3s ilk sahne, gerçek %200 zoom, ekran okuyucu ve klinik inceleme pilot öncesi açık. Login/bulut senkronizasyonu/yedekleme/hosting/offline/push yok. R5/R6 kapsamı eklenmedi.
+Fiziksel Android performansı, ekran okuyucu, gerçek zoom ve pilot incelemeleri açık. Login/senkronizasyon/yedekleme/hosting/offline/push bu turda kurulmadı.

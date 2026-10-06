@@ -15,6 +15,25 @@ assert.ok(manifest.baseTriangles<=28000);assert.equal(manifest.furTriangles,2250
 const view=new DataView(data.buffer,data.byteOffset,data.byteLength);
 assert.equal(view.getUint32(0,true),0x46546c67);
 const gltf=JSON.parse(new TextDecoder().decode(data.subarray(20,20+view.getUint32(12,true))));
+// A valid GLB can still contain clipped, open paws or muzzle surfaces. Check the
+// exported coat topology as well as format validity; strand cards stay open by design.
+const binaryStart=20+view.getUint32(12,true)+8;
+const accessor=index=>{
+  const a=gltf.accessors[index],bufferView=gltf.bufferViews[a.bufferView];
+  const TypedArray={5121:Uint8Array,5123:Uint16Array,5125:Uint32Array,5126:Float32Array}[a.componentType];
+  const components={SCALAR:1,VEC2:2,VEC3:3,VEC4:4}[a.type];
+  return new TypedArray(data.buffer,data.byteOffset+binaryStart+(bufferView.byteOffset??0)+(a.byteOffset??0),a.count*components);
+};
+for(const primitive of gltf.meshes.flatMap(mesh=>mesh.primitives)){
+  if(gltf.materials[primitive.material].name!=='FurWhite')continue;
+  const positions=accessor(primitive.attributes.POSITION),indices=accessor(primitive.indices),edges=new Map();
+  const vertex=index=>Array.from(positions.subarray(index*3,index*3+3),value=>value.toFixed(5)).join(',');
+  for(let i=0;i<indices.length;i+=3)for(let edge=0;edge<3;edge++){
+    const key=[vertex(indices[i+edge]),vertex(indices[i+(edge+1)%3])].sort().join('|');
+    edges.set(key,(edges.get(key)??0)+1);
+  }
+  assert.equal([...edges.values()].filter(count=>count===1).length,0,'Coat surfaces must be closed: pad the sampling volume around paws and muzzle');
+}
 assert.ok(gltf.skins?.[0]?.joints.length>=10);
 assert.deepEqual(gltf.animations.map(a=>a.name).sort(),['care','happy','idle','play','sleep','stretch']);
 const animatedNodes=new Set(gltf.animations.flatMap(a=>a.channels.map(c=>gltf.nodes[c.target.node].name)));

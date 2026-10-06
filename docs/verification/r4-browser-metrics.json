@@ -1,6 +1,6 @@
 {
-  "loadMs": "5623",
-  "triangles": "80222",
-  "drawCalls": "32",
+  "loadMs": "2124",
+  "triangles": "71916",
+  "drawCalls": "34",
   "renderer": "Chromium SwiftShader software WebGL2; not Android"
 }
