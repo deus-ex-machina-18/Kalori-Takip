@@ -199,6 +199,13 @@ try {
   await page.locator('[data-cat-action="sleep"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'sleep');
   await page.screenshot({path:'browser-results/r4-sleep.png',fullPage:true});
   await page.locator('[data-cat-action="sleep"]').click();
+  // Pause when the card is outside the viewport, resume on return.
+  await page.setViewportSize({width:390,height:350});
+  await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));
+  await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.animating==='false');
+  await page.locator('.cat-card').scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.animating==='true');
+  await page.setViewportSize({width:390,height:850});
   // Actual complete day drives state. Care never plays happy or play.
   await page.locator('#kcal').fill('0');await page.locator('#calorie-form button').click();await page.locator('main[aria-busy="false"]').waitFor();
   await page.locator('[data-action="complete"]').click();await page.locator('main[aria-busy="false"]').waitFor();
@@ -236,6 +243,16 @@ try {
   assert.deepEqual(errors,[]);
   await page.addInitScript(()=>Object.defineProperty(window,'WebGL2RenderingContext',{value:undefined}));
   await page.reload();await page.locator('.cat-card[data-scene-status="static"]').waitFor();assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
+  // A deliberately throttled RAF exercises low-FPS fallback (not a device benchmark).
+  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#motion').uncheck();
+  await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('main[aria-busy="false"]').waitFor();
+  const slowPage=await page.context().newPage();
+  await slowPage.addInitScript(()=>{const raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=callback=>raf(()=>setTimeout(()=>callback(performance.now()),220));});
+  await slowPage.goto('http://127.0.0.1:4173/#/bugun');await slowPage.locator('.cat-card[data-scene-status="ready"]').waitFor();
+  await slowPage.locator('.cat-card[data-scene-status="static"]').waitFor();
+  assert.match(await slowPage.locator('.cat-scene-status').textContent(),/Bu cihaz için statik/);
+  assert.equal(await slowPage.locator('#calorie-form button').isEnabled(),true);
+  await slowPage.close();
   const posterPage=await browser.newPage({viewport:{width:900,height:900},deviceScaleFactor:2,reducedMotion:'reduce'});
   await posterPage.goto('http://127.0.0.1:4173/#/bugun');await posterPage.locator('.cat-card[data-scene-status="ready"]').waitFor();
   await posterPage.locator('.cat-viewport').screenshot({path:'browser-results/r4-poster.png'});await posterPage.close();

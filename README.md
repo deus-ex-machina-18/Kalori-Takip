@@ -27,7 +27,7 @@ npm run build
 node scripts/browser-check.mjs
 ```
 
-GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Son başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37417506309): 50 test, R2 + R3 gerçek IndexedDB akışları ve yerleşim kabulü geçti; 58 görüntü ve hatasız rapor oluştu. Ayrıntı HANDOFF.md'de.
+GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Modelin başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37419540200): 56 test, R2/R3 regresyonları ve R4 gerçek GLB/WebGL2/IndexedDB/etkileşim/hata yolu kabulü geçti. Son statik poster ve lifecycle kontrolünün koşusu HANDOFF.md’de güncellenecek. Ayrıntı HANDOFF.md'de.
 
 ## Kullanım
 
@@ -55,3 +55,5 @@ PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R4 tara
 `public/models/grey-white-kitten.glb`: özgün prosedürel mesh, 14 kemik, 19.936 üçgen, 996.320 bayt, doku yok. Kaynak `scripts/build-cat.mjs`; MIT lisans metni ve hash/klip envanteri aynı klasörde. Yeniden üretim: `npm run assets:cat`; doğrulama: `npm run test:assets`.
 
 Three.js/GLTFLoader yalnız Bugün sahnesinde dinamik yüklenir. Yatay sürükle veya erişilebilir düğmelerle döndür; açı sıfırlanabilir. Sahne görünmezken animasyon durur. DPR en fazla 1.5, 30 FPS hedefli döngü; ölçülen <20 FPS, context kaybı veya 404 statik yedeğe geçer. Fiziksel Android performansı henüz ölçülmedi; Chromium SwiftShader sonucu Android kabulü değildir.
+
+Statik yedek `cat-poster.png`, gerçek modelin nötr render'ıdır; 2D görsel gerçek GLB'nin yerine sunulmaz. Model referans yönünü izleyen hafif geometri kullanır; ayrıntılı kürk yoktur.

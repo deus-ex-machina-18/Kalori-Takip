@@ -30,3 +30,5 @@ Kullanıcı üç referanstan 1. yumuşak oyuncak yönünü gri-beyaz seçti. Yen
 - Sahne teknik hedefleri: dinamik yükleme, DPR ≤1.5, ~30 FPS, görünmezken durma; görünür 4s örnekte <20 FPS statik yedeğe geçiş. WebGL yok/404/12s timeout/context kaybı aynı yedek yolunu kullanır. Statik görüntü gerçek GLB yerine geçmez.
 
 Fiziksel orta sınıf Android cihazda ≥30 FPS ve <3 sn ilk sahne kabulü henüz ölçülmedi. GitHub Chromium SwiftShader yazılım renderer akış doğrulaması, fiziksel cihaz kabulü değildir. Modelin referans yönünü izlemesi otomatik birebir kürk/detay eşitliği anlamına gelmez.
+
+Gerçek modelin nötr kamera görüntüsü `public/models/cat-poster.png` olarak saklanır; son modelin Chromium render'ından alınmıştır. Statik modda ve sahne hatasında aynı görüntü gösterilir. SVG erken teknik yedek çizimi olarak kalır; aktif UI PNG kullanır. Gölge 512² tek map; son Chromium sayaçları gölge geçişi dahil 40.580 çizilen üçgen ve 22 draw call verdi. Yerel preview yükleme ölçümü 222 ms; ağ/Android ilk yükleme sonucu değildir.

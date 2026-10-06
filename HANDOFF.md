@@ -6,7 +6,7 @@ Başlangıç: R3 teslim ef2df0b65ab10372e5dc89cb259439aa08389cb0.
 
 ## Durum
 
-R4 uygulandı; yerel TypeScript, üretim build'i, 56 test ve GLB doğrulaması geçti. **İlk gerçek Chromium kabulü geçti; yüz/kuyruk birleşimlerini iyileştiren son modelin kabulü bekleniyor.** Yayın yapılmadı.
+R4 uygulandı; yerel TypeScript, üretim build'i, 56 test ve GLB doğrulaması geçti. **Son GLB modeli gerçek Chromium kabulünü geçti. Statik PNG ve ek lifecycle testleri son koşuya hazırlanıyor.** Yayın yapılmadı.
 
 ## Seçim ve uygulama
 
@@ -33,3 +33,10 @@ Yerel Chromium indirmesi ağ ortamında geçerli ZIP dönmedi. GitHub Actions ta
 Fiziksel Android FPS/yükleme, gerçek %200 zoom, ekran okuyucu ve klinik inceleme pilot öncesi açık. Hosting/login/senkronizasyon/yedekleme yok. R5 kalıcı hafta geri bildirimi/ödüller/bildirim ve R6 veri/yayın işlemleri eklenmedi.
 
 Yeni görsel/3D yön değişikliğinde önce üç örnek şartı korunur; seçilmiş gri-beyaz 1. yön için kullanıcı yetkisi mevcut.
+
+### Son model kabulü — başarılı
+
+- Commit dcdd5da33ac9864e1fde23ff714906d90cdcabbe; koşu https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37419540200; artifact 11392780930. Rapor errors=[].
+- Yüz tek kaplamalı geometri, kuyruk iki kemik arasında ağırlıklarla kesintisiz; 19.936 kedi üçgeni, 996.320 bayt. GLB validator sıfır hata/uyarı. Altı klip, care önceliği, gerçek context kaybı ve tüm diğer R4 akışları geçti.
+- Gerçek 320px Bugün ve 720px nötr model render'ı görsel olarak incelendi. İsim/kontroller/form sığıyor. Render bütçe sayacı gölge geçişi dahil 40.580 üçgen / 22 draw call. Lokal preview yükleme 222 ms; bu internet bağlantısı/Android ölçümü değildir.
+- `cat-poster.png` bu modelin gerçek render'ından alındı; statik yedek aynı kediye bağlanır. Bu dosya ve görünmez kart/düşük FPS testleri için son koşu bekleniyor.
