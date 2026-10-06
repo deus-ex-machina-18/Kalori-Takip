@@ -31,7 +31,7 @@ Boş gün sıfır değildir. Hedef aşımı ile koruma ihtiyacı üzerindeki tü
 
 Alt navigasyon mobilde sabit, masaüstünde üstte. Yerel sistem fontları, görünür odak, içeriğe geç bağlantısı, semantik başlıklar, en az 48px navigasyon/kontrol yüksekliği. Sayfa değişiminde odak başlığa gider. Hareket azaltma başlangıçta cihaz tercihini kullanır; profil sonrası kullanıcı Ayarlar’dan CatPreferences içinde kalıcı olarak kaydedebilir. Statik görünüm de aynı kayıtta saklanır.
 
-R2 kullanıcı onayıyla profil ve plan üretir; manuel kalori ve kilo kaydını IndexedDB'de tutar. R3 hareket/plan düzenleme/haftalık değerlendirme eklendi. R4 gerçek rigli GLB, sahne ve kedi ayarlarını ekler; R5–6 kapsamları etiketli kalır. Aynı gerçek modelin statik PNG render’ı sahne hata yolunda kullanılır. Gerçek Android ve ekran okuyucu testi pilot öncesi gereklidir.
+R2 kullanıcı onayıyla profil ve plan üretir; manuel kalori ve kilo kaydını IndexedDB'de tutar. R3 hareket/plan düzenleme/haftalık değerlendirme eklendi. R4 gerçek rigli GLB, sahne ve kedi ayarlarını ekler; R5–6 kapsamları etiketli kalır. Aynı gerçek modelin statik WebP render’ı sahne hata yolunda kullanılır. Gerçek Android ve ekran okuyucu testi pilot öncesi gereklidir.
 
 ## Değişiklik disiplini
 
