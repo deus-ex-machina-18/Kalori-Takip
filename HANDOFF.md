@@ -6,7 +6,9 @@ Başlangıç: R3 teslim ef2df0b65ab10372e5dc89cb259439aa08389cb0.
 
 ## Durum
 
-**Raund 4 uygulama ve gerçek Chromium kabulü tamamlandı; main’de.** 56 test, TypeScript, üretim build'i ve GLB doğrulaması başarılı. Fiziksel Android performansı ölçülmedi. Yayın yapılmadı.
+**Raund 4 görsel kalite revizyonu açık.** Kullanıcı mevcut modelin referans görsel kalitesinde olmadığını bildirdi. Aşağıdaki önceki teknik kabul görsel onay anlamına gelmez. Main'deki çalışan sürüm korunur; revizyon `r4-visual-quality` dalında ilerler. R5'e geçilmedi. Fiziksel Android performansı ölçülmedi; yayın yapılmadı.
+
+Bağlantı kesintisi sonrası yerel çalışma alanı sıfırlandı. Önceki yeni model/sahne kaynakları GitHub'a aktarılmamıştı; o yerel test sonuçları bu daldaki kodun kanıtı sayılamaz. Üretilmiş beyaz kürk materyali kurtarıldı ve `assets/cat/` içinde kaynak/prompt ile kaydedildi. Model revizyonu yeniden kurulup yeniden doğrulanmalı. Doku tek başına referanstaki kaliteyi sağlamaz.
 
 Doğrulanmış son kod: 1971754eb0de3d3b37697a28b84f85d4e5615f45. Bu belgenin sonraki commit'i yalnız devir belgelerini günceller.
 
@@ -51,6 +53,6 @@ Fiziksel orta sınıf Android ≥30 FPS ve <3 sn ilk sahne hedefi, gerçek %200 
 
 ## Sonraki tek görev
 
-**Yalnız Raund 5 — kalıcı haftalık geri bildirim, ödüller ve hatırlatmalar.** PROJECT/CURRENT_TASK/DATA_CONTRACT/ENERGY_POLICY okunmalı; mevcut motorlar ve 3D sahne yeniden yazılmaz. Kalori açığının büyüklüğü ödül gerekçesi olamaz, care kutlamayı bastırır, eksik günler sıfır değildir; `(userId,eventKey)` idempotent ödül anahtarı korunur. Push/HTTPS/arka plan bağımlılıkları gerçekten kurulmadan push çalışıyor denmez. R6 export/silme/hosting kapsamı eklenmedi.
+**Raund 4 — mevcut gri-beyaz kedi yönünde görsel kalite revizyonunu tamamla.** Gerçek render referansla karşılaştırılmalı; kullanıcı kabulünden önce görsel görev tamamlandı denmez. Motorlar, bakım önceliği, kayıt güvenliği ve erişilebilir kontroller korunmalı. Sonraki R5 görevine henüz geçilmez.
 
 Yeni görsel veya 3D yön için önce üç örnek ve kullanıcı seçimi şartı sürer. Mevcut gri-beyaz 1. yön için yetki zaten vardır.
