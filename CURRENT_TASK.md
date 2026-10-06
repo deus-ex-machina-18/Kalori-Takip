@@ -1,22 +1,26 @@
-# Güncel görev — Raund 3
+# Güncel görev — Raund 4
 
-Tek çıktı: mevcut beş ekranın üzerinde kalıcı aktivite takibi, kontrollü plan düzenleme ve uygun haftalık değerlendirme.
+Tek çıktı: kullanıcı tarafından seçilen 1. örneğin gri-beyaz yönünde gerçek rigli 3D kedi ve sade oda sahnesi.
 
 ## Sınır
 
-`src/domain/activity.ts`, `weekly.ts`, `tracking.ts`, `contracts.ts`; `src/data/indexeddb.ts`; `src/ui/tracker.ts`, mevcut `main.ts` ve `styles.css`; ilgili testler/browser-check ve devir belgeleri. Vite/TypeScript, beş ekran, günlük kalori/kilo akışları ve IndexedDB v1 korunur. Yeni şema veya framework yok.
+`src/ui/cat-card.ts`, `cat-scene.ts`, mevcut `main.ts`/`styles.css`; `src/domain/cat.ts`, mevcut CatPreferences sözleşmesi ve IndexedDB v1 store'u; `public/models/`, tekrar üretilebilir `scripts/build-cat.mjs`, asset/test/browser kontrolü ve devir belgeleri.
 
-## Uygulananlar
+Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve veri şeması sürümü korunur. R5 ödül/bildirim ve R6 export/silme/hosting eklenmez. Ses isteğe bağlı kapsamdır; lisanslı ses üretilmediği için kapalı kalır.
 
-- Yürüyüş/koşu/bisiklet/salon-kuvvet; kaynakta tanımlı tempo/tür, dakika ve hesap kilosu, MET kodu ve tahmin aralığı. Kayıt ekleme/düzeltme/silme, hata/retry, atomik operasyon makbuzu ve iki sekmede önceki kayıt karşılaştırması.
-- Olağan egzersiz günlük hareket tabanındadır; aktivite bilgisi günlük hedef/açığa tekrar eklenmez.
-- Uygun günler ve sevilen aktivitelerden gerekçeli taslak; manuel hareket günleri/süreleri ve sınırları doğrulanan manuel kalori aralığı. Önizleme/geri dönüş/onay, ileri tarihli immutable plan sürümleri. Hedef ölçümünden sonra isteğe bağlı koruma önizlemesi.
-- Son yedi kapalı gün: tamamlanan/kısmi/eksik sayıları, yalnız tamamlananların ortalaması, hareket ve kilo günleri. Aynı planla yedi tamamlanan gün ve care olmaması halinde kullanıcı planı gözden geçirebilir. Kalori veya kilo tahminiyle otomatik azaltma yok.
+## Seçim
+
+Üç ayrı örnek sunuldu. Kullanıcı: “1 hocam ama rengi gri-beyaz olsun.” Seçilen yön yumuşak oyuncak görünümü; nihai varlık gerçek GLB'dir, referans PNG değil. Görünüm için yeniden seçim gerekmiyor.
 
 ## Kabul
 
-MET birimleri ve süre/kilo ölçeklemesi; kuvvette geniş belirsizlik; geçersiz/kapsam dışı giriş; CRUD/reload/retry/CAS; 2700/2200/2400 sonucunun harekette değişmemesi; manuel hedef kapıları; eski gün/plan korunması; eksik/karışık/care haftasına öneri yok; önizleme ve onaylı koruma geçişi; R2 regresyonları; TypeScript/build/test/gerçek Chromium akış ve genişlik kontrolleri.
+- GLB/glTF 2.0, gerçek geometri ve skin; baş/kulak/kuyruk/pati/göz/yüz kemikleri; idle/happy/stretch/play/sleep/care klipleri.
+- GLTF validator sıfır hata/uyarı; ≤25 bin kedi üçgeni, ≤5 MB asset; kaynak, lisans, hash ve klip envanteri.
+- Dokunma/yatay sürükleme/dikey scroll ayrımı, klavyeyle döndürme ve başlangıç açısına dönüş.
+- Enerji motorunun mevcut catState'i kullanılır; düşük tüketimde care kutlamayı/oyunu bastırır; beden boyutu kalorilerle değişmez.
+- İsim, hareket azaltma ve statik mod native IndexedDB'de; atomik makbuz/retry ve snapshot CAS.
+- Asset 404, WebGL context kaybı, WebGL yokluğu ve düşük FPS'te statik yedek; kalori formu sahneden bağımsız çalışır.
+- Görünmez sekme/kartta animasyon durur; DPR ≤1.5, 30 FPS hedefli döngü; fiziksel Android ölçümü ayrı açık gereksinimdir.
+- R2/R3 regresyonları, DOM ve gerçek Chromium akış/genişlik kabulü. Yazılım WebGL testi gerçek Android performansı sayılmaz.
 
-R4 3D, R5 ödül/bildirim/geri bildirim, R6 export/silme/hosting/bulut yok. Yeni görsel/3D varlık için kullanıcı önce üç örnekten seçim yapacak. İsteğe bağlı hareket karşılığı kartı eklenmedi; egzersiz borcu dili yok.
-
-Durum: tamamlandı; 50 test + TypeScript/build + gerçek Chromium kabulü başarılı. Son koşu, doğrulanmış commit, incelenen görseller ve açık bağımlılıklar HANDOFF.md’de. Sonraki tek görev Raund 4; önce üç örnekle kullanıcı estetik seçimi.
+Durum: uygulama ve yerel doğrulama sürüyor; gerçek Chromium kabulü henüz kapanmadı. Tamamlanma durumu HANDOFF.md'de güncellenecek.

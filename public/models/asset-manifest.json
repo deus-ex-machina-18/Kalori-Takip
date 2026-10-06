@@ -1,0 +1,78 @@
+{
+  "asset": "grey-white-kitten.glb",
+  "version": 1,
+  "author": "Kalori-Takip project contributors (procedural generation)",
+  "license": "MIT",
+  "source": "scripts/build-cat.mjs",
+  "date": "2026-10-06",
+  "sha256": "362fe547fef8e647c1ffbf8dbe07d027a2a1c0eba005d57f450407de0671ff6d",
+  "bytes": 932840,
+  "triangles": 23024,
+  "textures": 0,
+  "bones": [
+    "Root",
+    "Body",
+    "Head",
+    "EarL",
+    "EarR",
+    "TailBase",
+    "TailTip",
+    "PawL",
+    "PawR",
+    "HindL",
+    "HindR",
+    "EyeL",
+    "EyeR",
+    "Mouth"
+  ],
+  "clips": [
+    {
+      "name": "idle",
+      "duration": 4,
+      "loop": true
+    },
+    {
+      "name": "happy",
+      "duration": 2,
+      "loop": false
+    },
+    {
+      "name": "stretch",
+      "duration": 3,
+      "loop": false
+    },
+    {
+      "name": "play",
+      "duration": 2.4,
+      "loop": false
+    },
+    {
+      "name": "sleep",
+      "duration": 6,
+      "loop": true
+    },
+    {
+      "name": "care",
+      "duration": 4,
+      "loop": true
+    }
+  ],
+  "coordinates": {
+    "unit": "metre",
+    "up": "Y",
+    "front": "+Z",
+    "pivot": [
+      0,
+      0,
+      0
+    ]
+  },
+  "validation": {
+    "numErrors": 0,
+    "numWarnings": 0,
+    "numInfos": 0,
+    "numHints": 0,
+    "messages": [],
+    "truncated": false
+  }
+}

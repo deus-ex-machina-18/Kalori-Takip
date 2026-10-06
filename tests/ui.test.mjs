@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { IDBFactory } from "fake-indexeddb";
 import { webcrypto } from "node:crypto";
@@ -8,13 +8,13 @@ const html = readFileSync(
   new URL("../dist/index.html", import.meta.url),
   "utf8",
 );
-const asset = readdirSync(new URL("../dist/assets/", import.meta.url)).find(
-  (name) => name.endsWith(".js"),
-);
+const asset = html.match(/src="\.\/assets\/([^\"]+\.js)"/)[1];
 const script = readFileSync(
   new URL(`../dist/assets/${asset}`, import.meta.url),
   "utf8",
-);
+// jsdom evaluates the entry as a script. Substitute module metadata only;
+// real dynamic loading/WebGL is covered by scripts/browser-check.mjs.
+).replaceAll('import.meta',`({url:${JSON.stringify(`https://example.test/assets/${asset}`)}})`);
 async function until(predicate) {
   const start = Date.now();
   while (!predicate()) {
@@ -47,6 +47,7 @@ async function launch(hash = "/bugun", reducedMotion = false, factory = new IDBF
   Object.defineProperty(dom.window, "crypto", { value: webcrypto });
   dom.window.matchMedia = () => ({ matches: reducedMotion });
   dom.window.scrollTo = () => {};
+  dom.window.structuredClone = structuredClone;
   dom.window.eval(script);
   const app = { dom, window: dom.window, document: dom.window.document, errors };
   await until(() => app.document.querySelector("main")?.dataset.ready === "true" || app.document.querySelector(".error-message"));
@@ -98,10 +99,9 @@ test("boş gün sıfır kalori veya uydurma kişisel hedef göstermez", async ()
       /Belirlenmedi/,
     );
     assert.equal(app.document.querySelector("#calorie-form"), null);
-    assert.match(
-      app.document.querySelector(".scene-caption").textContent,
-      /Raund 4/,
-    );
+    assert.equal(app.document.querySelector('.cat-card').dataset.catState,'neutral');
+    assert.equal(app.document.querySelector('.cat-card').dataset.sceneStatus,'static');
+    assert.match(app.document.querySelector('.cat-message').textContent,/kendi hızında/);
     assert.deepEqual(app.errors, []);
   } finally {
     app.dom.window.close();
@@ -142,6 +142,39 @@ test("sistem hareket tercihi ve oturum içi ayar navigasyonda korunur", async ()
   } finally {
     app.dom.window.close();
   }
+});
+test('R4 isim, hareket azaltma ve statik mod onayla saklanır; HTML isim metin olarak gösterilir',async()=>{
+  const factory=new IDBFactory();let app=await launch('/planim',false,factory);
+  try{
+    await createProfile(app);
+    await navigate(app.window,app.document.querySelector('nav a[href="#/ayarlar"]'));
+    fill(app,'cat-name','<b>Duman</b>');fill(app,'scene-mode','static');app.document.querySelector('#motion').click();
+    app.document.querySelector('#cat-settings-form').requestSubmit();
+    await until(()=>/Kedi ayarların/.test(app.document.querySelector('#tracker-feedback').textContent) && app.document.querySelector('main').getAttribute('aria-busy')==='false');
+    await navigate(app.window,app.document.querySelector('nav a[href="#/bugun"]'));
+    assert.equal(app.document.querySelector('#cat-heading').textContent,'<b>Duman</b>');assert.equal(app.document.querySelector('#cat-heading b'),null);
+    assert.equal(app.document.querySelector('.cat-card').dataset.sceneStatus,'static');assert.ok(app.document.querySelector('#calorie-form'));
+    app.dom.window.close();app=await launch('/ayarlar',false,factory);
+    assert.equal(app.document.querySelector('#cat-name').value,'<b>Duman</b>');assert.equal(app.document.querySelector('#motion').checked,true);assert.equal(app.document.querySelector('#scene-mode').value,'static');
+    assert.deepEqual(app.errors,[]);
+  }finally{app.dom.window.close();}
+});
+test('R4 tercih yazma hatasında taslak korunur ve aynı işlem retry ile kaydedilir',async()=>{
+  const factory=new IDBFactory();const app=await launch('/planim',false,factory);
+  try{
+    await createProfile(app);await navigate(app.window,app.document.querySelector('nav a[href="#/ayarlar"]'));
+    const opening=factory.open.bind(factory);
+    const request=opening('kedi-kalori-v1');const db=await new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
+    const prototype=Object.getPrototypeOf(db),transaction=prototype.transaction;let failed=false;
+    prototype.transaction=function(stores,mode,...args){if(!failed && mode==='readwrite' && Array.from(stores).includes('catPreferences')){failed=true;throw new DOMException('quota','QuotaExceededError');}return transaction.call(this,stores,mode,...args);};
+    try{
+      fill(app,'cat-name','Duman');app.document.querySelector('#cat-settings-form').requestSubmit();
+      await until(()=>app.document.querySelector('[data-action="retry"]'));
+      assert.equal(app.document.querySelector('#cat-name').value,'Duman');app.document.querySelector('[data-action="retry"]').click();
+      await until(()=>/Kedi ayarların/.test(app.document.querySelector('#tracker-feedback').textContent) && app.document.querySelector('main').getAttribute('aria-busy')==='false');
+      assert.equal(app.document.querySelector('#cat-name').value,'Duman');
+    }finally{prototype.transaction=transaction;db.close();}
+  }finally{app.dom.window.close();}
 });
 test("içeriğe geç bağlantısı ve semantik navigasyon mevcut", async () => {
   const app = await launch();

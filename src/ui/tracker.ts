@@ -2,7 +2,8 @@ import { IndexedDbRepository } from '../data/indexeddb.ts';
 import type { SetupWrite } from '../data/indexeddb.ts';
 import { ACTIVITY_KINDS, ACTIVITY_MET, WEEKDAYS, createActivity, suggestMovement } from '../domain/activity.ts';
 import { reviewWeek } from '../domain/weekly.ts';
-import type { Activity, ActivityKind, DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
+import { defaultCatPreferences, validateCatPreferences } from '../domain/cat.ts';
+import type { Activity, ActivityKind, CatPreferences, DaySummary, DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
 import type { Result } from '../domain/contracts.ts';
 import { addLocalDays, localDateAt, parseLocalDate } from '../domain/dates.ts';
 import { PAL_OPTIONS, changeDay, engine, intake, newDay, nowUTC, planFor, representativeWeights, requireValue, uuid, validateProfile } from '../domain/tracking.ts';
@@ -22,6 +23,7 @@ export class Tracker {
   days: DayLog[] = [];
   weights: WeightMeasurement[] = [];
   activities: Activity[] = [];
+  catPreferences: CatPreferences | null = null;
   private editingActivity: Activity | null = null;
   private deletingActivity: Activity | null = null;
   private planDraft: Record<string,string[]> | null = null;
@@ -50,13 +52,14 @@ export class Tracker {
     const epoch = ++this.refreshEpoch;
     try {
       const profile = requireValue(await this.repository.getLocalProfile());
-      const [plans,days,weights,activities] = profile ? await Promise.all([this.repository.listPlans(profile.userId), this.repository.listDays(profile.userId, parseLocalDate('1900-01-01'), parseLocalDate('9999-12-31')), this.repository.listWeights(profile.userId), this.repository.listAllActivities(profile.userId)]) : [];
+      const [plans,days,weights,activities,catPreferences] = profile ? await Promise.all([this.repository.listPlans(profile.userId), this.repository.listDays(profile.userId, parseLocalDate('1900-01-01'), parseLocalDate('9999-12-31')), this.repository.listWeights(profile.userId), this.repository.listAllActivities(profile.userId), this.repository.getCatPreferences(profile.userId)]) : [];
       if (epoch !== this.refreshEpoch) return;
       this.profile = profile;
       this.plans = plans ? requireValue(plans) : [];
       this.days = days ? requireValue(days) : [];
       this.weights = weights ? requireValue(weights) : [];
       this.activities = activities ? requireValue(activities) : [];
+      this.catPreferences = catPreferences ? requireValue(catPreferences) : null;
       this.ready = true; this.loadFailed = false; this.lastToday = this.today();
     } catch (error) {
       if (epoch !== this.refreshEpoch) return;
@@ -76,6 +79,19 @@ export class Tracker {
   private day(date: LocalDate): DayLog | null { return this.days.find(day => day.date === date) ?? null; }
   private linkedPlan(day: DayLog | null, date: LocalDate): PlanVersion | null {
     return day ? this.plans.find(p => p.id === day.planVersionId) ?? null : this.profile?.automaticPlanEligibility === 'eligible' ? planFor(this.plans,date) : null;
+  }
+  catSummary(): DaySummary {
+    const date = this.today(), day = this.day(date);
+    return day ? requireValue(engine.summarizeDay(day, this.linkedPlan(day,date))) : { kind:'incomplete', status:'missing', provisionalIntakeKcal:null, catState:'neutral' };
+  }
+  saveCatSettings(input: { name: string; reducedMotion: boolean; sceneMode: CatPreferences['sceneMode'] }): void {
+    if (!this.profile || !this.ready || this.busy) return;
+    try {
+      const preferences = { ...defaultCatPreferences(this.profile.userId,input.reducedMotion), ...input, name:input.name.trim() };
+      validateCatPreferences(preferences);
+      const operationId=uuid(), expectedCatPreferences=this.catPreferences ? structuredClone(this.catPreferences) : null;
+      void this.persist(()=>this.repository.saveCatPreferences(preferences,{operationId,expectedCatPreferences}),()=>{},'Kedi ayarların bu cihazda kaydedildi.');
+    } catch(e) { this.error=(e as Error).message; this.notice=''; this.showMessages(); }
   }
   messages(): string {
     return `<div id="tracker-message" tabindex="-1" role="${this.error ? 'alert' : 'status'}" class="${this.error ? 'error-message' : 'tracker-notice'}">${escape(this.error || this.notice)}</div>${this.retry ? button('retry','Aynı işlemi tekrar dene',true) : ''}${this.loadFailed || this.error ? button('reload','Güncel kayıtları yükle',true) : ''}${this.rolloverPending ? button('new-day','Yeni güne geç',true) : ''}`;

@@ -1,10 +1,11 @@
 import type { DataRepository, Result, WriteContext } from '../domain/contracts.ts';
 import { createActivity, validateActivity } from '../domain/activity.ts';
-import type { Activity, DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
+import { validateCatPreferences } from '../domain/cat.ts';
+import type { Activity, CatPreferences, DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
 import { localDateAt } from '../domain/dates.ts';
 import { engine, failure, planFor, success, validId, validateDay, validateMeasurement, validatePlan, validateProfile } from '../domain/tracking.ts';
 
-type CoreRepository = Pick<DataRepository, 'scope' | 'getProfile' | 'listPlans' | 'getDay' | 'listDays' | 'saveDay' | 'listWeights' | 'saveWeight' | 'listActivities' | 'saveActivity' | 'deleteActivity'>;
+type CoreRepository = Pick<DataRepository, 'scope' | 'getProfile' | 'listPlans' | 'getDay' | 'listDays' | 'saveDay' | 'listWeights' | 'saveWeight' | 'listActivities' | 'saveActivity' | 'deleteActivity' | 'getCatPreferences' | 'saveCatPreferences'>;
 export interface SetupWrite { profile: Profile; plan: PlanVersion | null; weight: WeightMeasurement | null; expectedProfileUpdatedAt: string | null; }
 class RepositoryError extends Error {
   code: 'validation' | 'conflict' | 'not-found';
@@ -90,7 +91,7 @@ export class IndexedDbRepository implements CoreRepository {
   listWeights(userId: string): Promise<Result<WeightMeasurement[]>> { return this.list('weights', userId, validateMeasurement); }
   private async write<T>(stores: string[], userId: string, payload: unknown, context: WriteContext, action: (tx: IDBTransaction) => Promise<T>): Promise<Result<T>> {
     try { validId(userId); validId(context.operationId); } catch (error) { return failure('validation', (error as Error).message); }
-    const signature = canonical({ stores, userId, payload, expectedRevision: context.expectedRevision ?? null, expectedActivity: context.expectedActivity });
+    const signature = canonical({ stores, userId, payload, expectedRevision: context.expectedRevision ?? null, expectedActivity: context.expectedActivity, expectedCatPreferences: context.expectedCatPreferences });
     return this.transaction([...stores, 'operations'], 'readwrite', async tx => {
       const operations = tx.objectStore('operations');
       const receipt = await request<{ userId: string; signature: string; result: T } | undefined>(operations.get(context.operationId));
@@ -193,6 +194,21 @@ export class IndexedDbRepository implements CoreRepository {
       // Measurements are append-only in R2: corrections add a new representative.
       if (await request(store.get(weight.id))) conflict('Ölçüm kimliği zaten kullanılıyor.');
       await request(store.add(weight)); return weight;
+    });
+  }
+  getCatPreferences(userId: string): Promise<Result<CatPreferences | null>> { return this.read('catPreferences', userId, validateCatPreferences); }
+  async saveCatPreferences(preferences: CatPreferences, context: WriteContext): Promise<Result<CatPreferences>> {
+    try {
+      validateCatPreferences(preferences);
+      if (context.expectedCatPreferences === undefined) throw new Error('Kedi ayarlarının önceki sürümü gerekli.');
+      if (context.expectedCatPreferences) validateCatPreferences(context.expectedCatPreferences);
+    } catch(e) { return failure('validation', (e as Error).message); }
+    return this.write(['catPreferences','profiles'], preferences.userId, preferences, context, async tx => {
+      if (!await request(tx.objectStore('profiles').get(preferences.userId))) throw new RepositoryError('not-found','Önce profilini oluştur.');
+      const store = tx.objectStore('catPreferences');
+      const old = await request<CatPreferences | undefined>(store.get(preferences.userId));
+      if (canonical(old ?? null) !== canonical(context.expectedCatPreferences)) conflict('Kedi ayarları başka bir sekmede değişti. Güncel kayıtları yükle.');
+      await request(store.put(preferences)); return preferences;
     });
   }
 }

@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import validator from 'gltf-validator';
+const data=new Uint8Array(await readFile('public/models/grey-white-kitten.glb'));
+const manifest=JSON.parse(await readFile('public/models/asset-manifest.json','utf8'));
+const result=await validator.validateBytes(data,{uri:manifest.asset});
+assert.equal(result.issues.numErrors,0);assert.equal(result.issues.numWarnings,0);
+assert.equal(createHash('sha256').update(data).digest('hex'),manifest.sha256);
+assert.ok(data.byteLength<=5*1024*1024);assert.ok(manifest.triangles<=25000);
+const view=new DataView(data.buffer,data.byteOffset,data.byteLength);
+assert.equal(view.getUint32(0,true),0x46546c67);
+const gltf=JSON.parse(new TextDecoder().decode(data.subarray(20,20+view.getUint32(12,true))));
+assert.ok(gltf.skins?.[0]?.joints.length>=10);
+assert.deepEqual(gltf.animations.map(a=>a.name).sort(),['care','happy','idle','play','sleep','stretch']);
+assert.ok(gltf.meshes[0].primitives.every(p=>p.attributes.JOINTS_0!==undefined && p.attributes.WEIGHTS_0!==undefined));
+assert.equal(gltf.textures?.length ?? 0,0);
+console.log(`GLB passed: ${data.byteLength} bytes, ${manifest.triangles} triangles, ${gltf.skins[0].joints.length} joints, six clips, zero validator errors/warnings.`);

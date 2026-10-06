@@ -1,6 +1,6 @@
 # Veri sözleşmesi v1
 
-Bu belge, `src/domain/models.ts` ve `contracts.ts` davranışını açıklar. Raund 2'de profil/plan/gün/kilo kapsamı IndexedDB v1 ile uygulanmıştır; R3 hareket kayıtları da mevcut v1 store’unda uygulanmıştır; kedi/ödül/bildirim/export sonraki raundlar içindir.
+Bu belge, `src/domain/models.ts` ve `contracts.ts` davranışını açıklar. Raund 2'de profil/plan/gün/kilo kapsamı IndexedDB v1 ile uygulanmıştır; R3 hareket kayıtları da mevcut v1 store’unda uygulanmıştır; R4 kedi tercihleri mevcut store üzerinde uygulanır; ödül/bildirim/export sonraki raundlar içindir.
 
 ## Birimler, tarih ve kimlik
 
@@ -65,3 +65,9 @@ Buluta taşınırken aynı arayüz kullanılır; istemci store ayrımı sunucu y
 - PlanOptions movementDays kabul eder: ISO hafta günü 1=Pazartesi, 7=Pazar, her gün en fazla bir slot, destekli kind, dakika (0,360]. Var olan PlanVersion movementDays alanı kullanılır; yeni bir paralel plan kaynağı yok. Manuel kcal aralığı uygun değilse validation döner; plansız profil kaydıyla başarılıymış gibi sunulmaz.
 - Seçilmiş/sevilen aktiviteler taslak üretim girdisidir; onaylanan hareket düzeni plan sürümünde saklanır, ayrı profil tercihi tablosu oluşturulmaz. Önizlemeden geri dönüş form taslağını korur. Koruma geçişi son kilo ölçümünü forma önerir, mevcut planı değiştirmez; onaydan sonra ileri tarihli maintenance-transition sürümü oluşur.
 - weekly.ts son yedi kapalı yerel günü kullanır; bugün dahil değildir. missing/kısmi günler tüketim ortalamasına girmez, yalnız tamamlananlar sayılır. Yedi farklı tamamlanan gün, tek bağlı plan ve hiçbir care sonucu olmadığında review-plan adımı açılır. Plansız/karışık planlı/eksik/care haftadan hedef azaltma önerilmez. Kilo farkı en az üç farklı temsilci ölçüm günü ve ilk/son arasında üç takvim günü varsa gösterilir; yağ kaybı/tahmin diye sunulmaz. R5 kalıcı kısa geri bildirim henüz yok.
+
+## R4 uygulama kararları
+
+- CatPreferences mevcut userId anahtarlı store'dur. Ad trim edilmiş 1–30 Unicode karakter; reducedMotion ve soundEnabled boolean; sceneMode auto/static. UI ses üretmediği için soundEnabled=false yazar. Kullanıcı rengi gri-beyaz seçti; renk şemada yinelenmez, modelin malzemelerinde tutulur.
+- Yazmada expectedCatPreferences null (ilk kayıt) veya okunan tam snapshot zorunludur. Profil varlığı ve snapshot aynı transaction'da doğrulanır; ayar+operationId makbuzu atomiktir. Aynı operationId/payload/context retry tek sonuçtur; stale iki-sekme değişikliği conflict verir. Şema migrasyonu yok.
+- Statik mod, WebGL yokluğu/model hatası/context kaybı sahneyi devreden çıkarır, gün/kalori verisine yazmaz. Görsel durum bugünün motor çıktısından türetilir, bağımsız ödül veya günlük durum kaydı yaratmaz.

@@ -1,4 +1,4 @@
-# Kedi Kalori · Raund 3
+# Kedi Kalori · Raund 4
 
 Türkçe, telefon öncelikli **manuel** kalori ve kilo takibi. Kalorini dışarıda hesapla; günlük toplamı veya yalnız kcal parçalarını buraya yaz.
 
@@ -19,7 +19,7 @@ npm run build
 npm run preview
 ```
 
-`check`: TypeScript, üretim build'i, 32 tarih/hesap/IndexedDB testi ve 18 DOM akış testi. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
+`check`: TypeScript, üretim build'i, 36 tarih/hesap/IndexedDB testi ve 20 DOM akış testi; ayrıca gerçek GLB validator ve bütçe kontrolü. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
 
 ```bash
 npx playwright install chromium
@@ -44,8 +44,14 @@ Boş gün sıfır değildir. Hedef aralığını aşmak, koruma ihtiyacını aş
 
 Tek profil ve tek tarayıcı/origin kapsamında **IndexedDB**. Gerçek hesapla giriş, güvenli çok kullanıcı izolasyonu, bulut senkronizasyonu ve yedekleme henüz yok. Site verisini temizlemek kayıtları silebilir. Origin değiştirmek diğer origin'deki kayıtları taşımaz. Saklama hatası açık gösterilir; belleğe sessiz fallback yapılmaz.
 
-Manifest başlangıçtır; service worker/offline/push/install akışı henüz yok. Kedi hâlâ 2D taslak. Hareket hesabı, düzenlenebilir hareket/kalori planı ve son yedi kapalı günün değerlendirmesi çalışır. Gerçek 3D, ödül/bildirim ve yayın sonraki raundların kapsamıdır.
+Manifest başlangıçtır; service worker/offline/push/install akışı henüz yok. Gri-beyaz kedi gerçek GLB/iskelet ve altı kliple çalışır; WebGL yoksa statik yedek gösterilir. Hareket hesabı, düzenlenebilir hareket/kalori planı ve son yedi kapalı günün değerlendirmesi çalışır. Ödül/bildirim ve yayın sonraki raundların kapsamıdır. Ayarlar’dan kedi adı, hareket azaltma ve statik mod kaydedilebilir. Ses kapalıdır.
 
 ## Sonraki sohbet
 
-PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R3 kabulü tamamlandıysa yalnız Raund 4’e geç; mevcut ekranları veya framework'ü yeniden başlatma. Enerji hesabının tek kaynağı src/domain/tracking.ts ve docs/ENERGY_POLICY.md'dir.
+PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R4 tarayıcı kabulü tamamlandıysa yalnız Raund 5’e geç; mevcut ekranları veya framework'ü yeniden başlatma. Enerji hesabının tek kaynağı src/domain/tracking.ts ve docs/ENERGY_POLICY.md'dir.
+
+## 3D varlık
+
+`public/models/grey-white-kitten.glb`: özgün prosedürel mesh, 14 kemik, 23.024 üçgen, 932.840 bayt, doku yok. Kaynak `scripts/build-cat.mjs`; MIT lisans metni ve hash/klip envanteri aynı klasörde. Yeniden üretim: `npm run assets:cat`; doğrulama: `npm run test:assets`.
+
+Three.js/GLTFLoader yalnız Bugün sahnesinde dinamik yüklenir. Yatay sürükle veya erişilebilir düğmelerle döndür; açı sıfırlanabilir. Sahne görünmezken animasyon durur. DPR en fazla 1.5, 30 FPS hedefli döngü; ölçülen <20 FPS, context kaybı veya 404 statik yedeğe geçer. Fiziksel Android performansı henüz ölçülmedi; Chromium SwiftShader sonucu Android kabulü değildir.

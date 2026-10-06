@@ -1,6 +1,6 @@
 {
   "name": "kalori-takip",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,17 +12,24 @@
     "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "npm run build && npm run test:unit && npm run test:ui",
-    "check": "npm test",
+    "check": "npm test && npm run test:assets",
     "dev:lan": "vite --host 0.0.0.0",
     "test:unit": "node --experimental-strip-types --test tests/*.test.ts",
-    "test:ui": "node --test tests/*.test.mjs"
+    "test:ui": "node --test tests/*.test.mjs",
+    "assets:cat": "node scripts/build-cat.mjs",
+    "test:assets": "node scripts/validate-cat.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/three": "^0.186.0",
     "fake-indexeddb": "^6.2.4",
+    "gltf-validator": "^2.0.0-dev.3.10",
     "jsdom": "^26.1.0",
     "playwright": "^1.58.2",
     "typescript": "~5.9.3",
     "vite": "^8.0.0"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
   }
 }

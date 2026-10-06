@@ -31,6 +31,8 @@ export interface WriteContext {
   expectedRevision?: number;
   /** Activity CAS snapshot; null means create. Required for activity writes. */
   expectedActivity?: Activity | null;
+  /** Round 4 preferences CAS; null means create, snapshot means update. */
+  expectedCatPreferences?: CatPreferences | null;
 }
 export interface DataRepository {
   readonly scope: "device-local" | "authenticated-cloud";
