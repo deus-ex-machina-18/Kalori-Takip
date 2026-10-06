@@ -6,13 +6,13 @@ Başlangıç: R3 teslim ef2df0b65ab10372e5dc89cb259439aa08389cb0.
 
 ## Durum
 
-R4 uygulandı; yerel TypeScript, üretim build'i, 56 test ve GLB doğrulaması geçti. **Gerçek Chromium kabulü henüz kapanmadı.** Yayın yapılmadı.
+R4 uygulandı; yerel TypeScript, üretim build'i, 56 test ve GLB doğrulaması geçti. **İlk gerçek Chromium kabulü geçti; yüz/kuyruk birleşimlerini iyileştiren son modelin kabulü bekleniyor.** Yayın yapılmadı.
 
 ## Seçim ve uygulama
 
 Kullanıcı üç ayrı örnekten “1 hocam ama rengi gri-beyaz olsun” dedi. Yumuşak oyuncak yönünde özgün gerçek 3D mesh/skin üretildi; referans görüntü GLB olarak sunulmadı. Baş/kulak/kuyruk/pati/göz/yüz kemikleri; idle/happy/stretch/play/sleep/care klipleri; tek sade oda.
 
-Gerçek asset `public/models/grey-white-kitten.glb`, kaynak `scripts/build-cat.mjs`, manifest/hash/lisans aynı dizinde. MIT, özgün prosedürel eser; dış mesh/doku/ses yok. 23.024 üçgen, 14 kemik, 932.840 bayt; validator sıfır hata/uyarı. Oda ek küçük geometrilerle oluşturulur. Kaynak çalıştırılınca asset ve manifest yeniden üretilir.
+Gerçek asset `public/models/grey-white-kitten.glb`, kaynak `scripts/build-cat.mjs`, manifest/hash/lisans aynı dizinde. MIT, özgün prosedürel eser; dış mesh/doku/ses yok. 19.936 üçgen, 14 kemik, 996.320 bayt; validator sıfır hata/uyarı. Oda ek küçük geometrilerle oluşturulur. Kaynak çalıştırılınca asset ve manifest yeniden üretilir.
 
 Three.js sahnesi dinamik yüklenir. Yatay sürükleme/dokunma/dikey scroll ayrımı, erişilebilir döndürme/sıfırlama/oyun/gerinme/uyku düğmeleri; geçişler 0,25 sn. Care kutlamayı/oyunu bastırır; kedi gövdesi kalorilere göre değişmez. Kalori/plan/hareket/hafta hesap kodları yeniden yazılmadı.
 
@@ -24,7 +24,7 @@ Kedi adı, reducedMotion, sceneMode mevcut IndexedDB v1 CatPreferences store'und
 
 Yerel: `npm run check` → TypeScript + build + 36 domain/depo + 20 DOM test ve gerçek GLB validator/bütçe kontrolü başarılı. R2/R3 regresyonları, preference CAS/reload/retry, HTML isim güvenliği ve care önceliği kontrol edildi.
 
-Yerel Chromium indirmesi ağ ortamında geçerli ZIP dönmedi. GitHub Actions tarayıcı betiği R4 skin/klip/döndürme/drag/reset/play/stretch/sleep/care, native ayar retry/reload, 404/context kaybı/WebGL yokluğu/statik/reduced motion ve beş genişlikle genişletildi. Chromium SwiftShader yazılım WebGL2 kullanır; sonuç henüz incelenmedi. Sonuç gelmeden gerçek tarayıcı kabulü veya estetik kontrol tamamlanmış sayılmaz.
+Yerel Chromium indirmesi ağ ortamında geçerli ZIP dönmedi. GitHub Actions tarayıcı betiği R4 skin/klip/döndürme/drag/reset/play/stretch/sleep/care, native ayar retry/reload, 404/context kaybı/WebGL yokluğu/statik/reduced motion ve beş genişlikle genişletildi. Chromium SwiftShader yazılım WebGL2 kullanır; ilk koşu 37419100800 / commit 374337be18fd397a74f8a56d70e44950cd4b6df3 başarılı (artifact 11391354111, errors=[]). Gerçek görüntüler incelendi, yüz/kuyruk birleşimleri iyileştirildi. Son model için yeni kabul koşusu ve statik poster teslimi bekleniyor.
 
 ## Sonraki tek görev
 

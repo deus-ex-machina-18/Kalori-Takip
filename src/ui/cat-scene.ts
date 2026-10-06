@@ -44,14 +44,17 @@ export class ThreeCatScene implements CatScene {
     this.renderer.setClearColor('#f3ece2');
     this.renderer.outputColorSpace=T.SRGBColorSpace;
     this.renderer.toneMapping=T.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure=1.25;
+    this.renderer.toneMappingExposure=1;
+    this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFShadowMap;
     const canvas=this.renderer.domElement;
     canvas.className='cat-canvas';canvas.setAttribute('aria-hidden','true');
     host.querySelector('.cat-viewport')!.append(canvas);
     this.camera.position.set(.08,1.01,2.95);this.camera.lookAt(0,.76,0);
-    this.scene.add(new T.HemisphereLight('#fff7e8','#b1b8ac',2.5));
-    const light=new T.DirectionalLight('#fff4e5',3);light.position.set(-2,3,4);this.scene.add(light);
-    const fill=new T.DirectionalLight('#e5eaf1',1);fill.position.set(2,1,-1);this.scene.add(fill);
+    this.scene.add(new T.HemisphereLight('#fff7e8','#b1b8ac',1.8));
+    const light=new T.DirectionalLight('#fff4e5',2.4);light.position.set(-2,3,4);light.target.position.set(0,.6,0);
+    light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.camera.left=-1.2;light.shadow.camera.right=1.2;light.shadow.camera.top=1.3;light.shadow.camera.bottom=-1.1;light.shadow.camera.near=.5;light.shadow.camera.far=10;light.shadow.normalBias=.02;
+    this.scene.add(light,light.target);
+    const fill=new T.DirectionalLight('#e5eaf1',.7);fill.position.set(2,1,-1);this.scene.add(fill);
     this.room();
     const signal=this.listeners.signal;
     canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();this.fail('3D görünüm durdu. Statik kedinle kayıtlarına devam edebilirsin.');},{signal});
@@ -89,10 +92,10 @@ export class ThreeCatScene implements CatScene {
   }
   private room(): void {
     const material=(color:string)=>new T.MeshStandardMaterial({color,roughness:1});
-    const floor=new T.Mesh(new T.BoxGeometry(5,.04,5),material('#e3d4c1'));floor.position.set(0,-.03,0);this.scene.add(floor);
+    const floor=new T.Mesh(new T.BoxGeometry(5,.04,5),material('#e3d4c1'));floor.position.set(0,-.03,0);floor.receiveShadow=true;this.scene.add(floor);
     const wall=new T.Mesh(new T.BoxGeometry(5,3,.04),material('#f4eadc'));wall.position.set(0,1.45,-.62);this.scene.add(wall);
     const side=new T.Mesh(new T.BoxGeometry(.04,3,4),material('#ede2d4'));side.position.set(-1.35,1.45,1.35);this.scene.add(side);
-    const mat=new T.Mesh(new T.CylinderGeometry(.72,.72,.025,48),material('#a4b29b'));mat.position.set(0,-.003,.08);mat.scale.z=.8;this.scene.add(mat);
+    const mat=new T.Mesh(new T.CylinderGeometry(.72,.72,.025,48),material('#a4b29b'));mat.position.set(0,-.003,.08);mat.scale.z=.8;mat.receiveShadow=true;this.scene.add(mat);
     const shadow=new T.Mesh(new T.CircleGeometry(.37,40),new T.MeshBasicMaterial({color:'#667263',transparent:true,opacity:.16,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.set(0,.012,.06);shadow.scale.y=.7;this.scene.add(shadow);
     const cushion=new T.Mesh(new T.SphereGeometry(1,20,12),material('#d8b0a1'));cushion.position.set(.91,.13,-.3);cushion.scale.set(.31,.13,.25);this.scene.add(cushion);
   }
@@ -106,6 +109,7 @@ export class ThreeCatScene implements CatScene {
       const gltf=await new GLTFLoader().parseAsync(bytes,'');
       if(this.disposed){this.release(gltf.scene);return;}
       this.cat=gltf.scene;this.cat.rotation.y=BASE_ANGLE;this.scene.add(this.cat);
+      this.cat.traverse(object=>{if(object instanceof T.Mesh)object.castShadow=true;});
       this.mixer=new T.AnimationMixer(this.cat);
       for(const clip of gltf.animations)this.clips.set(clip.name as ClipName,this.mixer.clipAction(clip));
       for(const name of ['idle','happy','stretch','play','sleep','care'] as ClipName[])if(!this.clips.has(name))throw new Error('clips');
@@ -166,11 +170,15 @@ export class ThreeCatScene implements CatScene {
       this.sampleStart=time;this.sampleFrames=0;
     }
   }
-  private draw():void {if(!this.disposed)this.renderer.render(this.scene,this.camera);}
+  private draw():void {
+    if(this.disposed)return;
+    this.renderer.render(this.scene,this.camera);
+    if(this.loaded){this.host.dataset.triangles=String(this.renderer.info.render.triangles);this.host.dataset.drawCalls=String(this.renderer.info.render.calls);}
+  }
   private fail(reason:string):void {this.dispose();this.fallback(reason);}
   private release(root:T.Object3D):void {
     const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>();
-    root.traverse(object=>{if(object instanceof T.Mesh){geometries.add(object.geometry);for(const m of Array.isArray(object.material)?object.material:[object.material])materials.add(m);if(object instanceof T.SkinnedMesh)object.skeleton.dispose();}});
+    root.traverse(object=>{if(object instanceof T.Mesh){geometries.add(object.geometry);for(const m of Array.isArray(object.material)?object.material:[object.material])materials.add(m);if(object instanceof T.SkinnedMesh)object.skeleton.dispose();}if(object instanceof T.DirectionalLight)object.shadow.dispose();});
     geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
   }
   dispose():void {

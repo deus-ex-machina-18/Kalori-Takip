@@ -32,11 +32,12 @@ const materials = [
   ['InnerEar','#d9b0b2',.94], ['Nose','#bd8c90',.8],
   ['Eye','#30383b',.22], ['EyeGlint','#ffffff',.2],
   ['Whisker','#697078',.9], ['Iris','#827266',.42],
-].map(([name,color,roughness]) => new T.MeshStandardMaterial({ name, color, roughness, metalness:0 }));
+].map(([name,color,roughness]) => new T.MeshStandardMaterial({ name, color, roughness, metalness:0, vertexColors:name==='FurWhite' }));
 const pieces = [], pieceMaterials = [];
 function add(geometry, joint, material, position=[0,0,0], scale=[1,1,1], rotation=[0,0,0]) {
   geometry.deleteAttribute('uv');
   if (!geometry.index) geometry = mergeVertices(geometry);
+  if(!geometry.attributes.color)geometry.setAttribute('color',new T.Float32BufferAttribute(Array.from({length:geometry.attributes.position.count*3},()=>1),3));
   const matrix = new T.Matrix4().compose(new T.Vector3(...position), new T.Quaternion().setFromEuler(new T.Euler(...rotation)), new T.Vector3(...scale));
   geometry.applyMatrix4(matrix);
   const n = geometry.attributes.position.count;
@@ -47,21 +48,27 @@ function add(geometry, joint, material, position=[0,0,0], scale=[1,1,1], rotatio
   pieces.push(geometry); pieceMaterials.push(material);
 }
 const sphere = (joint,mat,pos,scale,segments=24) => add(new T.SphereGeometry(1,segments,16),joint,mat,pos,scale);
+function paintedSphere(joint,pos,scale,patch) {
+  const geometry=new T.SphereGeometry(1,32,20),colors=[];
+  const grey=new T.Color('#92979d'),white=new T.Color('#f8f7f3');
+  // FurWhite has a white base, so vertex colors encode the grey/white coat.
+  materials[1].color.set('#ffffff');
+  for(let i=0;i<geometry.attributes.position.count;i++){
+    const x=geometry.attributes.position.getX(i),y=geometry.attributes.position.getY(i),z=geometry.attributes.position.getZ(i);
+    const color=patch(x,y,z)?grey:white;colors.push(color.r,color.g,color.b);
+  }
+  geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));add(geometry,joint,1,pos,scale);
+}
 // Soft continuous silhouette, white chest and mittens; healthy body shape is fixed.
-sphere('Body',0,[0,.43,-.025],[.285,.36,.245]);
-sphere('Body',1,[0,.43,.165],[.202,.302,.106]);
+paintedSphere('Body',[0,.43,-.025],[.285,.36,.245],(x,y,z)=>!(z>.48 && Math.abs(x)<.67 && y>-.7));
 for (const [side,joint,hind] of [[-1,'PawL','HindL'],[1,'PawR','HindR']]) {
   sphere(hind,0,[side*.235,.225,-.008],[.166,.205,.182]);
   sphere(hind,1,[side*.245,.088,.105],[.134,.084,.157]);
   sphere(joint,1,[side*.143,.256,.18],[.087,.226,.103]);
   sphere(joint,1,[side*.146,.072,.242],[.106,.072,.126]);
 }
-sphere('Head',1,[0,1.015,.035],[.374,.327,.301],32);
-// Grey crown and cheek patches nest into the white face.
-sphere('Head',0,[0,1.187,-.015],[.328,.182,.273]);
-sphere('Head',0,[-.282,1.025,.058],[.115,.232,.223]);
-sphere('Head',0,[.282,1.025,.058],[.115,.232,.223]);
-sphere('Head',1,[0,1.133,.229],[.091,.189,.079]);
+// Grey crown/cheeks are color regions on one smooth face, not protruding patches.
+paintedSphere('Head',[0,1.015,.035],[.374,.327,.301],(x,y,z)=>z<.05 || Math.abs(x)>.75 || (y>.45 && (Math.abs(x)>.2 || y>.85)));
 sphere('Head',1,[-.071,.888,.279],[.108,.075,.063]);
 sphere('Head',1,[.071,.888,.279],[.108,.075,.063]);
 
@@ -90,8 +97,13 @@ tube('Mouth',6,[[0,.884,.35],[.026,.873,.344],[.05,.884,.338]],.004);
 for (const side of [-1,1]) for (const dy of [-.026,.022]) {
   tube('Head',6,[[side*.112,.893+dy,.319],[side*.236,.904+dy,.317],[side*.365,.91+dy*2,.27]],.0025);
 }
-tube('TailBase',0,[[-.25,.26,-.12],[-.4,.19,-.1],[-.54,.28,-.07],[-.57,.49,-.04]],.069);
-tube('TailTip',0,[[-.57,.48,-.04],[-.58,.61,-.04],[-.56,.71,-.015]],.071);
+tube('TailBase',0,[[-.25,.26,-.12],[-.4,.19,-.1],[-.54,.28,-.07],[-.57,.49,-.04],[-.58,.61,-.04],[-.56,.71,-.015]],.069);
+const tail=pieces.at(-1);
+for(let i=0;i<tail.attributes.position.count;i++){
+  const blend=T.MathUtils.smoothstep(tail.attributes.position.getY(i),.42,.62);
+  tail.attributes.skinIndex.setXY(i,blend<1?bones.indexOf(lookup.TailBase):0,blend>0?bones.indexOf(lookup.TailTip):0);
+  tail.attributes.skinWeight.setXY(i,1-blend,blend);
+}
 sphere('TailTip',1,[-.56,.716,-.015],[.072,.095,.074],16);
 const ordered=pieces.map((geometry,i)=>({geometry,material:pieceMaterials[i]})).sort((a,b)=>a.material-b.material);
 const merged = mergeGeometries(ordered.map(p=>p.geometry),true);
@@ -142,7 +154,7 @@ const animations=[
 const glb=await new GLTFExporter().parseAsync(scene,{binary:true,animations,onlyVisible:true});
 const bytes=new Uint8Array(glb);
 const validation=await validator.validateBytes(bytes,{uri:'grey-white-kitten.glb'});
-if(validation.issues.numErrors) throw new Error(JSON.stringify(validation.issues));
+if(validation.issues.numErrors || validation.issues.numWarnings) throw new Error(JSON.stringify(validation.issues.messages.slice(0,5)));
 const report={
   asset:'grey-white-kitten.glb',version:1,author:'Kalori-Takip project contributors (procedural generation)',
   license:'MIT',source:'scripts/build-cat.mjs',date:'2026-10-06',

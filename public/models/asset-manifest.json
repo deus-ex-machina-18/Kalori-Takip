@@ -5,9 +5,9 @@
   "license": "MIT",
   "source": "scripts/build-cat.mjs",
   "date": "2026-10-06",
-  "sha256": "362fe547fef8e647c1ffbf8dbe07d027a2a1c0eba005d57f450407de0671ff6d",
-  "bytes": 932840,
-  "triangles": 23024,
+  "sha256": "e6da06ac1598c79f235f617aaf1bdf286ebf2b849064071fa18ed3d4e30fa430",
+  "bytes": 996320,
+  "triangles": 19936,
   "textures": 0,
   "bones": [
     "Root",

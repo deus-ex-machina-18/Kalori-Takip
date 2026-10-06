@@ -184,7 +184,8 @@ try {
   assert.equal(await page.locator('.cat-card canvas').count(),1);
   assert.equal(await page.locator('#cat-heading').textContent(),'Duman');
   await page.screenshot({path:'browser-results/r4-grey-white-390.png',fullPage:true});
-  const metrics={loadMs:await page.locator('.cat-card').getAttribute('data-load-ms'),renderer:'Chromium SwiftShader software WebGL2; not Android'};
+  const metrics={loadMs:await page.locator('.cat-card').getAttribute('data-load-ms'),triangles:await page.locator('.cat-card').getAttribute('data-triangles'),drawCalls:await page.locator('.cat-card').getAttribute('data-draw-calls'),renderer:'Chromium SwiftShader software WebGL2; not Android'};
+  assert.ok(Number(metrics.triangles)>0 && Number(metrics.triangles)<=50000);
   await page.locator('[data-cat-action="right"]').click();
   assert.notEqual(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');
   await page.locator('[data-cat-action="reset"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');

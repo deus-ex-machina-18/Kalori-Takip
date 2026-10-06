@@ -17,3 +17,16 @@ R1'deki inline SVG iki boyutlu taslak. Model, animasyon veya döndürülebilir 3
 - Hedef ≥30 fps etkileşim; ilk anlamlı sahne hedefi <3 sn iyi bağlantıda. DPR sınırı, gölge/ışık azaltma, görünür değilken animasyon durdurma. GLTF validator kontrolü; WebGL context kaybı ve asset 404 testi.
 - Statik 2D yedek, hareket azaltma ve düşük performans modu. Canvas yerine erişilebilir metin ve kontrol; yükleme/model hatasında kalori girişi çalışmaya devam eder.
 - Teslimde GLB, lisans, klip envanteri, dosya boyutları, cihaz/tarayıcı ve ölçülmüş fps/yükleme sonuçları olmalı. Asset yoksa Raund 4 kısmi/engelli olarak raporlanır.
+
+## R4 teslim envanteri — 6 Ekim 2026
+
+Kullanıcı üç referanstan 1. yumuşak oyuncak yönünü gri-beyaz seçti. Yeni varlık özgün prosedürel mesh'tir; dış model indirilmedi. Gerçek GLB: `public/models/grey-white-kitten.glb`. Kaynak URL: https://github.com/deus-ex-machina-18/Kalori-Takip/blob/main/scripts/build-cat.mjs. Yazar: Kalori-Takip proje katkıcıları. Sürüm 1; dış indirme tarihi uygulanmaz, üretim tarihi 2026-10-06. MIT lisans tam metni `public/models/LICENSE.txt`; ticari kullanım, değiştirme ve dosya dağıtımı lisansla izinlidir, metin varlıklarla taşınmalıdır. Hash, byte/üçgen sayısı ve validator raporu `public/models/asset-manifest.json` tek kaynaktır.
+
+- GLB: 996.320 bayt, 19.936 üçgen, 0 texture. Malzemeye göre birleştirilmiş 8 draw group. Oda geometri maliyeti küçük; kedi+oda toplamı 50 bin üçgen bütçesinin altında, renderer sayaçları tarayıcı kabulünde ayrıca kaydedilir.
+- Metre, Y-up, ön +Z; zemin pivot [0,0,0]. Kamera konumu [0.08,1.01,2.95], hedef [0,0.76,0], FOV 34°; kedi başlangıç y açısı -0.22 rad.
+- Skin: Root, Body, Head, EarL, EarR, TailBase, TailTip, PawL, PawR, HindL, HindR, EyeL, EyeR, Mouth. Parçalar joint ağırlıklarıyla riglidir. Göz kapama EyeL/EyeR ölçeğiyle; yüz çizgileri Mouth kemiğine bağlıdır. Yüksek ayrıntılı kürk veya facial capture sistemi yok.
+- Klipler: idle 4s loop, happy 2s one-shot, stretch 3s one-shot, play 2.4s one-shot, sleep 6s loop, care 4s loop. 0.25s geçiş; one-shot bitince idle/care, uyku kullanıcı düğmesiyle seçilir. Care tüm happy/play/stretch tetiklerini bastırır. Reduced motion'da hiçbir animasyon döngüsü oynatılmaz.
+- Ses dosyası veya yeni lisanslı ses yok; varsayılan kapalı.
+- Sahne teknik hedefleri: dinamik yükleme, DPR ≤1.5, ~30 FPS, görünmezken durma; görünür 4s örnekte <20 FPS statik yedeğe geçiş. WebGL yok/404/12s timeout/context kaybı aynı yedek yolunu kullanır. Statik görüntü gerçek GLB yerine geçmez.
+
+Fiziksel orta sınıf Android cihazda ≥30 FPS ve <3 sn ilk sahne kabulü henüz ölçülmedi. GitHub Chromium SwiftShader yazılım renderer akış doğrulaması, fiziksel cihaz kabulü değildir. Modelin referans yönünü izlemesi otomatik birebir kürk/detay eşitliği anlamına gelmez.
