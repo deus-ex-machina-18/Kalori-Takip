@@ -818,3 +818,5 @@ select { font: inherit; }
 .activity-row small { display:block; color:var(--muted); margin-bottom:12px; }
 .movement-plan { margin-block:20px; }
 @media (max-width:600px) { .movement-day { grid-template-columns:1fr; } }
+.eligibility .field { display:grid; align-items:start; gap:var(--space-sm); }
+.eligibility .field input, .eligibility .field select { width:100%; height:auto; min-height:48px; }
