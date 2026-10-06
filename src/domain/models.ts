@@ -1,4 +1,4 @@
-/** V1 contract. Numbers are kg, cm, minutes and kcal. No persistence in round 1. */
+/** V1 contract. Numbers are kg, cm, minutes and kcal. Device-local persistence; R2 core and R3 activity/plan flows. */
 export type LocalDate = string & { readonly __localDate: unique symbol };
 export type UTCInstant = string & { readonly __utcInstant: unique symbol };
 export type UserId = string;

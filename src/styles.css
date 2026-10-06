@@ -808,3 +808,13 @@ select { font: inherit; }
   .entry-form .field { grid-column: 1 / -1; }
   .mode-tabs .button { padding: 12px 8px; gap: 4px; }
 }
+
+/* R3 reuses existing tokens and cards. */
+.movement-day { display:grid; grid-template-columns: 1fr 1.5fr 1fr; gap:var(--space-md); align-items:center; padding:12px 0; border-bottom:1px solid var(--line); }
+.movement-day input[type="checkbox"] { width:20px; height:20px; }
+.movement-day > label:first-child { display:flex; gap:8px; align-items:center; }
+.activity-row { padding:16px 0; border-bottom:1px solid var(--line); }
+.activity-row p { margin:8px 0; }
+.activity-row small { display:block; color:var(--muted); margin-bottom:12px; }
+.movement-plan { margin-block:20px; }
+@media (max-width:600px) { .movement-day { grid-template-columns:1fr; } }

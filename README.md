@@ -1,4 +1,4 @@
-# Kedi Kalori · Raund 2
+# Kedi Kalori · Raund 3
 
 Türkçe, telefon öncelikli **manuel** kalori ve kilo takibi. Kalorini dışarıda hesapla; günlük toplamı veya yalnız kcal parçalarını buraya yaz.
 
@@ -19,7 +19,7 @@ npm run build
 npm run preview
 ```
 
-`check`: TypeScript, üretim build'i, 21 tarih/hesap/IndexedDB testi ve 14 DOM akış testi. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
+`check`: TypeScript, üretim build'i, 32 tarih/hesap/IndexedDB testi ve 18 DOM akış testi. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
 
 ```bash
 npx playwright install chromium
@@ -33,8 +33,10 @@ GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280
 
 1. Planım'da profilini gir; uygunluk sorusunu yanıtla, hedefini seç, önizle ve onayla. Otomatik plan kapsamı dışında plansız kayıt yapabilirsin.
 2. Bugün'de toplam veya parçalı kcal gir. Bitirdiğinde **Günü tamamla**. Düzenleme günün durumunu yeniden kısmi yapar.
-3. Kayıtlar'da geçmiş günü seç/düzenle veya kilo ölçümü ekle. Kilo düzeltmesi yeni ölçümdür; eski ölçüm korunur.
-4. Planı düzenlediğinde yeni sürüm ileri tarihli başlar; geçmiş günler kendi planına bağlı kalır.
+3. Kayıtlar’da geçmiş günü seç/düzenle, hareket kaydet/düzelt/sil veya kilo ölçümü ekle. Kilo düzeltmesi yeni ölçümdür; eski ölçüm korunur.
+4. Planım’da uygun hareket günlerini/sürelerini düzenle veya sevdiğin aktivitelerle taslak oluştur; manuel kalori aralığı da aynı uygunluk sınırlarından geçer.
+5. İlerlemem’de son yedi kapalı günü değerlendir; kayıt eksikse hedef değişmez.
+6. Planı düzenlediğinde yeni sürüm ileri tarihli başlar; geçmiş günler kendi planına bağlı kalır.
 
 Boş gün sıfır değildir. Hedef aralığını aşmak, koruma ihtiyacını aşmakla aynı şey değildir. Enerji tahmini gözlenen kilo değişiminden ayrıdır; olağan egzersiz PAL içinde olduğundan tekrar kalori eklenmez.
 
@@ -42,8 +44,8 @@ Boş gün sıfır değildir. Hedef aralığını aşmak, koruma ihtiyacını aş
 
 Tek profil ve tek tarayıcı/origin kapsamında **IndexedDB**. Gerçek hesapla giriş, güvenli çok kullanıcı izolasyonu, bulut senkronizasyonu ve yedekleme henüz yok. Site verisini temizlemek kayıtları silebilir. Origin değiştirmek diğer origin'deki kayıtları taşımaz. Saklama hatası açık gösterilir; belleğe sessiz fallback yapılmaz.
 
-Manifest başlangıçtır; service worker/offline/push/install akışı henüz yok. Kedi hâlâ 2D taslak. Hareket hesabı, haftalık uyarlama, gerçek 3D, ödül/bildirim ve yayın sonraki raundların kapsamıdır.
+Manifest başlangıçtır; service worker/offline/push/install akışı henüz yok. Kedi hâlâ 2D taslak. Hareket hesabı, düzenlenebilir hareket/kalori planı ve son yedi kapalı günün değerlendirmesi çalışır. Gerçek 3D, ödül/bildirim ve yayın sonraki raundların kapsamıdır.
 
 ## Sonraki sohbet
 
-PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R2 kabulü tamamlandıysa yalnız Raund 3'e geç; mevcut ekranları veya framework'ü yeniden başlatma. Enerji hesabının tek kaynağı src/domain/tracking.ts ve docs/ENERGY_POLICY.md'dir.
+PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R3 kabulü tamamlandıysa yalnız Raund 4’e geç; mevcut ekranları veya framework'ü yeniden başlatma. Enerji hesabının tek kaynağı src/domain/tracking.ts ve docs/ENERGY_POLICY.md'dir.

@@ -29,6 +29,8 @@ export type Result<T> =
 export interface WriteContext {
   operationId: RecordId;
   expectedRevision?: number;
+  /** Activity CAS snapshot; null means create. Required for activity writes. */
+  expectedActivity?: Activity | null;
 }
 export interface DataRepository {
   readonly scope: "device-local" | "authenticated-cloud";
@@ -105,6 +107,7 @@ export interface PlanOptions {
   goal: "lose" | "maintain";
   targetWeightKg: number | null;
   calorieRangeKcal?: { min: number; max: number };
+  movementDays?: PlanVersion["movementDays"];
 }
 export interface CatScene {
   setState(state: DaySummary): void;

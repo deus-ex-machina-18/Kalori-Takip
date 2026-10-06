@@ -266,3 +266,44 @@ test('içeriğe geç bağlantısı Kayıtlar ekranını değiştirmeden main oda
   try{app.document.querySelector('.skip-link').click();assert.equal(app.window.location.hash,'#/kayitlar');assert.equal(app.document.activeElement.id,'main');}
   finally{app.dom.window.close();}
 });
+
+test('R3 aktivite kaydet/düzelt/sil ve reload; kalori özeti değişmez',async()=>{
+ const factory=new IDBFactory(),app=await launch('/planim',false,factory);
+ try{
+  await createProfile(app);await navigate(app.window,app.document.querySelector('nav a[href="#/kayitlar"]'));
+  fill(app,'kcal','2400');app.document.querySelector('#calorie-form').requestSubmit();await until(()=>app.document.querySelector('.calorie-value').textContent.includes('2.400') && app.document.querySelector('main').getAttribute('aria-busy')==='false');
+  app.document.querySelector('[data-action="complete"]').click();await until(()=>app.document.querySelector('.status').textContent==='Tamamlandı');
+  const balance=app.document.querySelectorAll('.record-editor .metric-row')[1].textContent;
+  fill(app,'activity-kind','cycle');app.document.querySelector('#activity-kind').dispatchEvent(new app.window.Event('change'));fill(app,'activity-minutes','30');fill(app,'activity-weight','91');app.document.querySelector('#activity-form').requestSubmit();
+  await until(()=>app.document.querySelectorAll('.activity-row').length===1 && app.document.querySelector('main').getAttribute('aria-busy')==='false');assert.match(app.document.querySelector('.activity-row').textContent,/Bisiklet · 30 dk/);assert.equal(app.document.querySelectorAll('.record-editor .metric-row')[1].textContent,balance);
+  app.document.querySelector('[data-edit-activity]').click();fill(app,'activity-minutes','45');app.document.querySelector('#activity-form').requestSubmit();await until(()=>app.document.querySelector('.activity-row').textContent.includes('45 dk') && app.document.querySelector('main').getAttribute('aria-busy')==='false');
+  const second=await launch('/kayitlar',false,factory);try{assert.equal(second.document.querySelectorAll('.activity-row').length,1);assert.match(second.document.querySelector('.activity-row').textContent,/45 dk/);}finally{second.dom.window.close();}
+  app.document.querySelector('[data-delete-activity]').click();app.document.querySelector('[data-action="cancel-delete-activity"]').click();assert.equal(app.document.querySelectorAll('.activity-row').length,1);
+  app.document.querySelector('[data-delete-activity]').click();app.document.querySelector('[data-action="confirm-delete-activity"]').click();await until(()=>!app.document.querySelector('.activity-row') && app.document.querySelector('main').getAttribute('aria-busy')==='false');assert.equal(app.document.querySelector('.status').textContent,'Tamamlandı');assert.deepEqual(app.errors,[]);
+ }finally{app.dom.window.close();}
+});
+test('R3 hareket taslağı önizlemede, geri dönünce ve onaylı yeni sürümde korunur',async()=>{
+ const app=await launch('/planim');try{
+  await createProfile(app);app.document.querySelector('[data-action="edit-profile"]').click();fill(app,'movement-mode','auto');app.document.querySelector('[name="movement-day"][value="1"]').checked=true;app.document.querySelector('[name="movement-day"][value="5"]').checked=true;app.document.querySelector('[name="preferred-kind"][value="walk"]').checked=false;app.document.querySelector('[name="preferred-kind"][value="cycle"]').checked=true;app.document.querySelector('[name="eligibility"][value="eligible"]').checked=true;
+  app.document.querySelector('#profile-form').requestSubmit();await until(()=>app.document.querySelector('.preview-card'));assert.match(app.document.querySelector('.preview-card').textContent,/Pazartesi · Bisiklet/);assert.match(app.document.querySelector('.preview-card').textContent,/15 dk/);
+  app.document.querySelector('[data-action="cancel-profile"]').click();assert.equal(app.document.querySelector('#movement-mode').value,'auto');assert.equal(app.document.querySelector('[name="movement-day"][value="5"]').checked,true);
+  app.document.querySelector('#profile-form').requestSubmit();await until(()=>app.document.querySelector('.preview-card'));app.document.querySelector('[data-action="save-profile"]').click();await until(()=>app.document.querySelector('.plan-summary') && app.document.querySelector('main').getAttribute('aria-busy')==='false');
+  app.document.querySelector('[data-action="edit-profile"]').click();assert.equal(app.document.querySelector('[name="movement-day"][value="1"]').checked,true);assert.equal(app.document.querySelector('[name="movement-kind-1"]').value,'cycle');assert.deepEqual(app.errors,[]);
+ }finally{app.dom.window.close();}
+});
+test('R3 geçersiz manuel aralık hata verir; profil ve plan onaysız kaydedilmez',async()=>{
+ const app=await launch('/planim');try{
+  await createProfile(app);app.document.querySelector('[data-action="edit-profile"]').click();app.document.querySelector('[name="custom-range"]').checked=true;fill(app,'range-min','1300');fill(app,'range-max','1400');app.document.querySelector('[name="eligibility"][value="eligible"]').checked=true;app.document.querySelector('#profile-form').requestSubmit();
+  await until(()=>app.document.querySelector('.error-message'));assert.equal(app.document.querySelector('.preview-card'),null);assert.match(app.document.querySelector('.error-message').textContent,/Koruma hedefi/);assert.equal(app.document.querySelector('#range-min').value,'1300');
+  await navigate(app.window,app.document.querySelector('nav a[href="#/ilerlemem"]'));assert.match(app.document.querySelector('.weekly-review').textContent,/0 \/ 0 \/ 7/);assert.equal(app.document.querySelector('[data-action="review-plan"]'),null);
+ }finally{app.dom.window.close();}
+});
+
+test('R3 hedefe ulaşıldığında koruma geçişi önizleme ve ileri tarihli onay ister',async()=>{
+ const app=await launch('/planim');try{
+  fill(app,'goal','lose');fill(app,'target-weight','80');await createProfile(app);
+  await navigate(app.window,app.document.querySelector('nav a[href="#/kayitlar"]'));fill(app,'weight-kg','80');app.document.querySelector('#weight-form').requestSubmit();await until(()=>app.document.querySelector('main').getAttribute('aria-busy')==='false' && app.document.querySelector('.history-list').textContent.includes('80 kg'));
+  await navigate(app.window,app.document.querySelector('nav a[href="#/planim"]'));app.document.querySelector('[data-action="maintain-plan"]').click();assert.equal(app.document.querySelector('#goal').value,'maintain');assert.equal(app.document.querySelector('#profile-weight').value,'80');
+  app.document.querySelector('#profile-form').requestSubmit();await until(()=>app.document.querySelector('.preview-card'));assert.match(app.document.querySelector('.preview-card').textContent,/Koruma modunda planlı açık yoktur/);app.document.querySelector('[data-action="save-profile"]').click();await until(()=>app.document.querySelector('.plan-summary') && app.document.querySelector('main').getAttribute('aria-busy')==='false');assert.match(app.document.querySelector('.plan-summary').textContent,/Sıradaki plan/);assert.match(app.document.querySelector('.plan-summary').textContent,/Hedef kilo 80/);
+ }finally{app.dom.window.close();}
+});

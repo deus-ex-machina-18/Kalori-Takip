@@ -121,6 +121,34 @@ try {
     await page.locator('main[aria-busy="false"]').waitFor();
     await page.reload(); await page.locator('main[data-ready="true"]').waitFor();
     assert.match(await page.locator('main').textContent(),/90,5 kg/);
+    // R3 activity CRUD, persistence and retry in native IndexedDB.
+    const balanceBefore=await page.locator('.record-editor .metric-row').nth(1).textContent();
+    await page.locator('#activity-kind').selectOption('cycle');
+    await page.locator('#activity-minutes').fill('30');
+    await page.locator('#activity-form button[type="submit"]').click();
+    await page.locator('.activity-row').waitFor();await page.locator('main[aria-busy="false"]').waitFor();
+    assert.match(await page.locator('.activity-row').textContent(),/Bisiklet · 30 dk/);
+    assert.equal(await page.locator('.record-editor .metric-row').nth(1).textContent(),balanceBefore);
+    await page.reload();await page.locator('main[data-ready="true"]').waitFor();
+    await page.locator('[data-edit-activity]').click();await page.locator('#activity-minutes').fill('45');
+    await page.evaluate(()=>{const original=IDBDatabase.prototype.transaction;let fail=true;IDBDatabase.prototype.transaction=function(stores,mode,...args){if(fail && mode==='readwrite' && [...stores].includes('activities')){fail=false;throw new DOMException('quota','QuotaExceededError');}return original.call(this,stores,mode,...args);};});
+    await page.locator('#activity-form button[type="submit"]').click();await page.locator('[data-action="retry"]').waitFor();
+    assert.equal(await page.locator('#activity-minutes').inputValue(),'45');
+    await page.locator('[data-action="retry"]').click();await page.locator('main[aria-busy="false"]').waitFor();
+    assert.equal(await page.locator('.activity-row').count(),1);assert.match(await page.locator('.activity-row').textContent(),/45 dk/);
+    await page.screenshot({path:'browser-results/activity-edit.png',fullPage:true});
+    await page.locator('[data-delete-activity]').click();await page.locator('[data-action="cancel-delete-activity"]').click();assert.equal(await page.locator('.activity-row').count(),1);
+    await page.locator('[data-delete-activity]').click();await page.locator('[data-action="confirm-delete-activity"]').click();await page.locator('main[aria-busy="false"]').waitFor();assert.equal(await page.locator('.activity-row').count(),0);
+    // A persisted activity remains on populated layout screenshots.
+    await page.locator('#activity-kind').selectOption('strength');await page.locator('#activity-minutes').fill('30');await page.locator('#activity-form button[type="submit"]').click();await page.locator('.activity-row').waitFor();await page.locator('main[aria-busy="false"]').waitFor();
+    await page.locator('nav a[href="#/planim"]').click();await page.locator('[data-action="edit-profile"]').click();
+    await page.locator('#movement-mode').selectOption('auto');await page.locator('[name="movement-day"][value="1"]').check();await page.locator('[name="movement-day"][value="5"]').check();await page.locator('[name="preferred-kind"][value="walk"]').uncheck();await page.locator('[name="preferred-kind"][value="cycle"]').check();await page.locator('[name="eligibility"][value="eligible"]').check();
+    await page.locator('#profile-form button[type="submit"]').click();await page.locator('.preview-card').waitFor();assert.match(await page.locator('.preview-card').textContent(),/Pazartesi · Bisiklet/);
+    await page.screenshot({path:'browser-results/movement-preview.png',fullPage:true});
+    await page.locator('[data-action="cancel-profile"]').click();assert.equal(await page.locator('#movement-mode').inputValue(),'auto');assert.equal(await page.locator('[name="movement-day"][value="5"]').isChecked(),true);
+    await page.locator('#profile-form button[type="submit"]').click();await page.locator('[data-action="save-profile"]').click();await page.locator('.plan-summary').waitFor();await page.locator('main[aria-busy="false"]').waitFor();
+    await page.reload();await page.locator('main[data-ready="true"]').waitFor();await page.locator('[data-action="edit-profile"]').click();assert.equal(await page.locator('[name="movement-day"][value="1"]').isChecked(),true);assert.equal(await page.locator('[name="movement-kind-1"]').inputValue(),'cycle');await page.locator('[data-action="close-profile"]').click();
+    checks.push('R3 native IndexedDB: activity CRUD, reload, failure/retry, balance unchanged, approved movement draft version and persistence: pass');
     checks.push('R2 native IndexedDB: profile approval, 650+800+500, complete, reload, mode conversion/cancel, storage failure retry, weight persistence: pass');
     for (const width of [320,360,390,768,1280]) {
       await page.setViewportSize({width,height:850});

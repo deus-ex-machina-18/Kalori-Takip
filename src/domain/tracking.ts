@@ -1,5 +1,6 @@
 import type { DayLog, LocalDate, PlanVersion, Profile, UTCInstant, WeightMeasurement } from './models.ts';
 import type { PlanEngine, PlanOptions, Result } from './contracts.ts';
+import { validateMovementDays } from './activity.ts';
 import { ageOn, parseLocalDate } from './dates.ts';
 
 export const PAL_OPTIONS = Object.freeze([{pal:1.4,label:'Çoğunlukla oturarak'},{pal:1.6,label:'Hafif hareketli'},{pal:1.8,label:'Hareketli'},{pal:2,label:'Çok hareketli'}]);
@@ -76,7 +77,7 @@ export function validatePlan(plan: PlanVersion): void {
   ensure(Number.isFinite(plan.estimatedMaintenanceKcal) && plan.estimatedMaintenanceKcal > 0, 'Koruma tahmini geçersiz.');
   ensure(plan.formulaVersion === 'mifflin-inclusive-pal-v1' && plan.safetyPolicyVersion === 'guardrails-v1', 'Plan yöntemi geçersiz.');
   ensure(plan.baseline.method === 'inclusive-pal-v1' && plan.baseline.includesLoggedExercise && POLICY.pals.includes(plan.baseline.pal), 'Plan hareket yöntemi geçersiz.');
-  ensure(Array.isArray(plan.movementDays) && plan.movementDays.length === 0, 'Hareket planı sonraki raundda uygulanacak.');
+  validateMovementDays(plan.movementDays);
   ensure(['initial','user-edit','weekly-review','maintenance-transition'].includes(plan.reason), 'Plan değişim nedeni geçersiz.');
   validateRange(plan.estimatedMaintenanceKcal, plan.goal, min, max);
 }
@@ -112,9 +113,14 @@ export const engine: PlanEngine = {
       const ree = 10 * profile.weightKg + 6.25 * profile.heightCm - 5 * age + (profile.formulaSex === 'male' ? 5 : -161);
       const maintenance = ree * profile.baseline.pal;
       ensure(Number.isFinite(maintenance) && maintenance > 0, 'Girdilerle hesap yapılamıyor.');
+      if (options.calorieRangeKcal) {
+        const {min,max}=options.calorieRangeKcal;
+        ensure(Number.isFinite(min) && Number.isFinite(max) && min>=POLICY.floorKcal && max>=min,'Manuel kalori aralığı uygun değil. Plan kaydedilmedi.');
+        validateRange(maintenance,options.goal,min,max);
+      }
       const range = options.calorieRangeKcal ?? (options.goal === 'maintain' ? { min: maintenance, max: maintenance } : { min: maintenance - Math.min(POLICY.maxDeficitKcal, maintenance * POLICY.maxDeficit), max: maintenance * (1 - POLICY.minDeficit) });
       if (range.min < POLICY.floorKcal || range.min > range.max) return failure('out-of-scope', 'Bu girdiler ürünün başlangıç aralığı sınırlarını karşılamıyor. Otomatik hedef yerine plansız kayıt yapabilirsin.');
-      const plan: PlanVersion = { id: uuid(), userId: profile.userId, previousVersionId: null, goal: options.goal, targetWeightKg: options.goal === 'lose' ? options.targetWeightKg : null, calorieRangeKcal: range, estimatedMaintenanceKcal: maintenance, baseline: { ...profile.baseline }, movementDays: [], reason: 'initial', effectiveFrom, createdAt: nowUTC(), formulaVersion: 'mifflin-inclusive-pal-v1', safetyPolicyVersion: 'guardrails-v1' };
+      const plan: PlanVersion = { id: uuid(), userId: profile.userId, previousVersionId: null, goal: options.goal, targetWeightKg: options.goal === 'lose' ? options.targetWeightKg : null, calorieRangeKcal: range, estimatedMaintenanceKcal: maintenance, baseline: { ...profile.baseline }, movementDays: options.movementDays ?? [], reason: 'initial', effectiveFrom, createdAt: nowUTC(), formulaVersion: 'mifflin-inclusive-pal-v1', safetyPolicyVersion: 'guardrails-v1' };
       validatePlan(plan); return success(plan);
     } catch (e) { return failure('validation', (e as Error).message); }
   },

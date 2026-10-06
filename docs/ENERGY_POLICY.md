@@ -41,3 +41,24 @@ R2'de runtime giriş doğrulaması, uygunluk soruları, açıklamalı hedef öni
 ## Uygulanan aralık ve doğrulama
 
 `POLICY` motorun tek sabit kaynağıdır. Kilo verme alt hedefi M − min(500, %20 × M), üst hedefi %90 × M; koruma M–M. Aralık ters dönüyorsa veya altı 1300'den düşükse sessiz sıkıştırma yapılmaz; kapsam dışı sonuç gösterilir. Boy 100–250 cm ve kilo 20–400 kg teknik giriş sınırlarıdır, sağlık uygunluğu onayı değildir. Kapsam/yaş/BMI/formül bilgisi kontrolleri ayrıca yapılır. Aralık önizlemede yuvarlanır, hesapta yuvarlanmaz. UI sınırsız manuel kcal hedefi sunmaz.
+
+## R3 — doğrulanmış hareket yöntemi (6 Ekim 2026)
+
+Resmi 2024 Adult Compendium tabloları doğrudan kontrol edildi:
+
+| Tür | Hafif/yavaş kod ve MET | Orta kod ve MET | Yoğun/tempolu kod ve MET | Kaynak |
+| --- | --- | --- | --- | --- |
+| Düz zeminde yürüyüş | 17152 / 2.8 | 17190 / 3.8 | 17200 / 4.8 | https://pacompendium.com/walking/ |
+| Düz koşu | 12028 / 6.5 | 12030 / 8.5 | 12050 / 9.3 | https://pacompendium.com/running/ |
+| Açık hava bisiklet, seçilen tempo | 01015 / 4.3 | 01016 / 7.0 | 01017 / 9.0 | https://pacompendium.com/bicycling/ |
+| Kuvvet | Vücut ağırlığı 02056 / 3.0 | Ağırlık, çeşitli 8–15 tekrar 02054 / 3.5 | Yoğun ağırlık 02050 / 6.0 | https://pacompendium.com/conditioning-exercise/ |
+
+Kategori açıklamaları UI’da gösterilir. Koşuda “hafif” göreli hız seçimidir; mutlak düşük efor iddiası değildir. Eğim, elektrikli/sabit bisiklet, devre antrenmanı, tüm salon çalışması veya adım toplamı bu kategorilere otomatik eşlenmez.
+
+Brüt kcal = MET × 3.5 × kilo / 200 × dakika. Standard MET kişisel dinlenme metabolizmasını düzeltmez: https://pacompendium.com/corrected-mets/. Yöntem ölçüm değildir; yaş kapsamı 19–59: https://pacompendium.com/adult-compendium/.
+
+**Ürün belirsizlik kararı:** yürüyüş/koşu/bisiklette merkez değerin ±%20’si, kuvvette ±%40’ı gösterilir. Bu yüzdeler Compendium’ın sağladığı güven aralığı veya kişisel hata garantisi değildir; yaklaşık seçime/kuvvette set ve dinlenme farklılığına dikkat çeken ihtiyatlı sunumdur. Gerçek değer aralık dışında kalabilir. Kayıtta tam ondalıklar tutulur, UI yuvarlar. Kayıt düzenlendiğinde yalnız o kaydın tahmini değişir.
+
+Hareket taslağında inclusive PAL 1.4/1.6/1.8–2.0 için 15/20/30 dakika, kullanıcı seçtiği gün ve türlerle yerleştirilir. Bu **ürün başlangıç tercihi**, kaynak egzersiz reçetesi veya haftalık sağlık hedefi değildir. Kullanıcı süre/günleri düzenler ve önizlemeyi onaylar. Kalori hedefi hareket planına göre artırılmaz.
+
+Manuel kalori hedefleri R2 POLICY sınırlarından geçer. Haftalık kontrol kayda dayanır; bir enerji hesabından kilo öngörmez, hedefi otomatik azaltmaz. Tam/care olmayan tek planlı hafta yalnız kullanıcıya uygulanabilirliği değerlendirme fırsatı verir. İsteğe bağlı “hareket karşılığı” kartı eklenmedi.

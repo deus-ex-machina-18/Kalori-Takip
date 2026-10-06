@@ -1,24 +1,22 @@
-# Güncel görev — Raund 2
+# Güncel görev — Raund 3
 
-Tek çıktı: mevcut beş ekran üzerinde profil + başlangıç planı + manuel kalori + gün tamamlama/geçmiş düzenleme + kilo + kalıcı IndexedDB takibi.
+Tek çıktı: mevcut beş ekranın üzerinde kalıcı aktivite takibi, kontrollü plan düzenleme ve uygun haftalık değerlendirme.
 
-## Yetki ve sınır
+## Sınır
 
-Dosyalar: `src/domain/dates.ts`, `contracts.ts`, yeni `tracking.ts`; `src/data/indexeddb.ts`; `src/ui/tracker.ts`; `src/main.ts`, `styles.css`; ilgili testler, browser-check, paket kilidi ve bu devir belgeleri. Mevcut Vite/TypeScript ve beş ekran korunur.
+`src/domain/activity.ts`, `weekly.ts`, `tracking.ts`, `contracts.ts`; `src/data/indexeddb.ts`; `src/ui/tracker.ts`, mevcut `main.ts` ve `styles.css`; ilgili testler/browser-check ve devir belgeleri. Vite/TypeScript, beş ekran, günlük kalori/kilo akışları ve IndexedDB v1 korunur. Yeni şema veya framework yok.
 
-## Tamamlanan kapsam
+## Uygulananlar
 
-- Uygunluk sorulu profil; saat dilimi, boy/kilo/doğum tarihi/formül/PAL; açıklamalı önizleme ve onay. Kapsam dışı profil plansız kayıt yapabilir.
-- Deterministik Mifflin × inclusive PAL planı; koruma veya kilo verme; immutable geçmiş ve ileri tarihli plan düzenlemesi.
-- Toplam veya parçalı kcal; ekleme/düzeltme/silme; mod değişimi için dönüşüm/boşaltma/iptal. Kalori düzenlemesi günü yeniden açar.
-- Gün onayı ve geçmiş gün seçimi. Eksik/kısmi günler kesin enerji dengesi üretmez; hedef farkı ile koruma farkı ayrıdır.
-- Ondalık kilo ve bütün ölçümlerin korunması; günlük son ölçüm temsilcisi.
-- IndexedDB v1; atomik profil/plan/başlangıç kilosu, atomik kayıt/işlem makbuzu; tekrar deneme kimliği, gün sürümü ve profil sürümü kontrolü; görünür hata, sessiz bellek fallback'i yok.
+- Yürüyüş/koşu/bisiklet/salon-kuvvet; kaynakta tanımlı tempo/tür, dakika ve hesap kilosu, MET kodu ve tahmin aralığı. Kayıt ekleme/düzeltme/silme, hata/retry, atomik operasyon makbuzu ve iki sekmede önceki kayıt karşılaştırması.
+- Olağan egzersiz günlük hareket tabanındadır; aktivite bilgisi günlük hedef/açığa tekrar eklenmez.
+- Uygun günler ve sevilen aktivitelerden gerekçeli taslak; manuel hareket günleri/süreleri ve sınırları doğrulanan manuel kalori aralığı. Önizleme/geri dönüş/onay, ileri tarihli immutable plan sürümleri. Hedef ölçümünden sonra isteğe bağlı koruma önizlemesi.
+- Son yedi kapalı gün: tamamlanan/kısmi/eksik sayıları, yalnız tamamlananların ortalaması, hareket ve kilo günleri. Aynı planla yedi tamamlanan gün ve care olmaması halinde kullanıcı planı gözden geçirebilir. Kalori veya kilo tahminiyle otomatik azaltma yok.
 
-## Kabul kriterleri
+## Kabul
 
-650+800+500=1950; 2700/2200/2400 → hedef +200, açık +300; mod dönüşümü çift saymaz; düzenleme tekrar onay ister; yeniden açılış kayıtları korur; tekrarlanan yazma tek kayıt üretir; iki sekme değişikliği ezmez; yerel gece yarısı tarih hesabı ve geçmiş plan bağlantısı doğru; TypeScript/build/test ve Chromium genişlik/akış kontrolü geçer.
+MET birimleri ve süre/kilo ölçeklemesi; kuvvette geniş belirsizlik; geçersiz/kapsam dışı giriş; CRUD/reload/retry/CAS; 2700/2200/2400 sonucunun harekette değişmemesi; manuel hedef kapıları; eski gün/plan korunması; eksik/karışık/care haftasına öneri yok; önizleme ve onaylı koruma geçişi; R2 regresyonları; TypeScript/build/test/gerçek Chromium akış ve genişlik kontrolleri.
 
-R3 hareket/haftalık motor, R4 gerçek 3D, R5 ödül/bildirim, R6 export/silme/hosting/bulut bu raundun dışında. Yayın yapılmadı. Kontrolün güncel sonucu HANDOFF.md'de.
+R4 3D, R5 ödül/bildirim/geri bildirim, R6 export/silme/hosting/bulut yok. Yeni görsel/3D varlık için kullanıcı önce üç örnekten seçim yapacak. İsteğe bağlı hareket karşılığı kartı eklenmedi; egzersiz borcu dili yok.
 
-Durum: tamamlandı. Yerel ve GitHub kontrollerinde 35 test + gerçek Chromium kabulü geçti; 56 görüntü ve hatasız rapor oluştu. Sonraki tek görev Raund 3. Başarılı koşu ve kaynak commit HANDOFF.md'de.
+Durum: kod hazır, yerel kontroller ve Chromium kabulünün güncel sonucu HANDOFF.md’de.

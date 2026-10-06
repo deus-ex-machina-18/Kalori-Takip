@@ -1,6 +1,6 @@
 # Veri sözleşmesi v1
 
-Bu belge, `src/domain/models.ts` ve `contracts.ts` davranışını açıklar. Raund 2'de profil/plan/gün/kilo kapsamı IndexedDB v1 ile uygulanmıştır; diğer kayıt türleri sonraki raundlar içindir.
+Bu belge, `src/domain/models.ts` ve `contracts.ts` davranışını açıklar. Raund 2'de profil/plan/gün/kilo kapsamı IndexedDB v1 ile uygulanmıştır; R3 hareket kayıtları da mevcut v1 store’unda uygulanmıştır; kedi/ödül/bildirim/export sonraki raundlar içindir.
 
 ## Birimler, tarih ve kimlik
 
@@ -32,7 +32,7 @@ Motorun doğrulanmış örnek testi: koruma 2700, aralık 2200–2200, tamamlanm
 ## Kilo, hareket, kedi ve bildirim
 
 - Kilo: tüm ölçümler korunur; günün temsilcisi en geç measuredAt, eşitse id sırası belirlenmiş son ölçüm. Günlük temsilci ileride türetilir, kayıtlardan hiçbiri sessizce silinmez. Kilo düzeltmesi eski plan ve Activity weightKgAtCalculation değerini yeniden yazmaz.
-- Hareket: yöntem, MET kodu, hesap anındaki kilo ve tahmin aralığı kayda bağlıdır. Aktivite brüt harcaması yalnız bilgi; contributionToBalance daima already-in-baseline. Yoğunluk/kaynak eşlemesi R3'te uygulanır.
+- Hareket: yöntem, MET kodu, hesap anındaki kilo ve tahmin aralığı kayda bağlıdır. Aktivite brüt harcaması yalnız bilgi; contributionToBalance daima already-in-baseline. Yoğunluk/kaynak eşlemesi R3’te uygulandı.
 - Kedi durum önceliği: eksik/kısmi veya plansız → neutral; tamamlanmış ve düşük tüketim → care; uygun aralık → celebrate-range; hedef üstü → encouraging; salt kayıt tamamlama → celebrate-record. Care kutlamayı bastırır. R4 eşik kararını aynı enerji politikasından alır.
 - RewardLedger: `(userId,eventKey)` benzersiz. Kalori açığı büyüklüğü veya tekrar tamamlama ödül gerekçesi değildir.
 - Bildirim: HH:mm yerel saat; IANA zone. Gece yarısını geçen sessiz aralık, izin iptali, tamamlanmış gün ve benzersiz olay kontrolü R5'te uygulanır. R1 izin istemez.
@@ -49,11 +49,19 @@ Buluta taşınırken aynı arayüz kullanılır; istemci store ayrımı sunucu y
 
 - Adaptör DataRepository'nin profil okuma, plan listeleme, gün/kilo yazma/listeleme alt kümesini uygular. Kapsam dışı metotlara sahte başarı döndürmez. `saveSetup` profil + isteğe bağlı plan + başlangıç ölçümünü tek transaction içinde kaydeder; profil CAS token'ı `expectedProfileUpdatedAt` değeridir.
 - Profile uygunluk sorusuna her plan düzenlemesinde açık cevap gerekir. Ayrıntılı sağlık bilgisi tutulmaz. Kapsam dışı profile yeni günler plansız bağlanır; geçmiş bağlı günlerin planları değişmez.
-- İlk profilin planı bugün başlar. Düzenleme varsayılan yarın; ileri tarihli bir sürüm zaten varsa onun ertesi günü başlar. Aynı effectiveFrom ikinci kez kullanılmaz, sürümler güncellenmez. UI serbest/sınırsız kalori hedefi açmaz; yeni plan profil ve hedef seçimiyle yeniden hesaplanır.
+- İlk profilin planı bugün başlar. Düzenleme varsayılan yarın; ileri tarihli bir sürüm zaten varsa onun ertesi günü başlar. Aynı effectiveFrom ikinci kez kullanılmaz, sürümler güncellenmez. UI sınırsız kalori hedefi açmaz; yeni plan profil ve hedef seçimiyle yeniden hesaplanır.
 - Önizleme geri dönüşü girilen taslağı korur. Onay tek atomik işlemdir; profile/plan/başlangıç ölçümünün yalnız bir kısmı kaydedilemez.
 - Boş total modunun sayısal temsili yoktur: boşaltma `missing + calories:null` olur; boş entries listesi `partial` olabilir. İki durumda da provisional toplam null ve tamamlama kapalıdır. Açık 0 girişi farklıdır.
 - Gün düzenlemesinde expectedRevision zorunlu; yeni gün expectedRevision=0/revision=1. Aynı gün kimliği/saat dilimi/planı sabittir. Düzenlenen tamamlanmış gün önce partial olur. Depo sınırı gerçek takvim, UUID, UTC anı, sayısal aralık ve ayrık kalori kaynağını doğrular.
 - Başarısız saklama için arayüz aynı closure/payload/operationId ile tekrar dener. Conflict tekrar denenmez; güncel veriyi yükleme seçeneği ve görünür hata sunulur. Değişiklik sessizce ezilmez.
 - R2 kilo ölçümleri append-only; düzeltme aynı gün yeni ölçümdür. measuredAt, kullanıcının ölçümü kaydettiği UTC andır; seçtiği yerel ölçüm günü ayrı tutulur. Profildeki kilo plan girdisidir; sonraki ölçüm eski planı yeniden hesaplamaz.
 - Yerel gün değişimi 30 saniyelik kontrol ve görünürlük dönüşünde fark edilir. Açık formun submit closure'ı gösterilen güne bağlı kalır; kullanıcı “Yeni güne geç” düğmesine basınca veya yeni Bugün ekranını açınca yeni yerel günü görür. Önceki günün verisi yeni güne taşınmaz.
-- Koruma/kilo verme hedef önizlemesi UI'da yuvarlanır; kayıtlı hesap değerleri yuvarlanmaz. İlerlemem günlük son kilo temsilcisini ve tamamlanan/kısmi gün adetlerini gösterir; haftalık motor R3'tür.
+- Koruma/kilo verme hedef önizlemesi UI'da yuvarlanır; kayıtlı hesap değerleri yuvarlanmaz. İlerlemem günlük son kilo temsilcisini ve tamamlanan/kısmi gün adetlerini gösterir; haftalık motor R3’te eklendi.
+
+## R3 uygulama kararları
+
+- Activity yöntemi değişmedi: compendium-2024-v1, brüt tahmin aralığı, hesap kilosu, MET kodu ve already-in-baseline saklanır. R3 createActivity yaş kapsamını kayıt tarihi üzerinden 19–59 olarak denetler. Tarih gelecekte olamaz; dakika (0,360], kilo [20,400]. Kilo UI’da geçmiş güne kadar son temsilci ölçümden önerilir, kullanıcı düzeltilebilir; sonraki ölçüm eski kaydı yeniden hesaplamaz.
+- saveActivity create için expectedActivity:null, edit/delete için okunan Activity’nin tam snapshot’ını zorunlu kılar. Önceki kayıt aynı transaction’da karşılaştırılır; değiştirilmiş/silinmiş kayıt conflict olur. Kayıt+makbuz atomiktir; aynı operationId/payload/context tek sonuç verir. Değişiklik id/user/date/createdAt değerlerini korur. CAS şemaya yeni revision alanı eklemez; IndexedDB v1 migrasyonu gerektirmez. Conflict sonrası Güncel kayıtları yükle stale edit snapshot’ını temizler.
+- PlanOptions movementDays kabul eder: ISO hafta günü 1=Pazartesi, 7=Pazar, her gün en fazla bir slot, destekli kind, dakika (0,360]. Var olan PlanVersion movementDays alanı kullanılır; yeni bir paralel plan kaynağı yok. Manuel kcal aralığı uygun değilse validation döner; plansız profil kaydıyla başarılıymış gibi sunulmaz.
+- Seçilmiş/sevilen aktiviteler taslak üretim girdisidir; onaylanan hareket düzeni plan sürümünde saklanır, ayrı profil tercihi tablosu oluşturulmaz. Önizlemeden geri dönüş form taslağını korur. Koruma geçişi son kilo ölçümünü forma önerir, mevcut planı değiştirmez; onaydan sonra ileri tarihli maintenance-transition sürümü oluşur.
+- weekly.ts son yedi kapalı yerel günü kullanır; bugün dahil değildir. missing/kısmi günler tüketim ortalamasına girmez, yalnız tamamlananlar sayılır. Yedi farklı tamamlanan gün, tek bağlı plan ve hiçbir care sonucu olmadığında review-plan adımı açılır. Plansız/karışık planlı/eksik/care haftadan hedef azaltma önerilmez. Kilo farkı en az üç farklı temsilci ölçüm günü ve ilk/son arasında üç takvim günü varsa gösterilir; yağ kaybı/tahmin diye sunulmaz. R5 kalıcı kısa geri bildirim henüz yok.

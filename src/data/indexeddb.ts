@@ -1,9 +1,10 @@
 import type { DataRepository, Result, WriteContext } from '../domain/contracts.ts';
-import type { DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
+import { createActivity, validateActivity } from '../domain/activity.ts';
+import type { Activity, DayLog, LocalDate, PlanVersion, Profile, WeightMeasurement } from '../domain/models.ts';
 import { localDateAt } from '../domain/dates.ts';
 import { engine, failure, planFor, success, validId, validateDay, validateMeasurement, validatePlan, validateProfile } from '../domain/tracking.ts';
 
-type CoreRepository = Pick<DataRepository, 'scope' | 'getProfile' | 'listPlans' | 'getDay' | 'listDays' | 'saveDay' | 'listWeights' | 'saveWeight'>;
+type CoreRepository = Pick<DataRepository, 'scope' | 'getProfile' | 'listPlans' | 'getDay' | 'listDays' | 'saveDay' | 'listWeights' | 'saveWeight' | 'listActivities' | 'saveActivity' | 'deleteActivity'>;
 export interface SetupWrite { profile: Profile; plan: PlanVersion | null; weight: WeightMeasurement | null; expectedProfileUpdatedAt: string | null; }
 class RepositoryError extends Error {
   code: 'validation' | 'conflict' | 'not-found';
@@ -89,7 +90,7 @@ export class IndexedDbRepository implements CoreRepository {
   listWeights(userId: string): Promise<Result<WeightMeasurement[]>> { return this.list('weights', userId, validateMeasurement); }
   private async write<T>(stores: string[], userId: string, payload: unknown, context: WriteContext, action: (tx: IDBTransaction) => Promise<T>): Promise<Result<T>> {
     try { validId(userId); validId(context.operationId); } catch (error) { return failure('validation', (error as Error).message); }
-    const signature = canonical({ stores, userId, payload, expectedRevision: context.expectedRevision ?? null });
+    const signature = canonical({ stores, userId, payload, expectedRevision: context.expectedRevision ?? null, expectedActivity: context.expectedActivity });
     return this.transaction([...stores, 'operations'], 'readwrite', async tx => {
       const operations = tx.objectStore('operations');
       const receipt = await request<{ userId: string; signature: string; result: T } | undefined>(operations.get(context.operationId));
@@ -150,6 +151,36 @@ export class IndexedDbRepository implements CoreRepository {
         if (day.planVersionId !== expectedPlan || day.timeZone !== profile.timeZone) conflict('Profil veya plan değişti. Kaydı yeniden yükle.');
       }
       await request(store.put(day)); return day;
+    });
+  }
+  listActivities(userId: string, date: LocalDate): Promise<Result<Activity[]>> {
+    return this.transaction(['activities'], 'readonly', async tx => {
+      const values=await request<Activity[]>(tx.objectStore('activities').index('userDate').getAll([userId,date]));
+      values.forEach(validateActivity); return values;
+    });
+  }
+  listAllActivities(userId: string): Promise<Result<Activity[]>> { return this.list('activities',userId,validateActivity); }
+  async saveActivity(activity: Activity, context: WriteContext): Promise<Result<Activity>> {
+    try { validateActivity(activity); if (context.expectedActivity === undefined) throw new Error('Hareketin önceki sürümü gerekli.'); }
+    catch(e) { return failure('validation',(e as Error).message); }
+    return this.write(['activities','profiles'],activity.userId,activity,context,async tx=>{
+      const store=tx.objectStore('activities'),old=await request<Activity | undefined>(store.get(activity.id));
+      if (canonical(old ?? null)!==canonical(context.expectedActivity)) conflict('Hareket başka bir sekmede değişti. Güncel kayıtları yükle.');
+      const profile=await request<Profile | undefined>(tx.objectStore('profiles').get(activity.userId));
+      if (!profile) throw new RepositoryError('not-found','Önce profilini oluştur.');
+      if (activity.date>localDateAt(new Date(),profile.timeZone)) throw new RepositoryError('validation','Hareket tarihi gelecekte olamaz.');
+      if (old && (old.userId!==activity.userId || old.date!==activity.date || old.createdAt!==activity.createdAt)) conflict('Hareketin profili, tarihi ve ilk kayıt zamanı değiştirilemez.');
+      createActivity(profile,activity.date,activity.kind,activity.intensity,activity.durationMinutes,activity.weightKgAtCalculation,old);
+      await request(store.put(activity)); return activity;
+    });
+  }
+  async deleteActivity(userId: string, id: string, context: WriteContext): Promise<Result<void>> {
+    try { validId(id); if (!context.expectedActivity) throw new Error('Silinecek hareketin sürümü gerekli.'); }
+    catch(e) { return failure('validation',(e as Error).message); }
+    return this.write(['activities'],userId,{delete:id},context,async tx=>{
+      const store=tx.objectStore('activities'),old=await request<Activity | undefined>(store.get(id));
+      if (!old || old.userId!==userId || canonical(old)!==canonical(context.expectedActivity)) conflict('Hareket değişti veya silindi. Güncel kayıtları yükle.');
+      await request(store.delete(id));
     });
   }
   async saveWeight(weight: WeightMeasurement, context: WriteContext): Promise<Result<WeightMeasurement>> {

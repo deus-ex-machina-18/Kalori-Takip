@@ -1,6 +1,6 @@
 # Kedi Kalori — proje kararları
 
-Sürüm: 0.2.0 · 5 Ekim 2026 · Raund 2
+Sürüm: 0.3.0 · 6 Ekim 2026 · Raund 3
 Repo: https://github.com/deus-ex-machina-18/Kalori-Takip · ana dal: main
 
 ## Ürün
@@ -31,8 +31,15 @@ Boş gün sıfır değildir. Hedef aşımı ile koruma ihtiyacı üzerindeki tü
 
 Alt navigasyon mobilde sabit, masaüstünde üstte. Yerel sistem fontları, görünür odak, içeriğe geç bağlantısı, semantik başlıklar, en az 48px navigasyon/kontrol yüksekliği. Sayfa değişiminde odak başlığa gider. Hareket azaltma cihaz tercihini başlangıçta okur; ayar bu oturumda değişir. R4 gerçek sahne geldiğinde bu tercih kalıcı CatPreferences'e bağlanacak.
 
-R2 kullanıcı onayıyla profil ve plan üretir; manuel kalori ve kilo kaydını IndexedDB'de tutar. R3–6 kapsamları etiketli kalır. SVG çizim 2D taslaktır; gerçek model değildir. Gerçek Android ve ekran okuyucu testi pilot öncesi gereklidir.
+R2 kullanıcı onayıyla profil ve plan üretir; manuel kalori ve kilo kaydını IndexedDB'de tutar. R3 hareket/plan düzenleme/haftalık değerlendirme eklendi; R4–6 kapsamları etiketli kalır. SVG çizim 2D taslaktır; gerçek model değildir. Gerçek Android ve ekran okuyucu testi pilot öncesi gereklidir.
 
 ## Değişiklik disiplini
 
 Her raund aynı depoda ilerler. CURRENT_TASK.md güncel sınırı; HANDOFF.md kontrolleri ve sonraki tek işi taşır. Mevcut şema sessizce değiştirilmez; migrasyon gerekir. Geçmiş plan sürümleri değişmez. Bir raundun testleri geçmeden sonraki raund başlamaz. Gizli anahtarlar repoya konmaz.
+
+## Raund 3 kararları
+
+- Aktivite kaydı/düzeltme/onaylı silme cihazdaki mevcut activities store’unu kullanır. Hesap kodları ve katsayılar `src/domain/activity.ts`, haftalık değerlendirme `src/domain/weekly.ts` içindedir. Inclusive PAL politikası aynıdır; brüt aktivite harcaması enerji dengesine eklenmez.
+- Otomatik hareket taslağı seçilen günlere sevilen aktiviteleri sırayla yerleştirir. Süreler ürünün başlangıç tercihleridir, klinik egzersiz reçetesi değildir. Manuel hareket günleri ve kalori aralığı aynı onay/ileri tarih/uygunluk sınırlarını korur.
+- Son yedi kapalı yerel günün değerlendirmesi R2 devir talimatına göre R3’te uygulandı. R5’te geri bildirim, ödül ve hatırlatma eklenecek; şimdi hedefler otomatik düşürülmez.
+- Yeni görsel veya 3D çalışmada önce üç ayrı örnek hazırlanır, kullanıcı seçmeden nihai yön veya asset üretilmez. R3 var olan tasarım tokenlarını kullanır; yeni görsel/3D üretilmedi. Bu şart R4 devrine taşınır.
