@@ -1,9 +1,10 @@
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
 const server = spawn('npm', ['run', 'preview', '--', '--port', '4173'], { stdio: 'inherit' });
+const assetManifest=JSON.parse(await readFile('public/models/asset-manifest.json','utf8'));
 let browser;
 try {
   for (let i = 0; i < 100; i++) {
@@ -187,7 +188,8 @@ try {
   assert.equal(await page.locator('#cat-heading').textContent(),'Duman');
   await page.screenshot({path:'browser-results/r4-grey-white-390.png',fullPage:true});
   const metrics={loadMs:await page.locator('.cat-card').getAttribute('data-load-ms'),triangles:await page.locator('.cat-card').getAttribute('data-triangles'),drawCalls:await page.locator('.cat-card').getAttribute('data-draw-calls'),renderer:'Chromium SwiftShader software WebGL2; not Android'};
-  assert.ok(Number(metrics.triangles)>0 && Number(metrics.triangles)<=90000);
+  assert.ok(Number(metrics.triangles)>0 && Number(metrics.triangles)<=assetManifest.rendering.sceneTriangleBudget);
+  assert.equal(Number(await page.locator('.cat-card').getAttribute('data-fur-layers')),assetManifest.rendering.furLayers);
   await page.locator('[data-cat-action="right"]').click();
   assert.notEqual(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');
   await page.locator('[data-cat-action="reset"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');
@@ -203,10 +205,21 @@ try {
   await page.locator('nav a[href="#/bugun"]').click();await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
   await page.locator('[data-cat-action="play"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'play');
   await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.clip==='idle');
+  // Each short control check starts with a fresh scene. Sustained software-GPU
+  // performance and the resulting static fallback are exercised separately below.
+  const freshAnimationScene=async()=>{
+    await page.locator('nav a[href="#/kayitlar"]').click();
+    await page.locator('nav a[href="#/bugun"]').click();
+    await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
+  };
+  await freshAnimationScene();
   await page.locator('[data-cat-action="stretch"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'stretch');
+  await freshAnimationScene();
   await page.locator('[data-cat-action="sleep"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'sleep');
+  await page.evaluate(()=>new Promise(requestAnimationFrame));
   await page.screenshot({path:'browser-results/r4-sleep.png',fullPage:true});
   await page.locator('[data-cat-action="sleep"]').click();
+  await freshAnimationScene();
   // Pause when the card is outside the viewport, resume on return.
   await page.setViewportSize({width:390,height:350});
   await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));
@@ -265,6 +278,7 @@ try {
   await slowPage.addInitScript(()=>{const raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=callback=>raf(()=>setTimeout(()=>callback(performance.now()),220));});
   await slowPage.goto('http://127.0.0.1:4173/#/bugun');await slowPage.locator('.cat-card[data-scene-status="ready"]').waitFor();
   await slowPage.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.quality==='balanced');
+  assert.equal(Number(await slowPage.locator('.cat-card').getAttribute('data-fur-layers')),assetManifest.rendering.balancedFurLayers);
   await slowPage.locator('.cat-card[data-scene-status="static"]').waitFor();
   assert.match(await slowPage.locator('.cat-scene-status').textContent(),/Bu cihaz için statik/);
   assert.equal(await slowPage.locator('#calorie-form button').isEnabled(),true);
@@ -274,7 +288,11 @@ try {
   await posterPage.locator('.cat-viewport').screenshot({path:'browser-results/r4-poster.png'});await posterPage.close();
   await writeFile('browser-results/r4-metrics.json',JSON.stringify(metrics,null,2));
   checks.push('R4 full-size WebGL stills: model + albedo, shader error check, rotate/drag/reset, five widths. Animation mechanics: 160px software backbuffer play/stretch/sleep/pause. Full-size throttled RAF: balanced then static. Model/texture 404 and context loss preserve calorie form. Not Android performance acceptance: pass');
-  await writeFile('browser-results/report.json', JSON.stringify({ checks, errors }, null, 2));
+  await writeFile('browser-results/report.json', JSON.stringify({
+    checks, errors, verifiedAt:new Date().toISOString(),
+    modelSha256:assetManifest.sha256,posterSha256:assetManifest.poster.sha256,
+    rendering:assetManifest.rendering,
+  }, null, 2));
   console.log(checks.join('\n'));
 } finally {
   await browser?.close();

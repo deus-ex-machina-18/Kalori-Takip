@@ -9,8 +9,11 @@ assert.equal(result.issues.numErrors,0);assert.equal(result.issues.numWarnings,0
 assert.equal(createHash('sha256').update(data).digest('hex'),manifest.sha256);
 const fur=new Uint8Array(await readFile('public/models/white-fur-v1.jpg'));
 assert.equal(createHash('sha256').update(fur).digest('hex'),manifest.runtimeTextures[0].sha256);
-assert.equal(data.byteLength+fur.byteLength,manifest.initialBytes);
-assert.ok(data.byteLength+fur.byteLength<=5*1024*1024);assert.ok(manifest.triangles<=50000);
+const poster=new Uint8Array(await readFile(`public/models/${manifest.poster.asset}`));
+assert.equal(createHash('sha256').update(poster).digest('hex'),manifest.poster.sha256);
+assert.equal(poster.byteLength,manifest.poster.bytes);
+assert.equal(data.byteLength+fur.byteLength+poster.byteLength,manifest.initialBytes);
+assert.ok(manifest.initialBytes<=5*1024*1024);assert.ok(manifest.triangles<=50000);
 assert.ok(manifest.baseTriangles<=28000);assert.equal(manifest.furTriangles,22500);
 const view=new DataView(data.buffer,data.byteOffset,data.byteLength);
 assert.equal(view.getUint32(0,true),0x46546c67);

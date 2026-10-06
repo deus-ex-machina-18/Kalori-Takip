@@ -1,43 +1,54 @@
-# Raund 4 — görsel revizyon 3, kabul açık
+# Raund 4 — görsel revizyon 4, görsel kabul açık
 
 Repo: https://github.com/deus-ex-machina-18/Kalori-Takip
-Dal: r4-visual-quality · 6 Ekim 2026 · mevcut taslak PR #1
-Başlangıç checkpoint: f619af1778c4869a18d243ec6430f956daf77ef1. Main eski R4 sürümündedir; bu değişiklikler görsel revizyon dalındadır. Yayın yapılmadı, R5'e geçilmedi.
+Dal: r4-visual-quality · taslak PR #1 · 6 Ekim 2026
+Başlangıç: 6ce39d249ee228841671a3d0634948d05b44766b. Main birleştirilmedi; yayın ve R5 bu turda yapılmadı.
 
-## Güncel durum
+## Sonuç ve görsel sınır
 
-ZIP paketi güncel dal ile karşılaştırıldı ve aynı kaynakları içerdiği doğrulandı. Bu turda model oranları, göz yüzeyi ve kürk ışıklanması geliştirildi; SDF kesilmelerinden gelen pati/ağız açıklıkları giderildi. Gerçek uygulama render'ı `public/models/cat-poster.png` içinde. **Referanstaki yoğun ve doğal kürk kalitesine tam ulaşıldığı iddia edilmez. Kullanıcının görsel kabulü hâlâ açık.**
+Gri-beyaz yön korunarak kedi yeniden şekillendirildi. Göz yuvaları, iris yüzeyi, kulak hacmi, ağız ve parmaklar; yoğun kısa kürk, ışık ve halı geliştirildi. Gerçek canlı sahnenin büyük görüntüsü `docs/verification/r4-live-render.png`; uygulamanın statik yedeği aynı görüntünün WebP kodlaması `public/models/cat-poster.webp`.
 
-## Değişiklikler
+**Referanstaki doğal kürk ve sinematik oda ışığı birebir karşılandı denmez. Kullanıcının görsel kabulü açık.** Yeni yön seçilmedi; tekrar üç örnek seçimi gerekmedi. Yalnız teknik testlerin geçmesi görsel hedefin tamamlandığı anlamına gelmez.
 
-- Gövde, arka bacak ve patiler dolgunlaştırıldı; kafa/rig birlikte aşağı alındı. İris ve pupil tek yüzeyde, göz çevresindeki kalın halka kaldırıldı; burun/ağız/bıyık konumu güncellendi.
-- MarchingCubes kenar hücrelerini atladığı için yüzey örnekleme alanı genişletildi. Önceki geometrinin ön pati, yan yüzey ve ağız açıklıkları kapandı. `test:assets` artık exported FurWhite kaplamanın açık kenarı olmadığını da doğrular; format validator'ı tek başına bu kusuru bulmuyordu.
-- Kısa tüyler fiziksel sahne ışıklarını kullanır; iki yüzde dışa bakan kaplama normali korunur. Ters normalden gelen benekler kaldırıldı. Albedo ve bump aynı kürk kaynağından; kontrolsüz beyazlama önlendi. Sıcak ışık/doldurma, VSM zemin gölgesi, temas gölgesi ve oda yüzeyi örneklemesi ayarlandı.
-- Aynı gerçek GLB render'ı statik yedeğe kaydedildi. Üretilmiş konsept resmi 3D model diye kullanılmadı; yeni ücretli veya stock asset yok.
-- Kalori/aktivite/plan/haftalık motorlar, IndexedDB şeması, kayıt formu ve beş ekran değişmedi. Mevcut care önceliği, altı animasyon, tercih saklama, low-FPS balanced→statik ve hata yedeği korunur.
+## Uygulanan değişiklik
 
-Boyut/hash/üçgen/kemik/klip sayılarının tek kaynağı `public/models/asset-manifest.json` (sürüm 3); kaynak ve lisanslar aynı dizin yapısında. Model+albedo ilk yüklemesi bütçe içinde, önceki revizyondan daha küçüktür.
+- Başta kapalı SDF göz yuvaları; küre yerine korneal kapak, daha sakin kahverengi iris, büyük pupil ve az sayıda yansıma. Muzzle hacmi, burun/ağız ve kaş yerleşimi değişti.
+- Kulaklar düz ekstrüzyon yerine düzgün normalli, kapalı, çanak biçimli yüzeyler; pembe iç yüzeyi hacme oturur. Ön patilerde yuvarlak parmak hacimleri, dolgun kuyruk.
+- Baş/göz/kulak/ağız kemik pivotları yeni yüzle hizalandı; altı klip korundu.
+- GLB'deki kısa tüylerin yanında 12 rigli underfur katmanı. Aynı kaplama vertex buffer'ları ve iskelet kullanılır; ayrı indirilen bir kürk modeli yok. Folikül maskesi komşu hücrelerde düzensiz köklerden ve her tüy için sabit bükülmeden oluşur; tekrarlanan diyagonal desen azaltıldı. Shader tek baskın yüzey projeksiyonu kullanır.
+- Kaplama ve katmanlar ışık/gölge alır; PCF soft shadow, sıcak ana ışık, daha düşük doldurma, temas gölgesi, yuvarlak ve dokulu halı. Gözlerin aşırı ortam yansıması azaltıldı.
+- Hafif mod DPR 1, gölgesiz, 4 underfur katmanı ve yarım kısa tüy kullanır; sonraki düşük FPS örneği statik yedeğe geçer. Eşik/süre değiştirilmedi. Görünmezken durma, care önceliği, döndürme ve tercih kaydı korunur.
+- Statik yedek 600 CSS px aynı canlı sahneden üretilir; yüksek çözünürlüklü WebP yaklaşık 74 KB. İlk yükleme bütçesine poster de katıldı. Eski PNG yedeği kaldırıldı; büyük PNG yalnız doğrulama belgesidir.
 
-## Doğrulama
+Kalori/aktivite/plan/haftalık motorlar, IndexedDB şeması ve beş ekran değişmedi. Dış model satın alınmadı; yeni ücretli servis kullanılmadı.
 
-- TypeScript, üretim build'i, 36 domain/depo + 20 DOM testi geçti. GLB validator sıfır hata/uyarı; hash, ≤5 MiB, geometri bütçesi, rig/klip ve kapalı kaplama kontrolü başarılı.
-- Tamamlanmış gerçek Chromium raporu `docs/verification/r4-browser-report.json`: errors=[]; 320/360/390/768/1280px beş ekran, klavye/odak, native IndexedDB R2/R3, tam boy WebGL görünümü ve döndürme/sürükleme/reset geçti.
-- play/stretch/sleep ve görünmezken durma/dönüş mekanikleri 160px software backbuffer'da geçti. Tam boy yavaş RAF balanced→statik; model/albedo 404, WebGL yokluğu ve context-loss kayıt formunu korudu.
-- `r4-browser-metrics.json` ve `r4-render-metrics.json` farklı yerel Software Chromium koşularını içerir. Bunlar fiziksel Android veya internet performansı kabulü değildir. Yerel ilk yükleme 2.1–6.3 sn arasında değişti; <3 sn hedefi sağlandı diye genellenmez.
-- Terminal push kimliği yoktu; kod/varlıklar GitHub bağlantısıyla aynı dalın ileri güncellemesi olarak kaydedildi. Ana dal birleştirilmedi. Bu sürümün GitHub CI sonucu PR'dan ayrıca izlenmelidir; önceki dal koşusu yeni commit'in CI kanıtı değildir.
+## Bütçe ve doğrulama
 
-## Çalıştırma
+Boyut, hash, üçgen/kemik/klip ve poster envanterinin kaynağı `public/models/asset-manifest.json` (sürüm 4). Render ayarlarının kaynağı `assets/cat/render-settings.json`.
+
+- GLB: 48.380 üçgen (25.880 temel + 22.500 kısa tüy), 14 kemik, 6 klip. GLB + albedo + aktif WebP poster yaklaşık 4,52 MB; ≤5 MiB kontrolü geçer. GLB validator sıfır hata/uyarı; beyaz kaplamanın kapalı yüzey testi ve hash kontrolleri geçti.
+- Katmanlar nedeniyle **çalışma anındaki bütçe arttı**: gölge geçişi dahil tam sahne 281.366 çizilen üçgen / 42 draw call; manifest sınırı 300.000. GLB'nin ≤50 bin bütçesi ile GPU'nun tekrar çizdiği katmanlar ayrı sayılardır. Bu artış fiziksel Android performans kabulü değildir.
+- TypeScript/üretim build'i, 36 domain/depo + 20 DOM testi geçti. Güncel gerçek Chromium kabulü `docs/verification/r4-browser-report.json`, errors=[].
+- 320/360/390/768/1280px: beş ekran, yerel profil/kalori/aktivite/kilo ve native IndexedDB; kayıt başarısızlığında retry, klavye/odak, taşma ve kontrol erişimi geçti.
+- Gerçek model/shader render'ı, döndürme/sürükleme/reset, model ve albedo 404, WebGL yokluğu ve context kaybında kalori formunun korunması geçti. Statik mod ve hareket tercihi kalıcı.
+- 160px software backbuffer'da kısa play/stretch/sleep ve görünmezken durma/devam kontrolleri ayrı yeni sahnelerle yapılır. Uzun software-GPU döngüsü düşük FPS yedeğine geçebilir; bu kontrol sürekli animasyon FPS kabulü değildir. Tam boy yavaş RAF ile 12→4 katman→statik akış ayrıca doğrulandı.
+- Yerel software Chromium yükleme 1,5–2,1 sn olan son iki koşu ayrı JSON raporlarında. Bunlar internet, fiziksel Android veya Android'de ≥30 FPS/<3 sn kabulü değildir.
+
+Önceki sürümün CI sonucu bu sürümün CI kanıtı sayılmaz; dalın son commit'i için ayrıca kontrol edilir.
+
+## Tekrar üretim
 
 ```bash
 npm ci
+npm run assets:cat
+npm run build
+node scripts/render-cat-poster.mjs
 npm run check
-npm run dev
+node scripts/browser-check.mjs
 ```
 
-Model/material tekrar üretimi `npm run assets:cat`. Build sonrası gerçek render `node scripts/render-cat-poster.mjs`; tam tarayıcı kabulü `node scripts/browser-check.mjs`. Playwright Chromium gerekir; farklı binary için `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` desteklenir. Model veya sahne değişirse poster yenilenir.
+Poster render'ı manifest'in poster hash/ilk yükleme toplamını yeniler; ardından build son posteri dist'e taşır. Model veya sahne değişirse poster yenilenir. Farklı Chromium binary için `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` desteklenir. Büyük PNG doğrulama görüntüsü, 390px gerçek uygulama ve JSON raporları `docs/verification/` içinde.
 
-## Sonraki tek iş
+## Sonraki tek görev
 
-Gri-beyaz seçilen yönün gerçek render'ını kullanıcıyla değerlendirmek; referans farkını kapatacak sonraki görsel işi bunun üzerinden sınırlamak. R5 eklenmez. Yeni bir görsel/3D yön seçilecekse üç örnek şartı sürer; mevcut yön için yeniden seçim gerekmez.
-
-Fiziksel Android performansı, ekran okuyucu, gerçek zoom ve pilot incelemeleri açık. Login/senkronizasyon/yedekleme/hosting/offline/push bu turda kurulmadı.
+R4'ün bu gerçek render'ını referans ve kullanıcı geri bildirimiyle değerlendirmek; kalan doğal kürk/ışık farkına odaklanmak. Fiziksel Android'de 12/4 katman ve statik moda geçişi ölçmek. R5'e geçilmez; görsel kabul açık. Yeni model veya yön seçilecekse üç örnek şartı sürer.

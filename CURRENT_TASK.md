@@ -4,7 +4,7 @@ Tek çıktı: kullanıcı tarafından seçilen 1. örneğin gri-beyaz yönünde 
 
 ## Sınır
 
-`src/ui/cat-card.ts`, `cat-scene.ts`, mevcut `main.ts`/`styles.css`; `src/domain/cat.ts`, mevcut CatPreferences sözleşmesi ve IndexedDB v1 store'u; `public/models/`, tekrar üretilebilir `scripts/build-cat.mjs`, asset/test/browser kontrolü ve devir belgeleri.
+Bu revizyon: `src/ui/cat-card.ts`, `cat-scene.ts`, yeni `cat-fur.ts`; `assets/cat/render-settings.json`; `scripts/cat-geometry.mjs`, `build-cat.mjs`, poster/validator/browser kontrolü; `public/models/`, `docs/verification/` ve devir belgeleri. Kalori ve veri katmanlarında değişiklik yok.
 
 Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve veri şeması sürümü korunur. R5 ödül/bildirim ve R6 export/silme/hosting eklenmez. Ses isteğe bağlı kapsamdır; lisanslı ses üretilmediği için kapalı kalır.
 
@@ -21,6 +21,7 @@ Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve ve
 - İsim, hareket azaltma ve statik mod native IndexedDB'de; atomik makbuz/retry ve snapshot CAS.
 - Asset 404, WebGL context kaybı, WebGL yokluğu ve düşük FPS'te statik yedek; kalori formu sahneden bağımsız çalışır.
 - Görünmez sekme/kartta animasyon durur; DPR ≤1.5, 30 FPS hedefli döngü; fiziksel Android ölçümü ayrı açık gereksinimdir.
+- Underfur aynı GLB vertex/skin buffer'larını kullanır. Tam 12, hafif mod 4 katman; shadow dahil çalışma anı bütçesi 300 bin çizilen üçgen. Bu revizyonun GPU yük artışı fiziksel Android ölçümü gerektirir. GLB + albedo + aktif WebP poster birlikte ≤5 MiB.
 - R2/R3 regresyonları, DOM ve gerçek Chromium akış/genişlik kabulü. Yazılım WebGL testi gerçek Android performansı sayılmaz.
 
-Durum: sürüm 3 görsel revizyonu uygulandı; yüzey kesilmeleri, ters tüy normalleri ve ince gövde/pati düzeltildi. Görsel kalite kabulü açık; uygulama teknik kontrolleri referans kalitesine ulaşmak anlamına gelmez. `r4-visual-quality` dalı bağlantı kesintisi sonrası yeniden oluşturulan kaynakları ve materyali korur. Gerçek render incelenmeden ve kullanıcı görseli kabul etmeden tamamlandı denmez. Fiziksel Android performansı ve yayın açık.
+Durum: sürüm 4; göz yuvaları/iris, çanak kulak, ağız/kemik pivotları, parmaklar ve 12 katmanlı kürk geliştirildi. 56 test, GLB/kapalı yüzey/hash bütçeleri ve gerçek Chromium kabulü geçti. Görsel kalite kabulü açık; teknik testler referans kalitesine ulaşmak anlamına gelmez. Son görüntü `docs/verification/r4-live-render.png`. Fiziksel Android performansı ve yayın açık.

@@ -11,3 +11,11 @@ Kullanıcı referansı: ince doğal kürk, büyük parlak kahverengi gözler, yu
 Seamless beyaz kürk albedosu imagegen ile üretildi, `assets/cat/` içinde kaynak/prompt korunuyor. Bu bir materyal swatch'ıdır; referans kedinin görüntüsü veya gerçek 3D geometri diye sunulmaz. Geometri/rig/animasyon özgün kaynaklardan üretilir. Three.js MIT RoomEnvironment hazır oda yansıma ortamı kullanılır; lisans `public/THIRD_PARTY_NOTICES.txt` içinde.
 
 Yerel çalışma alanı kesinti sonrası sıfırlandı; yeniden kurulan model/sahne bu dalda tekrar test edilmeli. Önceki kaydedilmemiş çalışmanın testleri yeni kodun kabul kanıtı sayılmaz. Referanstaki görsel kaliteye ulaşıldığı iddia edilmez.
+
+## Revizyon 4 — kullanılan teknik kaynaklar
+
+- [Jérémie Piellard'ın gerçek zamanlı kürk açıklaması](https://piellardj.github.io/fur-threejs/readme/): WebGL'de shell/fins yaklaşımının birincil uygulama açıklaması. Bu revizyonda aynı ilke ile özgün, rigli katman shader'ı yazıldı; bu projeden kod veya varlık kopyalanmadı. İnce geometrik tüyler silüeti, katmanlar yoğun kısa kürkü oluşturur.
+- [Three.js MeshPhysicalMaterial](https://threejs.org/docs/pages/MeshPhysicalMaterial.html): sheen, clearcoat, roughness ve çevre yansıması özellikleri. Katmanlar daha düşük maliyetli MeshStandardMaterial, temel kaplama/fibre ise fiziksel materyal kullanır.
+- [Three.js SkinnedMesh](https://threejs.org/docs/pages/SkinnedMesh.html): buffer skin ağırlıkları, bind matrix ve aynı world transform'u paylaşan mesh'lerin bind davranışı. Katmanlar GLB kaplamasıyla aynı attached bind mode'da; böylece kedi döndürülünce veya rig oynayınca kürk ayrı dönmez.
+
+Lisanslı hazır kedi alınmadı. Çalışma hedef referansa doğru bir iyileştirmedir; doğal kürk/oda ışığının birebir kabulü açık. Son raporlar ve gerçek render HANDOFF.md'dedir.

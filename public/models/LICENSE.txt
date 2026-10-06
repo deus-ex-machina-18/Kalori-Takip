@@ -2,7 +2,7 @@ MIT License
 
 Copyright (c) 2026 Kalori-Takip project contributors
 
-Applies to grey-white-kitten.glb, cat-poster.svg/png, the original procedural
+Applies to grey-white-kitten.glb, cat-poster.svg/webp, docs/verification/r4-live-render.png, the original procedural
 geometry/animation scripts, and white-fur-v1.jpg / assets/cat/white-fur-source.png.
 Geometry is original procedural artwork. White-fur albedo was generated with
 OpenAI imagegen; prompt and provenance are in assets/cat/white-fur-source.json.

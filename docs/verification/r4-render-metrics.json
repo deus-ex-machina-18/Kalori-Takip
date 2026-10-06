@@ -3,12 +3,13 @@
     "catState": "neutral",
     "sceneStatus": "ready",
     "animating": "false",
+    "furLayers": "12",
     "quality": "full",
     "angle": "-0.22",
     "clip": "idle",
-    "triangles": "71916",
-    "drawCalls": "34",
-    "loadMs": "6297"
+    "triangles": "281366",
+    "drawCalls": "42",
+    "loadMs": "2079"
   },
   "errors": []
 }

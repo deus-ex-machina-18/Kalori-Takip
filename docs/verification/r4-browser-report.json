@@ -30,5 +30,14 @@
     "R2 native IndexedDB: profile approval, 650+800+500, complete, reload, mode conversion/cancel, storage failure retry, weight persistence: pass",
     "R4 full-size WebGL stills: model + albedo, shader error check, rotate/drag/reset, five widths. Animation mechanics: 160px software backbuffer play/stretch/sleep/pause. Full-size throttled RAF: balanced then static. Model/texture 404 and context loss preserve calorie form. Not Android performance acceptance: pass"
   ],
-  "errors": []
+  "errors": [],
+  "verifiedAt": "2026-10-06T12:43:40.968211+00:00",
+  "modelSha256": "2b26efac7a75a92fe8cacc5a63fb07142731911bb1e6fa9ba5b64466e213090c",
+  "posterSha256": "6f02535d25a4f034494850f1af662d1a10ba028634efb047fe6679e83564d2fa",
+  "rendering": {
+    "furLayers": 12,
+    "balancedFurLayers": 4,
+    "sceneTriangleBudget": 300000,
+    "description": "Includes the main render and shadow pass; underfur shares GLB vertices and adds no downloads. Balanced mode keeps every third shell."
+  }
 }
