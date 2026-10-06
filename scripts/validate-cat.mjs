@@ -13,6 +13,8 @@ assert.equal(view.getUint32(0,true),0x46546c67);
 const gltf=JSON.parse(new TextDecoder().decode(data.subarray(20,20+view.getUint32(12,true))));
 assert.ok(gltf.skins?.[0]?.joints.length>=10);
 assert.deepEqual(gltf.animations.map(a=>a.name).sort(),['care','happy','idle','play','sleep','stretch']);
+const animatedNodes=new Set(gltf.animations.flatMap(a=>a.channels.map(c=>gltf.nodes[c.target.node].name)));
+for(const joint of ['Head','EarL','EarR','TailBase','TailTip','PawL','PawR','EyeL','EyeR','Mouth'])assert.ok(animatedNodes.has(joint),`${joint} requires an animation track`);
 assert.ok(gltf.meshes[0].primitives.every(p=>p.attributes.JOINTS_0!==undefined && p.attributes.WEIGHTS_0!==undefined));
 assert.equal(gltf.textures?.length ?? 0,0);
 console.log(`GLB passed: ${data.byteLength} bytes, ${manifest.triangles} triangles, ${gltf.skins[0].joints.length} joints, six clips, zero validator errors/warnings.`);

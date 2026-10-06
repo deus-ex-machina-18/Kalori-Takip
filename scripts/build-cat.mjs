@@ -125,12 +125,14 @@ const blink=(times,ys)=>['EyeL','EyeR'].map(name=>[name,'scale',times,ys.flatMap
 const animations=[
   new T.AnimationClip('idle',4,tracks([
     rotate('Head',[0,0,1],[0,2,4],[0,.025,0]),rotate('TailTip',[0,0,1],[0,2,4],[-.07,.08,-.07]),
+    rotate('EarL',[0,0,1],[0,2,4],[0,.045,0]),
     ...blink([0,2.8,2.92,3.06,4],[1,1,.06,1,1]),
   ])),
   new T.AnimationClip('happy',2,tracks([
     rotate('Head',[0,0,1],[0,.5,1,1.5,2],[0,-.1,0,.1,0]),
     rotate('TailBase',[0,1,0],[0,.5,1,1.5,2],[0,.28,0,-.28,0]),
     rotate('PawR',[0,0,1],[0,.4,1.5,2],[0,.55,.4,0]),...blink([0,1,1.2,2],[1,.4,.4,1]),
+    ['Mouth','scale',[0,1,2],[1,1,1,1.1,1,1,1,1,1]],
   ])),
   new T.AnimationClip('stretch',3,tracks([
     ['Body','scale',[0,1,2,3],[1,1,1,.94,1.1,.98,.94,1.1,.98,1,1,1]],
@@ -141,6 +143,7 @@ const animations=[
     rotate('Head',[0,1,0],[0,.6,1.2,1.8,2.4],[0,-.14,0,.14,0]),
     rotate('PawL',[1,0,0],[0,.6,1.2,1.8,2.4],[0,-.7,0,-.5,0]),
     rotate('TailTip',[0,0,1],[0,1.2,2.4],[0,-.3,0]),
+    rotate('EarR',[0,0,1],[0,1.2,2.4],[0,-.1,0]),
   ])),
   new T.AnimationClip('sleep',6,tracks([
     rotate('Head',[1,0,0],[0,3,6],[.14,.16,.14]),

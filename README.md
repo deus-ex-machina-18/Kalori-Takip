@@ -52,7 +52,7 @@ PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R4 tara
 
 ## 3D varlık
 
-`public/models/grey-white-kitten.glb`: özgün prosedürel mesh, 14 kemik, 19.936 üçgen, 996.320 bayt, doku yok. Kaynak `scripts/build-cat.mjs`; MIT lisans metni ve hash/klip envanteri aynı klasörde. Yeniden üretim: `npm run assets:cat`; doğrulama: `npm run test:assets`.
+`public/models/grey-white-kitten.glb`: özgün prosedürel mesh, 14 kemik, 19.936 üçgen, 997.724 bayt, doku yok. Kaynak `scripts/build-cat.mjs`; MIT lisans metni ve hash/klip envanteri aynı klasörde. Yeniden üretim: `npm run assets:cat`; doğrulama: `npm run test:assets`.
 
 Three.js/GLTFLoader yalnız Bugün sahnesinde dinamik yüklenir. Yatay sürükle veya erişilebilir düğmelerle döndür; açı sıfırlanabilir. Sahne görünmezken animasyon durur. DPR en fazla 1.5, 30 FPS hedefli döngü; ölçülen <20 FPS, context kaybı veya 404 statik yedeğe geçer. Fiziksel Android performansı henüz ölçülmedi; Chromium SwiftShader sonucu Android kabulü değildir.
 

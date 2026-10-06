@@ -12,7 +12,8 @@ try {
   }
   browser = await chromium.launch({ args:['--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
   await mkdir('browser-results', { recursive: true });
-  const page = await browser.newPage({ reducedMotion: 'reduce' });
+  const context = await browser.newContext({ reducedMotion: 'reduce' });
+  const page = await context.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   const checks = [];

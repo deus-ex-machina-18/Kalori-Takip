@@ -12,7 +12,7 @@ R4 uygulandı; yerel TypeScript, üretim build'i, 56 test ve GLB doğrulaması g
 
 Kullanıcı üç ayrı örnekten “1 hocam ama rengi gri-beyaz olsun” dedi. Yumuşak oyuncak yönünde özgün gerçek 3D mesh/skin üretildi; referans görüntü GLB olarak sunulmadı. Baş/kulak/kuyruk/pati/göz/yüz kemikleri; idle/happy/stretch/play/sleep/care klipleri; tek sade oda.
 
-Gerçek asset `public/models/grey-white-kitten.glb`, kaynak `scripts/build-cat.mjs`, manifest/hash/lisans aynı dizinde. MIT, özgün prosedürel eser; dış mesh/doku/ses yok. 19.936 üçgen, 14 kemik, 996.320 bayt; validator sıfır hata/uyarı. Oda ek küçük geometrilerle oluşturulur. Kaynak çalıştırılınca asset ve manifest yeniden üretilir.
+Gerçek asset `public/models/grey-white-kitten.glb`, kaynak `scripts/build-cat.mjs`, manifest/hash/lisans aynı dizinde. MIT, özgün prosedürel eser; dış mesh/doku/ses yok. 19.936 üçgen, 14 kemik, 997.724 bayt; validator sıfır hata/uyarı. Oda ek küçük geometrilerle oluşturulur. Kaynak çalıştırılınca asset ve manifest yeniden üretilir.
 
 Three.js sahnesi dinamik yüklenir. Yatay sürükleme/dokunma/dikey scroll ayrımı, erişilebilir döndürme/sıfırlama/oyun/gerinme/uyku düğmeleri; geçişler 0,25 sn. Care kutlamayı/oyunu bastırır; kedi gövdesi kalorilere göre değişmez. Kalori/plan/hareket/hafta hesap kodları yeniden yazılmadı.
 
@@ -37,6 +37,6 @@ Yeni görsel/3D yön değişikliğinde önce üç örnek şartı korunur; seçil
 ### Son model kabulü — başarılı
 
 - Commit dcdd5da33ac9864e1fde23ff714906d90cdcabbe; koşu https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37419540200; artifact 11392780930. Rapor errors=[].
-- Yüz tek kaplamalı geometri, kuyruk iki kemik arasında ağırlıklarla kesintisiz; 19.936 kedi üçgeni, 996.320 bayt. GLB validator sıfır hata/uyarı. Altı klip, care önceliği, gerçek context kaybı ve tüm diğer R4 akışları geçti.
+- Yüz tek kaplamalı geometri, kuyruk iki kemik arasında ağırlıklarla kesintisiz; 19.936 kedi üçgeni, 997.724 bayt. GLB validator sıfır hata/uyarı. Altı klip, care önceliği, gerçek context kaybı ve tüm diğer R4 akışları geçti.
 - Gerçek 320px Bugün ve 720px nötr model render'ı görsel olarak incelendi. İsim/kontroller/form sığıyor. Render bütçe sayacı gölge geçişi dahil 40.580 üçgen / 22 draw call. Lokal preview yükleme 222 ms; bu internet bağlantısı/Android ölçümü değildir.
 - `cat-poster.png` bu modelin gerçek render'ından alındı; statik yedek aynı kediye bağlanır. Bu dosya ve görünmez kart/düşük FPS testleri için son koşu bekleniyor.
