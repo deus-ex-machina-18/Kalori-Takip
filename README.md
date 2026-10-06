@@ -27,7 +27,7 @@ npm run build
 node scripts/browser-check.mjs
 ```
 
-GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Son başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37375600559): 35 test, gerçek IndexedDB akışları ve yerleşim kabulü geçti; 56 görüntü ve hatasız rapor oluştu. Ayrıntı HANDOFF.md'de.
+GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Son başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37417506309): 50 test, R2 + R3 gerçek IndexedDB akışları ve yerleşim kabulü geçti; 58 görüntü ve hatasız rapor oluştu. Ayrıntı HANDOFF.md'de.
 
 ## Kullanım
 

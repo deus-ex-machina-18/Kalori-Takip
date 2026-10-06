@@ -19,4 +19,4 @@ MET birimleri ve süre/kilo ölçeklemesi; kuvvette geniş belirsizlik; geçersi
 
 R4 3D, R5 ödül/bildirim/geri bildirim, R6 export/silme/hosting/bulut yok. Yeni görsel/3D varlık için kullanıcı önce üç örnekten seçim yapacak. İsteğe bağlı hareket karşılığı kartı eklenmedi; egzersiz borcu dili yok.
 
-Durum: kod hazır, yerel kontroller ve Chromium kabulünün güncel sonucu HANDOFF.md’de.
+Durum: tamamlandı; 50 test + TypeScript/build + gerçek Chromium kabulü başarılı. Son koşu, doğrulanmış commit, incelenen görseller ve açık bağımlılıklar HANDOFF.md’de. Sonraki tek görev Raund 4; önce üç örnekle kullanıcı estetik seçimi.
