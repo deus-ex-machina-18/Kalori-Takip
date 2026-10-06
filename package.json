@@ -16,7 +16,7 @@
     "dev:lan": "vite --host 0.0.0.0",
     "test:unit": "node --experimental-strip-types --test tests/*.test.ts",
     "test:ui": "node --test tests/*.test.mjs",
-    "assets:cat": "node scripts/build-cat.mjs",
+    "assets:cat": "node scripts/build-cat-texture.mjs && node scripts/build-cat.mjs",
     "test:assets": "node scripts/validate-cat.mjs"
   },
   "devDependencies": {
@@ -26,6 +26,7 @@
     "gltf-validator": "^2.0.0-dev.3.10",
     "jsdom": "^26.1.0",
     "playwright": "^1.58.2",
+    "sharp": "0.35.5",
     "typescript": "~5.9.3",
     "vite": "^8.0.0"
   },

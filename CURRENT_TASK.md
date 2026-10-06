@@ -1,6 +1,6 @@
 # Güncel görev — Raund 4
 
-Tek çıktı: kullanıcı tarafından seçilen 1. örneğin gri-beyaz yönünde gerçek rigli 3D kedi ve sade oda sahnesi.
+Tek çıktı: kullanıcı tarafından seçilen 1. örneğin gri-beyaz yönünde gerçek rigli 3D kedi ve sade oda sahnesi. Kullanıcı mevcut görseli yetersiz buldu; Raund 4 görsel kalite revizyonu sürüyor. R5'e geçilmedi.
 
 ## Sınır
 
@@ -15,7 +15,7 @@ Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve ve
 ## Kabul
 
 - GLB/glTF 2.0, gerçek geometri ve skin; baş/kulak/kuyruk/pati/göz/yüz kemikleri; idle/happy/stretch/play/sleep/care klipleri.
-- GLTF validator sıfır hata/uyarı; ≤25 bin kedi üçgeni, ≤5 MB asset; kaynak, lisans, hash ve klip envanteri.
+- GLTF validator sıfır hata/uyarı; revizyon bütçesi ≤28 bin temel yüzey + 22.500 kısa tüy üçgeni, toplam ≤50 bin; model + albedo ≤5 MiB. Kaynak, prompt, lisans, hash ve klip envanteri. Bütçenin önceki 25 binden artması gerçek Android performans kabulü yerine geçmez.
 - Dokunma/yatay sürükleme/dikey scroll ayrımı, klavyeyle döndürme ve başlangıç açısına dönüş.
 - Enerji motorunun mevcut catState'i kullanılır; düşük tüketimde care kutlamayı/oyunu bastırır; beden boyutu kalorilerle değişmez.
 - İsim, hareket azaltma ve statik mod native IndexedDB'de; atomik makbuz/retry ve snapshot CAS.
@@ -23,4 +23,4 @@ Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve ve
 - Görünmez sekme/kartta animasyon durur; DPR ≤1.5, 30 FPS hedefli döngü; fiziksel Android ölçümü ayrı açık gereksinimdir.
 - R2/R3 regresyonları, DOM ve gerçek Chromium akış/genişlik kabulü. Yazılım WebGL testi gerçek Android performansı sayılmaz.
 
-Durum: tamamlandı. 56 test + TypeScript/build + GLB validator ve son gerçek Chromium kabulü başarılı. Son kod/koşu/artifact HANDOFF.md'de. Fiziksel Android performansı pilot öncesi açık; yayın yapılmadı. Sonraki tek görev Raund 5.
+Durum: görsel kalite kabulü açık; uygulama teknik kontrolleri referans kalitesine ulaşmak anlamına gelmez. `r4-visual-quality` dalı bağlantı kesintisi sonrası yeniden oluşturulan kaynakları ve materyali korur. Gerçek render incelenmeden ve kullanıcı görseli kabul etmeden tamamlandı denmez. Fiziksel Android performansı ve yayın açık.

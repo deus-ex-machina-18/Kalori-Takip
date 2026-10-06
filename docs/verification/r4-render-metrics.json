@@ -1,0 +1,14 @@
+{
+  "metrics": {
+    "catState": "neutral",
+    "sceneStatus": "ready",
+    "animating": "false",
+    "quality": "full",
+    "angle": "-0.22",
+    "clip": "idle",
+    "triangles": "80222",
+    "drawCalls": "32",
+    "loadMs": "4036"
+  },
+  "errors": []
+}

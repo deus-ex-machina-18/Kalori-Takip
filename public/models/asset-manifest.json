@@ -1,13 +1,16 @@
 {
   "asset": "grey-white-kitten.glb",
-  "version": 1,
+  "version": 2,
   "author": "Kalori-Takip project contributors (procedural generation)",
   "license": "MIT",
   "source": "scripts/build-cat.mjs",
   "date": "2026-10-06",
-  "sha256": "51182d5f81758a72aa7a6219e908a29df2c184ba6a98a08f0aa2502130fdf6b6",
-  "bytes": 997724,
-  "triangles": 19936,
+  "sha256": "97b8d788643da55c542a51acf775dd0b72db4e0752c0363dfd0f2fd54a42c51c",
+  "bytes": 4325772,
+  "triangles": 49800,
+  "baseTriangles": 27300,
+  "furTriangles": 22500,
+  "furStrands": 22500,
   "textures": 0,
   "bones": [
     "Root",
@@ -67,12 +70,99 @@
       0
     ]
   },
+  "runtimeTextures": [
+    {
+      "asset": "white-fur-v1.jpg",
+      "source": "assets/cat/white-fur-source.png",
+      "provenance": "assets/cat/white-fur-source.json",
+      "bytes": 377222,
+      "sha256": "631453729b6e9794a11a39426bf727a7874b742530cc280ae206326877b48beb",
+      "width": 1024,
+      "height": 1024,
+      "colorSpace": "sRGB",
+      "role": "albedo"
+    }
+  ],
+  "initialBytes": 4702994,
   "validation": {
     "numErrors": 0,
     "numWarnings": 0,
-    "numInfos": 0,
+    "numInfos": 12,
     "numHints": 0,
-    "messages": [],
+    "messages": [
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/7/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/8/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/9/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/10/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/1/primitives/0/attributes/TEXCOORD_0"
+      }
+    ],
     "truncated": false
   }
 }

@@ -52,4 +52,4 @@ Her raund aynı depoda ilerler. CURRENT_TASK.md güncel sınırı; HANDOFF.md ko
 - Kalori hesabı sahneden ayrıdır. UI catState'i enerji motorundan alır; care happy/play/stretch'i bastırır. Gün kalorileri kedinin beden geometrisini değiştirmez.
 - Fiziksel Android ≥30 FPS ve <3 sn hedefleri ölçülmeden doğrulanmış sayılmaz. Chromium SwiftShader yalnız renderer/etkileşim/hata yolu kabulüdür.
 
-R4 kabulü kapandı: 56 test + GLB validator + gerçek Chromium (1971754eb0de3d3b37697a28b84f85d4e5615f45). Fiziksel Android ve yayın bağımlılıkları açık; sonraki iş yalnız Raund 5. Doğrulama envanteri HANDOFF.md'dedir.
+R4 görsel kabulü kullanıcı geri bildirimiyle yeniden açıldı. Önceki teknik kabul referans görüntü kalitesini doğrulamaz. `r4-visual-quality` dalı yumuşak birleşimli geometri, daha ayrıntılı gözler, 22.500 gerçek kısa tüy ve imagegen beyaz kürk albedosu içerir. Ücretli/stock kedi kullanılmadı. Kalori motorları ve v1 şema korunur. R5'e geçilmez; fiziksel Android ve yayın bağımlılıkları açık. Güncel doğrulama envanteri HANDOFF.md'dedir.
