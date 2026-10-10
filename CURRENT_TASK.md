@@ -1,26 +1,20 @@
-# Güncel görev — Raund 4
+# Güncel görev — onaylı mobil görsel dilin uygulanması
 
-Tek çıktı: kullanıcı tarafından seçilen 1. örneğin gri-beyaz yönünde gerçek rigli 3D kedi ve sade oda sahnesi.
+11 Ekim 2026 · `reference-ui` · başlangıç: `a6291a3` (`r4-visual-quality`).
 
-## Sınır
+Tek çıktı: kullanıcının altı referans görseline göre çalışan Kalori Takip arayüzü.
 
-`src/ui/cat-card.ts`, `cat-scene.ts`, mevcut `main.ts`/`styles.css`; `src/domain/cat.ts`, mevcut CatPreferences sözleşmesi ve IndexedDB v1 store'u; `public/models/`, tekrar üretilebilir `scripts/build-cat.mjs`, asset/test/browser kontrolü ve devir belgeleri.
+## Kapsam
 
-Kalori, hareket, plan ve haftalık hesap motorları; beş ekran; framework ve veri şeması sürümü korunur. R5 ödül/bildirim ve R6 export/silme/hosting eklenmez. Ses isteğe bağlı kapsamdır; lisanslı ses üretilmediği için kapalı kalır.
+Bugün, Kayıtlar, Planım, İlerlemem, Sosyal, Ayarlar; ortak krem/desenli zemin, koyu yeşil düğmeler, altın çerçeveler, serif başlıklar, yeniden kullanılan referans ikonları ve altı sekmeli navigasyon. Bugün ekranında son Su / İlerlemem kısayolu referansı kullanılır. Kalori formu açılır bölümde; hesap, onay, retry ve geçmiş kayıt akışları korunur. Su takibi kullanıcı ve yerel gün bazında ayrı v1 cihaz kaydında tutulur.
 
-## Seçim
+Enerji/hareket/haftalık domain hesapları ve IndexedDB v1 değişmez. Mevcut beş video korunur. Gerçek hesap/arkadaş/grup/challenge altyapısı bu görsel turda kurulmaz. Sosyal ekran bunu açıkça belirtir; paylaşım kapalıdır, sahte arkadaş ve katılımcı kayıtları yoktur.
 
-Üç ayrı örnek sunuldu. Kullanıcı: “1 hocam ama rengi gri-beyaz olsun.” Seçilen yön yumuşak oyuncak görünümü; nihai varlık gerçek GLB'dir, referans PNG değil. Görünüm için yeniden seçim gerekmiyor.
+## Kabul ve mevcut durum
 
-## Kabul
+- TypeScript / üretim build / 39 domain ve depo + 22 DOM = 61 test: başarılı.
+- Video hash, fast-start, format ve boyut kontrolü: başarılı.
+- Mobil piksel eşleşmesi ve gerçek tarayıcı QA: açık. Playwright Chromium indirmesi geçerli ZIP dönmedi. Cloud Browser yerel önizlemeye `ERR_CONNECTION_REFUSED` verdi. Görsellerle birebir eşleşme onaylandı iddiası yok.
+- GitHub'a gönderim: 11 Ekim 2026'da kullanıcının açık onayıyla tamamlandı. Komut satırı kimlik doğrulaması bulunmadığı için bağlı GitHub bağlantısı kullanıldı. `reference-ui` dalı ve taslak PR #2 oluşturuldu; uygulama commit'i `1d0395fa1907c4da3f292a017ddcf1a424fa01a1`. Yerel/test edilen ve uzak kaynak ağacı aynı: `6305dc5bf94031724e438bef8edfb5ac6f79cea3`. Main'e birleştirme veya yayın yapılmadı.
 
-- GLB/glTF 2.0, gerçek geometri ve skin; baş/kulak/kuyruk/pati/göz/yüz kemikleri; idle/happy/stretch/play/sleep/care klipleri.
-- GLTF validator sıfır hata/uyarı; ≤25 bin kedi üçgeni, ≤5 MB asset; kaynak, lisans, hash ve klip envanteri.
-- Dokunma/yatay sürükleme/dikey scroll ayrımı, klavyeyle döndürme ve başlangıç açısına dönüş.
-- Enerji motorunun mevcut catState'i kullanılır; düşük tüketimde care kutlamayı/oyunu bastırır; beden boyutu kalorilerle değişmez.
-- İsim, hareket azaltma ve statik mod native IndexedDB'de; atomik makbuz/retry ve snapshot CAS.
-- Asset 404, WebGL context kaybı, WebGL yokluğu ve düşük FPS'te statik yedek; kalori formu sahneden bağımsız çalışır.
-- Görünmez sekme/kartta animasyon durur; DPR ≤1.5, 30 FPS hedefli döngü; fiziksel Android ölçümü ayrı açık gereksinimdir.
-- R2/R3 regresyonları, DOM ve gerçek Chromium akış/genişlik kabulü. Yazılım WebGL testi gerçek Android performansı sayılmaz.
-
-Durum: tamamlandı. 56 test + TypeScript/build + GLB validator ve son gerçek Chromium kabulü başarılı. Son kod/koşu/artifact HANDOFF.md'de. Fiziksel Android performansı pilot öncesi açık; yayın yapılmadı. Sonraki tek görev Raund 5.
+Sonraki tek görev: PR #2 üzerinde tarayıcı kontrollerini çalıştır, gerçek mobil ekran görüntülerini referanslarla karşılaştır ve yalnız bulunan görsel farkları düzelt.

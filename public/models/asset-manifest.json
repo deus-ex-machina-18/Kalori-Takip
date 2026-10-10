@@ -1,13 +1,16 @@
 {
   "asset": "grey-white-kitten.glb",
-  "version": 1,
+  "version": 4,
   "author": "Kalori-Takip project contributors (procedural generation)",
   "license": "MIT",
   "source": "scripts/build-cat.mjs",
   "date": "2026-10-06",
-  "sha256": "51182d5f81758a72aa7a6219e908a29df2c184ba6a98a08f0aa2502130fdf6b6",
-  "bytes": 997724,
-  "triangles": 19936,
+  "sha256": "2b26efac7a75a92fe8cacc5a63fb07142731911bb1e6fa9ba5b64466e213090c",
+  "bytes": 4066864,
+  "triangles": 48380,
+  "baseTriangles": 25880,
+  "furTriangles": 22500,
+  "furStrands": 22500,
   "textures": 0,
   "bones": [
     "Root",
@@ -67,12 +70,107 @@
       0
     ]
   },
+  "runtimeTextures": [
+    {
+      "asset": "white-fur-v1.jpg",
+      "source": "assets/cat/white-fur-source.png",
+      "provenance": "assets/cat/white-fur-source.json",
+      "bytes": 377222,
+      "sha256": "631453729b6e9794a11a39426bf727a7874b742530cc280ae206326877b48beb",
+      "width": 1024,
+      "height": 1024,
+      "colorSpace": "sRGB",
+      "role": "albedo"
+    }
+  ],
+  "poster": {
+    "asset": "cat-poster.webp",
+    "bytes": 74070,
+    "sha256": "6f02535d25a4f034494850f1af662d1a10ba028634efb047fe6679e83564d2fa",
+    "width": 1200,
+    "height": 1202,
+    "source": "same live GLB, scene and shaders; 600 CSS px, DPR cap 1.5; WebP encoding only"
+  },
+  "initialBytes": 4518156,
+  "rendering": {
+    "furLayers": 12,
+    "balancedFurLayers": 4,
+    "sceneTriangleBudget": 300000,
+    "description": "Includes the main render and shadow pass; underfur shares GLB vertices and adds no downloads. Balanced mode keeps every third shell."
+  },
   "validation": {
     "numErrors": 0,
     "numWarnings": 0,
-    "numInfos": 0,
+    "numInfos": 11,
     "numHints": 0,
-    "messages": [],
+    "messages": [
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/3/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/4/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/5/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/6/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/7/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/8/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/9/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/1/primitives/0/attributes/TEXCOORD_0"
+      }
+    ],
     "truncated": false
   }
 }

@@ -1,0 +1,43 @@
+{
+  "checks": [
+    "320/bugun: no overflow, controls reachable",
+    "320/kayitlar: no overflow, controls reachable",
+    "320/planim: no overflow, controls reachable",
+    "320/ilerlemem: no overflow, controls reachable",
+    "320/ayarlar: no overflow, controls reachable",
+    "360/bugun: no overflow, controls reachable",
+    "360/kayitlar: no overflow, controls reachable",
+    "360/planim: no overflow, controls reachable",
+    "360/ilerlemem: no overflow, controls reachable",
+    "360/ayarlar: no overflow, controls reachable",
+    "390/bugun: no overflow, controls reachable",
+    "390/kayitlar: no overflow, controls reachable",
+    "390/planim: no overflow, controls reachable",
+    "390/ilerlemem: no overflow, controls reachable",
+    "390/ayarlar: no overflow, controls reachable",
+    "768/bugun: no overflow, controls reachable",
+    "768/kayitlar: no overflow, controls reachable",
+    "768/planim: no overflow, controls reachable",
+    "768/ilerlemem: no overflow, controls reachable",
+    "768/ayarlar: no overflow, controls reachable",
+    "1280/bugun: no overflow, controls reachable",
+    "1280/kayitlar: no overflow, controls reachable",
+    "1280/planim: no overflow, controls reachable",
+    "1280/ilerlemem: no overflow, controls reachable",
+    "1280/ayarlar: no overflow, controls reachable",
+    "keyboard, heading focus, back/forward, reduced motion, 200% equivalent reflow: pass",
+    "R3 native IndexedDB: activity CRUD, reload, failure/retry, balance unchanged, approved movement draft version and persistence: pass",
+    "R2 native IndexedDB: profile approval, 650+800+500, complete, reload, mode conversion/cancel, storage failure retry, weight persistence: pass",
+    "R4 full-size WebGL stills: model + albedo, shader error check, rotate/drag/reset, five widths. Animation mechanics: 160px software backbuffer play/stretch/sleep/pause. Full-size throttled RAF: balanced then static. Model/texture 404 and context loss preserve calorie form. Not Android performance acceptance: pass"
+  ],
+  "errors": [],
+  "verifiedAt": "2026-10-06T12:43:40.968211+00:00",
+  "modelSha256": "2b26efac7a75a92fe8cacc5a63fb07142731911bb1e6fa9ba5b64466e213090c",
+  "posterSha256": "6f02535d25a4f034494850f1af662d1a10ba028634efb047fe6679e83564d2fa",
+  "rendering": {
+    "furLayers": 12,
+    "balancedFurLayers": 4,
+    "sceneTriangleBudget": 300000,
+    "description": "Includes the main render and shadow pass; underfur shares GLB vertices and adds no downloads. Balanced mode keeps every third shell."
+  }
+}

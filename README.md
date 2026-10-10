@@ -19,7 +19,7 @@ npm run build
 npm run preview
 ```
 
-`check`: TypeScript, üretim build'i, 36 tarih/hesap/IndexedDB testi ve 20 DOM akış testi; ayrıca gerçek GLB validator ve bütçe kontrolü. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
+`check`: TypeScript, üretim build'i, 39 tarih/hesap/IndexedDB ve kalori-video sınır testi, 20 DOM akış testi; ayrıca aktif MP4/poster hash, bütçe ve fast-start kontrolü. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
 
 ```bash
 npx playwright install chromium
@@ -27,7 +27,7 @@ npm run build
 node scripts/browser-check.mjs
 ```
 
-GitHub Actions aynı Chromium kontrolünü çalıştırır: 320/360/390/768/1280px boş ve kayıtlı ekranlar, klavye/odak/navigasyon, gerçek IndexedDB ile profil/kalori/mod/kilo/yenileme ve saklama hatası sonrası tekrar deneme. `browser-check` artifact'ı görüntüleri ve raporu içerir. Modelin başarılı [Chromium koşusu](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37420124824): 56 test, R2/R3 regresyonları ve R4 gerçek GLB/WebGL2/IndexedDB/etkileşim/hata yolu kabulü geçti. Statik poster, görünmez kartta durma ve yapay düşük FPS yedeği de geçti; 70 PNG ve hatasız rapor oluştu. Ayrıntı HANDOFF.md'de.
+GitHub Actions aynı Chromium kontrolünü çalıştırır: beş genişlikte boş/kayıtlı ekranlar, klavye/odak, gerçek IndexedDB, kayıt hatası/retry ve beş videonun gerçek decode/tek oynatma/beklemeye dönüş akışı. `browser-check` artifact'ı ekran görüntülerini ve raporu içerir. Fiziksel Android testi ayrı kabul adımıdır; güncel sonuç HANDOFF.md içindedir.
 
 ## Kullanım
 
@@ -44,16 +44,16 @@ Boş gün sıfır değildir. Hedef aralığını aşmak, koruma ihtiyacını aş
 
 Tek profil ve tek tarayıcı/origin kapsamında **IndexedDB**. Gerçek hesapla giriş, güvenli çok kullanıcı izolasyonu, bulut senkronizasyonu ve yedekleme henüz yok. Site verisini temizlemek kayıtları silebilir. Origin değiştirmek diğer origin'deki kayıtları taşımaz. Saklama hatası açık gösterilir; belleğe sessiz fallback yapılmaz.
 
-Manifest başlangıçtır; service worker/offline/push/install akışı henüz yok. Gri-beyaz kedi gerçek GLB/iskelet ve altı kliple çalışır; WebGL yoksa statik yedek gösterilir. Hareket hesabı, düzenlenebilir hareket/kalori planı ve son yedi kapalı günün değerlendirmesi çalışır. Ödül/bildirim ve yayın sonraki raundların kapsamıdır. Ayarlar’dan kedi adı, hareket azaltma ve statik mod kaydedilebilir. Ses kapalıdır.
+Manifest başlangıçtır; service worker/offline/push/install akışı henüz yok. Gri-beyaz kedi sabit açılı beş MP4 ile çalışır; video hatasında ortak WebP poster gösterilir. Hareket azaltma/statik tercih video indirmez. Hareket hesabı, düzenlenebilir hareket/kalori planı ve son yedi kapalı günün değerlendirmesi çalışır. Ödül/bildirim ve yayın sonraki raundların kapsamıdır. Ayarlar’dan kedi adı, hareket azaltma ve statik mod kaydedilebilir. Ses kapalıdır.
+
+## Kedi videoları
+
+Aktif medya `public/cat-media/`; tek envanter `asset-manifest.json`. Mevcut bekleme, hedef tuttu, hedef üstü/koruma altı, koruma üstü ve hedef altı klipleri kullanılır. Başarılı “Günü tamamla” kaydı tepkiyi bir kez oynatır; sonra beklemeye döner, sonuç yazısı kalır. Yenileme/navigasyon/geçmiş gün kaydı tepkiyi tekrar oynatmaz. Plan farkları mevcut enerji motorundan gelir. Bakım önceliği korunur. Oyun/esneme/uyku videoları bu pakette yok; eski 3D etkileşim düğmeleri aktif arayüzden kaldırılmıştır.
+
+640×640, H.264 Constrained Baseline, yuv420p, 24 fps, sessiz, fast-start MP4. Kaynak 16 fps klipleri 24 fps'e dönüştürmek yeni hareket ayrıntısı üretmez. Paket/poster 1.539.538 bayt; ilk bekleme/poster 312.844 bayt. Klip sonları ortak bekleme karesine 0,25 sn çözünür. Hedef-altı kabın klip ortasında belirme/kayma kusuru devam eder; yeniden üretim adayıdır.
+
+Tekrar hazırlama: `python3 scripts/prepare-cat-videos.py --source-dir /kaynaklar`. Kaynak klasörü aynı isimli beş orijinal MP4 içermeli; orijinaller değiştirilmez. Kaynak hash'leri envanterde. Eski GLB kaynakları tarihsel çalışma olarak korunur; aktif uygulama Three.js yüklemez.
 
 ## Sonraki sohbet
 
-PROJECT.md, CURRENT_TASK.md, HANDOFF.md ve docs/DATA_CONTRACT.md'yi oku. R4 tarayıcı kabulü tamamlandıysa yalnız Raund 5’e geç; mevcut ekranları veya framework'ü yeniden başlatma. Enerji hesabının tek kaynağı src/domain/tracking.ts ve docs/ENERGY_POLICY.md'dir.
-
-## 3D varlık
-
-`public/models/grey-white-kitten.glb`: özgün prosedürel mesh, 14 kemik, 19.936 üçgen, 997.724 bayt, doku yok. Kaynak `scripts/build-cat.mjs`; MIT lisans metni ve hash/klip envanteri aynı klasörde. Yeniden üretim: `npm run assets:cat`; doğrulama: `npm run test:assets`.
-
-Three.js/GLTFLoader yalnız Bugün sahnesinde dinamik yüklenir. Yatay sürükle veya erişilebilir düğmelerle döndür; açı sıfırlanabilir. Sahne görünmezken animasyon durur. DPR en fazla 1.5, 30 FPS hedefli döngü; ölçülen <20 FPS, context kaybı veya 404 statik yedeğe geçer. Fiziksel Android performansı henüz ölçülmedi; Chromium SwiftShader sonucu Android kabulü değildir.
-
-Statik yedek `cat-poster.png`, gerçek modelin nötr render'ıdır; 2D görsel gerçek GLB'nin yerine sunulmaz. Model referans yönünü izleyen hafif geometri kullanır; ayrıntılı kürk yoktur.
+PROJECT.md, CURRENT_TASK.md ve HANDOFF.md'yi oku. Sonraki tek görev fiziksel Android'de video/görsel kabulüdür. Alternatif klip üretimi bu kontrolden sonra; R5 özelliklerini aynı tura ekleme. Enerji hesabının tek kaynağı src/domain/tracking.ts ve docs/ENERGY_POLICY.md'dir.

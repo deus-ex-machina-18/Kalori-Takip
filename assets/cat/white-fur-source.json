@@ -1,0 +1,7 @@
+{
+  "asset": "white-fur-source.png",
+  "created": "2026-10-06",
+  "generator": "OpenAI imagegen",
+  "purpose": "Fine short white kitten fur albedo; material only, not a kitten render or 3D geometry",
+  "prompt": "Use case: photorealistic-natural. Asset type: seamless square albedo texture for the surface of a premium soft 3D baby kitten. Create a 1024 by 1024 flat, edge-to-edge material swatch of extremely fine, dense, SHORT white kitten fur. Macro-level individual hair fibres are clearly resolved, overlapping in natural small wisps, softly combed in a mostly downward direction with small variation. The fur should look delicately velvety and natural, like the surface of a high quality animated baby kitten, with tiny soft fibre occlusion and bright ivory-white highlights. Flat uniform neutral diffuse lighting appropriate to a PBR albedo texture, gentle low contrast but detailed fine hair structure. Seamless tiling in both axes; consistent density and scale across the full square. Entire frame consists of fur texture only. No cat body, face, eyes, paws, ears, room, border, text, logo, watermark, tufts protruding in perspective, large waves, fabric weave, shadow gradient, or large locks of hair. White and very light neutral ivory grey only; no orange, pink, blue or tan patches."
+}

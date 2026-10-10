@@ -1,56 +1,46 @@
-# Raund 4 — devir teslim
+# 11 Ekim 2026 — arayüz teslim durumu
 
-Repo: https://github.com/deus-ex-machina-18/Kalori-Takip
-Dal: main · sürüm 0.4.0 · 6 Ekim 2026
-Başlangıç: R3 teslim ef2df0b65ab10372e5dc89cb259439aa08389cb0.
+Güncel görev ve kabul sınırları `CURRENT_TASK.md` içindedir. Onaylı görsel dil altı ekrana uygulandı; domain/depo mantığı korunuyor, su takibi ve açıkça etiketlenmiş Sosyal önizleme eklendi. 61 test, build ve medya doğrulaması geçti. Piksel eşleşmesi ve tarayıcı kabulü tamamlanmadı. Kullanıcının 11 Ekim 2026 tarihli açık onayıyla `reference-ui` dalı ve taslak PR #2 GitHub'a gönderildi. Uygulama commit'i `1d0395fa1907c4da3f292a017ddcf1a424fa01a1`; test edilen kaynak ağacı `6305dc5bf94031724e438bef8edfb5ac6f79cea3` ile aynı. Main ve PR #1 değişmedi.
 
-## Durum
+Yerel dal: `reference-ui`, taban: `a6291a3`. `npm ci && npm run check`; tarayıcı ortamı sağlanınca `node scripts/browser-check.mjs`. Sonraki tek görev: PR #2 üzerinde tarayıcı kanıtları ve referansla görsel karşılaştırma.
 
-**Raund 4 uygulama ve gerçek Chromium kabulü tamamlandı; main’de.** 56 test, TypeScript, üretim build'i ve GLB doğrulaması başarılı. Fiziksel Android performansı ölçülmedi. Yayın yapılmadı.
+---
 
-Doğrulanmış son kod: 1971754eb0de3d3b37697a28b84f85d4e5615f45. Bu belgenin sonraki commit'i yalnız devir belgelerini günceller.
+# R4 video entegrasyonu — devir
 
-## Kullanıcı seçimi
+10 Ekim 2026 · `deus-ex-machina-18/Kalori-Takip` · dal `r4-visual-quality` · taslak PR #1.
+Başlangıç head: `6b0b9ecf32709626b11269bd44c7e82062e4df28`. Yeni head için GitHub'ı esas al.
 
-Üç ayrı örnek sunuldu; kullanıcı “1 hocam ama rengi gri-beyaz olsun” dedi. Yumuşak oyuncak yönü gri-beyaz, mobil için sadeleştirilmiş gerçek geometriyle uygulandı. Ayrıntılı kürk yok; referans PNG gerçek 3D model diye sunulmadı. Kedi adı Ayarlar'dan değiştirilebilir.
+## Tamamlanan uygulama
 
-## Tamamlananlar
+- Eski aktif Three.js kedi, kullanıcının mevcut beş videosunu oynatan sabit açılı kartla değişti. Bekleme yeniden üretilmedi.
+- Başarılı bugünkü tamamlama, ilgili tepkiyi bir kez oynatır. Sonra bekleme; sonuç yazısı kayıtlı veriden kalır. Yenileme/navigasyon replay üretmez. Kayıt hata/retry akışı korunur. Tamamlamada kart görünür alana getirilir.
+- Aralık/sınır/koruma sonucu enerji motorunun farklarından sunulur; hesap motorları, veri tipleri ve IndexedDB v1 değişmedi. Care önceliği korunur.
+- İsim/statik/hareket azaltma mevcut ayarlarda kalıcı. Kare medya contain; video gizliyken durur; hata poster/form yedeğine döner. İki video elemanı en fazla aynı anda; tepki dosyaları yalnız olayda yüklenir.
+- Beş MP4: 640×640, Baseline/yuv420p, sessiz, fast-start, 24 fps. Orijinal 16 fps kaynaklara yeni hareket karesi uydurulmadı. 0,25 sn ortak başlangıç karesine çözünür. Aktif poster aynı idle ilk karesidir.
+- Paket+poster 1.539.538 bayt; ilk yük 312.844 bayt. Bir 640px RGBA kare ~1,64 MB, iki kare ~3,28 MB: bu yalnız ham kare hesabıdır, gerçek decoder bellek ölçümü değildir.
+- Oyun/esneme/uyku klipleri mevcut değil; eski 3D hareket/döndürme kontrolleri aktif karttan kaldırıldı. Kaynak 3D çalışma `docs/archive/r4-3d-handoff.md` ve mevcut dosyalarda korunur.
 
-- Gerçek GLB/glTF 2.0 mesh ve skin; 14 kemik, 19.936 üçgen, 997.724 bayt, doku yok. Baş, iki kulak, kuyruk, patiler, göz ve ağız bağımsız animasyon izlerine sahip. idle/happy/stretch/play/sleep/care; loop/one-shot ve 0,25 sn geçiş. Basit tek oda.
-- Özgün prosedürel kaynak `scripts/build-cat.mjs`; GLB, SHA-256/klip envanteri ve tam MIT lisans metni `public/models/` içinde. Ticari kullanım/değiştirme/web dağıtımı lisansla izinlidir. Dış mesh, doku veya ses kullanılmadı. Ses kapalı.
-- Three.js/GLTFLoader/AnimationMixer dinamik yüklenir. Dokunma, yatay döndürme ve dikey kaydırma ayrılır; klavye düğmeleri, açı sıfırlama, oyun, gerinme ve uyku. Erişilebilir kedi adı/durum/metin, canvas dışı kontroller.
-- Kedi durumu mevcut enerji motorundan gelir. Care kutlamayı/oyunu bastırır; kedinin beden boyutu kalorilerle değişmez. Kalori/plan/hareket/haftalık hesaplar ve beş ekran korunur.
-- İsim/reducedMotion/sceneMode mevcut IndexedDB v1 CatPreferences store'unda. Profil zorunlu; aynı transaction'da ayar+makbuz, aynı işlem retry ve tam snapshot CAS. Şema migrasyonu yok. Profil öncesi cihazın hareket tercihi kullanılır.
-- Statik PNG, aynı gerçek modelin nötr render'ıdır. Auto/statik seçim kalıcıdır; WebGL yokluğu, model 404/12 sn timeout, context kaybı veya düşük FPS'te yedek görünüm. Sahne hatası kalori formunu kapatmaz.
-- DPR≤1.5, yaklaşık 30 FPS döngü, tek 512² gölge. Görünmez kart/sekmede döngü durur. Görünür 4 sn örnekte <20 FPS statik moda geçer. Gerçek Android FPS/yükleme kabulü ayrı açık gereksinimdir.
+## Dosyalar
 
-## Kontroller — başarılı
+`src/ui/cat-card.ts`, `cat-video.ts`, `cat-result.ts`; `src/ui/tracker.ts` başarılı kayıt olayı; `src/main.ts`, ilgili CSS. Aktif medya/provenance/hash tek kaynak `public/cat-media/asset-manifest.json`. `scripts/prepare-cat-videos.py`, `validate-cat-media.mjs`, `cat-browser-check.mjs`, mevcut `browser-check.mjs`; `tests/cat-result.test.ts`.
 
-- Yerel `npm run check`: TypeScript + üretim build + 36 domain/depo + 20 DOM testi. R2/R3 regresyonları, kedi CAS/reload/retry, isim HTML güvenliği ve care önceliği geçti. GLB validator sıfır hata ve uyarı; bütçe ve bağımsız kemik animasyon izleri doğrulandı.
-- Son gerçek Chromium koşusu: https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/37420124824
-- Commit: 1971754eb0de3d3b37697a28b84f85d4e5615f45; artifact browser-check ID 11392532655; 70 PNG + report.json + r4-metrics.json; errors=[].
-- Native IndexedDB ile R2/R3 ve R4 tercih retry/reload geçti. Gerçek GLB/WebGL2, döndürme/sürükleme/reset, play/stretch/sleep, care önceliği, yeniden kısmi/nötr gün, 404 ve gerçek WEBGL_lose_context, WebGL yokluğu, kalıcı statik/reduced motion, görünmez kartta durma/dönüşte devam ve yapay yavaş RAF'te düşük FPS yedeği geçti.
-- 320/360/390/768/1280px boş/kayıtlı/3D ekranlar ve mevcut klavye/odak/reflow akışları geçti. 320px gerçek 3D ve 390px statik ekran son artifact'tan görsel olarak incelendi. Kontroller kaydırmayla erişilebilir; sabit alt navigasyon tam sayfa ekran görüntüsünde orta akışın üzerine çizilir.
-- Chromium SwiftShader yazılım renderer: gölge geçişi dahil 40.580 çizilen üçgen, 22 draw call; yerel preview ilk render 213 ms. Bu internet bağlantısı veya fiziksel Android sonucu değildir. 640px reflow gerçek %200 zoom değildir.
+## Doğrulama
 
-Yerel Chromium indirmesi geçerli ZIP dönmedi; gerçek tarayıcı kabulü GitHub Actions'ta yapıldı. Bir ara koşu yalnız test betiğinin çoklu sekme context kurulumu yüzünden başarısız oldu; açık browser context ile düzeltildi, son koşu bütünüyle geçti.
+- Beş MP4 yerelde FFmpeg ile sonuna kadar hatasız çözüldü.
+- Yerel Chromium indirimi geçerli ZIP dönmedi; gerçek tarayıcı kabulü GitHub Actions'ta çalıştırılır.
+- `npm run check`: TypeScript/üretim build + 39 domain/depo/sınır + 20 DOM = **59 test**, medya hash/bütçe/fast-start geçti.
+- Gerçek Chromium: **başarılı** [Actions 38084061717](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38084061717), test edilen uygulama commit'i `4ccad767dfa40fdc0e897aa776438fc2d6d974f6`. Native IndexedDB/R2/R3 ve tercihler/retry, sekiz kcal/sınır sonucu, kısmi 800, gerçek video decode/ended/idle, sabit yazı, reload/navigasyon replay yok, başarılı completion retry, IntersectionObserver pause/resume, simüle görünmez sekme, beş genişlik contain, statik/hareket azaltma MP4 yok, idle/tepki 404 ve autoplay reddinde çalışan form. `errors=[]`.
+- Artifact 11681885098: 75 dosya. Kalıcı kanıt `docs/verification/r4-video-browser-report.json`, `r4-video-metrics.json`, `r4-video-mobile-390.png`. Kartın görsel kesiti `r4-video-cat-card-390.png`. Tam ekran görüntüsünde klavye testinden kalan odaklı “İçeriğe geç” bağlantısı görünür; kesit yalnız kartın görsel incelemesidir.
+- 390px ekranda medya kartı 304×304 CSS px; kaynak gerçekten 640×640 çözülür, object-fit contain. 320/360/768/1280 genişliklerde de taşma yok. Bunlar masaüstü Chromium'da mobil viewport sonuçlarıdır; fiziksel Android sonucu değildir.
+- Sonraki belge/kanıt commit'i aynı uygulama ağacını korur; yeni head'de CI sonucu ayrıca kontrol edilir.
 
-## Çalıştırma
+## Açık
 
-```bash
-npm ci
-npm run check
-npm run dev
-```
-
-http://127.0.0.1:5173/#/bugun. GLB tekrar üretim: `npm run assets:cat`; validator: `npm run test:assets`. Gerçek tarayıcı: build sonrası `node scripts/browser-check.mjs` (Playwright Chromium gerekir). Kaynak geometri değişirse statik poster de güncel gerçek render'dan alınmalı.
-
-## Açık bağımlılıklar
-
-Fiziksel orta sınıf Android ≥30 FPS ve <3 sn ilk sahne hedefi, gerçek %200 zoom, ekran okuyucu ve klinik inceleme pilot öncesi açık. Tek cihaz/origin/yerel profil; login/yetki/senkronizasyon/yedekleme/hosting yok. Manifest tam offline/push değildir. MET belirsizliği kişisel ölçüm veya güven aralığı değildir. Ücretli hizmet açılmadı.
+Hedef-altı videoda kap klip ortasında belirip kayıyor; son kare çözünmesi bunu tamamen düzeltmez. Hedef üstü hafif uyarıda yan bakış/baş sallama zayıf. Fiziksel Android yükleme/pil/decode ve kullanıcı görsel kabulü açık. Yeni kedi/video üretilmedi; ücretli servis kullanılmadı. Main'e birleştirme/yayın yok.
 
 ## Sonraki tek görev
 
-**Yalnız Raund 5 — kalıcı haftalık geri bildirim, ödüller ve hatırlatmalar.** PROJECT/CURRENT_TASK/DATA_CONTRACT/ENERGY_POLICY okunmalı; mevcut motorlar ve 3D sahne yeniden yazılmaz. Kalori açığının büyüklüğü ödül gerekçesi olamaz, care kutlamayı bastırır, eksik günler sıfır değildir; `(userId,eventKey)` idempotent ödül anahtarı korunur. Push/HTTPS/arka plan bağımlılıkları gerçekten kurulmadan push çalışıyor denmez. R6 export/silme/hosting kapsamı eklenmedi.
+Son kullanıcı yönlendirmesi: kedi adı **Zilli**; varsayılan ad güncellendi. Eski ekranlarda Duman test adı görünebilir. Kullanıcı ayrı sohbette mobil ekran tasarımını çalışacak; önce mevcut video kartını ve uzun sonuçları kullanan 390px Bugün tasarımı, sonra aynı dilde diğer dört ekran. Çalışan hesap/depo/video davranışını veya karakter kimliğini yeniden tasarlama. Yeni özellik, video üretimi ve R5 bu tura eklenmez.
 
-Yeni görsel veya 3D yön için önce üç örnek ve kullanıcı seçimi şartı sürer. Mevcut gri-beyaz 1. yön için yetki zaten vardır.
+Tasarım uygulandıktan sonra aynı sürümü gerçek Android'de kontrol et. Sonra sorunlu klipleri/alternatifleri aynı ilk kare/kamera/ışıkla üret. Bildirim/ödül veya hesap değişikliği ekleme.

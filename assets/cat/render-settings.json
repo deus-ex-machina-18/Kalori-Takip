@@ -1,0 +1,6 @@
+{
+  "furLayers": 12,
+  "balancedFurLayers": 4,
+  "sceneTriangleBudget": 300000,
+  "description": "Includes the main render and shadow pass; underfur shares GLB vertices and adds no downloads. Balanced mode keeps every third shell."
+}

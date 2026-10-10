@@ -1,5 +1,7 @@
 import * as T from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { addUnderfur, reduceUnderfur, FUR_LAYERS, BALANCED_FUR_LAYERS } from './cat-fur.ts';
 import type { CatScene } from '../domain/contracts.ts';
 import type { CatPreferences, DaySummary } from '../domain/models.ts';
 import type { CAT_PRESENTATION } from '../domain/cat.ts';
@@ -7,6 +9,7 @@ import type { CAT_PRESENTATION } from '../domain/cat.ts';
 type ClipName = 'idle' | 'happy' | 'stretch' | 'play' | 'sleep' | 'care';
 const BASE_ANGLE = -.22;
 const modelUrl = `${import.meta.env.BASE_URL}models/grey-white-kitten.glb`;
+const furUrl = `${import.meta.env.BASE_URL}models/white-fur-v1.jpg`;
 
 /** Owned by one mounted card. Every request, listener and GPU resource is disposed. */
 export class ThreeCatScene implements CatScene {
@@ -36,25 +39,33 @@ export class ThreeCatScene implements CatScene {
   private host: HTMLElement;
   private fallback: (reason:string)=>void;
   private presentation: typeof CAT_PRESENTATION;
+  private textures = new Set<T.Texture>();
+  private environment: T.WebGLRenderTarget;
+  private furBitmap: ImageBitmap | null = null;
+  private balanced = false;
   constructor(host: HTMLElement, summary: DaySummary, preferences: CatPreferences, presentation: typeof CAT_PRESENTATION, fallback: (reason:string)=>void) {
     this.host=host;this.summary=summary;this.reduced=preferences.reducedMotion;this.fallback=fallback;
     this.presentation=presentation;
     this.renderer = new T.WebGLRenderer({ antialias:true, alpha:false, powerPreference:'low-power' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-    this.renderer.setClearColor('#f3ece2');
+    this.renderer.setClearColor('#e9dfd2');
     this.renderer.outputColorSpace=T.SRGBColorSpace;
     this.renderer.toneMapping=T.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure=1;
-    this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFShadowMap;
+    this.renderer.toneMappingExposure=1.04;
+    this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;
+    const room=new RoomEnvironment(),pmrem=new T.PMREMGenerator(this.renderer);
+    this.environment=pmrem.fromScene(room,.04);this.scene.environment=this.environment.texture;this.scene.environmentIntensity=.32;
+    room.dispose();pmrem.dispose();
     const canvas=this.renderer.domElement;
     canvas.className='cat-canvas';canvas.setAttribute('aria-hidden','true');
     host.querySelector('.cat-viewport')!.append(canvas);
-    this.camera.position.set(.08,1.01,2.95);this.camera.lookAt(0,.76,0);
-    this.scene.add(new T.HemisphereLight('#fff7e8','#b1b8ac',1.8));
-    const light=new T.DirectionalLight('#fff4e5',2.4);light.position.set(-2,3,4);light.target.position.set(0,.6,0);
-    light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.camera.left=-1.2;light.shadow.camera.right=1.2;light.shadow.camera.top=1.3;light.shadow.camera.bottom=-1.1;light.shadow.camera.near=.5;light.shadow.camera.far=10;light.shadow.normalBias=.02;
+    this.camera.position.set(.10,1.16,3.25);this.camera.lookAt(0,.72,0);
+    this.scene.add(new T.HemisphereLight('#fff0d9','#b2a28f',.65));
+    const light=new T.DirectionalLight('#ffe6c8',2.7);light.position.set(-3,3.2,3.4);light.target.position.set(0,.6,0);
+    light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-1.2;light.shadow.camera.right=1.2;light.shadow.camera.top=1.65;light.shadow.camera.bottom=-.6;light.shadow.camera.near=.5;light.shadow.camera.far=10;light.shadow.normalBias=.009;light.shadow.bias=-.0001;light.shadow.radius=4;light.shadow.blurSamples=8;
     this.scene.add(light,light.target);
-    const fill=new T.DirectionalLight('#e5eaf1',.7);fill.position.set(2,1,-1);this.scene.add(fill);
+    const fill=new T.DirectionalLight('#edf1ff',.28);fill.position.set(2,1.5,3);this.scene.add(fill);
+    const rim=new T.DirectionalLight('#fff1dc',1.4);rim.position.set(1,2,-2);this.scene.add(rim);
     this.room();
     const signal=this.listeners.signal;
     canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();this.fail('3D görünüm durdu. Statik kedinle kayıtlarına devam edebilirsin.');},{signal});
@@ -91,30 +102,101 @@ export class ThreeCatScene implements CatScene {
     this.fit();
   }
   private room(): void {
-    const material=(color:string)=>new T.MeshStandardMaterial({color,roughness:1});
-    const floor=new T.Mesh(new T.BoxGeometry(5,.04,5),material('#e3d4c1'));floor.position.set(0,-.03,0);floor.receiveShadow=true;this.scene.add(floor);
-    const wall=new T.Mesh(new T.BoxGeometry(5,3,.04),material('#f4eadc'));wall.position.set(0,1.45,-.62);this.scene.add(wall);
+    const material=(color:string,extra:Partial<T.MeshStandardMaterialParameters>={})=>new T.MeshStandardMaterial({color,roughness:1,...extra});
+    const grain=this.surfaceTexture('grain'),wood=this.surfaceTexture('wood');
+    const floor=new T.Mesh(new T.BoxGeometry(5,.04,5),material('#d8c3a9',{bumpMap:wood,bumpScale:.002,roughness:.92}));floor.position.set(0,-.03,0);floor.receiveShadow=true;this.scene.add(floor);
+    const wall=new T.Mesh(new T.BoxGeometry(5,3,.04),material('#ffffff',{map:this.surfaceTexture('wall')}));wall.position.set(0,1.45,-.8);this.scene.add(wall);
     const side=new T.Mesh(new T.BoxGeometry(.04,3,4),material('#ede2d4'));side.position.set(-1.35,1.45,1.35);this.scene.add(side);
-    const mat=new T.Mesh(new T.CylinderGeometry(.72,.72,.025,48),material('#a4b29b'));mat.position.set(0,-.003,.08);mat.scale.z=.8;mat.receiveShadow=true;this.scene.add(mat);
-    const shadow=new T.Mesh(new T.CircleGeometry(.37,40),new T.MeshBasicMaterial({color:'#667263',transparent:true,opacity:.16,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.set(0,.012,.06);shadow.scale.y=.7;this.scene.add(shadow);
-    const cushion=new T.Mesh(new T.SphereGeometry(1,20,12),material('#d8b0a1'));cushion.position.set(.91,.13,-.3);cushion.scale.set(.31,.13,.25);this.scene.add(cushion);
+    const trim=new T.Mesh(new T.BoxGeometry(5,.075,.055),material('#eee4d7'));trim.position.set(0,.018,-.755);this.scene.add(trim);
+    const rug=this.surfaceTexture('rug');
+    const mat=new T.Mesh(new T.LatheGeometry([[0,-.012],[.835,-.012],[.865,-.006],[.88,.002],[.871,.014],[.84,.018],[0,.018]].map(p=>new T.Vector2(p[0],p[1])),64),material('#9caa83',{map:rug,bumpMap:grain,bumpScale:.009}));mat.position.set(0,-.008,.08);mat.scale.z=.86;mat.receiveShadow=true;this.scene.add(mat);
+    const shadow=new T.Mesh(new T.PlaneGeometry(1.16,.79),new T.MeshBasicMaterial({map:this.surfaceTexture('shadow'),transparent:true,opacity:.32,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.set(0,.012,.03);this.scene.add(shadow);
+    const cushion=new T.Mesh(new T.SphereGeometry(1,32,18),material('#d49d86',{bumpMap:grain,bumpScale:.004}));cushion.position.set(.93,.125,-.42);cushion.scale.set(.37,.135,.285);cushion.castShadow=true;cushion.receiveShadow=true;this.scene.add(cushion);
+    const seam=new T.Mesh(new T.TorusGeometry(1,.008,5,64),material('#bb8975'));seam.rotation.x=Math.PI/2;seam.position.copy(cushion.position);seam.scale.set(.371,.286,1);this.scene.add(seam);
+  }
+  private surfaceTexture(kind:'grain'|'wood'|'wall'|'shadow'|'rug'):T.Texture {
+    const size=kind==='wall'||kind==='shadow'?128:256,data=new Uint8Array(size*size*4);let seed=319;
+    const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+    const warm=new T.Color('#f2d9b6'),shade=new T.Color('#bda58e');
+    for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      const i=(y*size+x)*4;data[i+3]=255;
+      if(kind==='shadow'){const r=Math.hypot((x/size-.5)*2,(y/size-.5)*2);data.set([40,38,28,Math.round(255*Math.max(0,1-r)**2)],i);}
+      else if(kind==='wall'){
+        const u=x/size,v=y/size;
+        const pane=1-T.MathUtils.smoothstep(Math.abs(u+.20*v-.46),.055,.10);
+        const horizontal=1-T.MathUtils.smoothstep(Math.abs(v-.48),.24,.30);
+        const window=pane*horizontal*.55;
+        const c=warm.clone().lerp(shade,T.MathUtils.clamp(u*.9+(1-v)*.38-window,0,1));
+        const srgb=c.convertLinearToSRGB();data.set([Math.round(srgb.r*255),Math.round(srgb.g*255),Math.round(srgb.b*255),255],i);
+      }
+      else if(kind==='rug'){const v=180+random()*60;data.set([v,v,v,255],i);}
+      else {const v=kind==='wood'?127+24*Math.sin(x*.85+Math.sin(y*.035)*2)+12*Math.sin(x*2.4+y*.01):85+random()*100;data.set([v,v,v,255],i);}
+    }
+    const texture=new T.DataTexture(data,size,size,T.RGBAFormat);texture.needsUpdate=true;texture.magFilter=T.LinearFilter;texture.minFilter=T.LinearFilter;
+    if(kind==='grain'||kind==='wood'||kind==='rug'){texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(kind==='wood'?4:3,kind==='wood'?4:3);texture.minFilter=T.LinearMipmapLinearFilter;texture.generateMipmaps=true;texture.anisotropy=Math.min(4,this.renderer.capabilities.getMaxAnisotropy());}
+    if(kind==='wall'||kind==='rug')texture.colorSpace=T.SRGBColorSpace;this.textures.add(texture);return texture;
+  }
+  private fibreMaterial():T.MeshPhysicalMaterial {
+    // The coat and fibres share real scene lights and shadows, avoiding bright flecks.
+    const material=new T.MeshPhysicalMaterial({vertexColors:true,side:T.DoubleSide,roughness:1,
+      sheen:.25,sheenColor:new T.Color('#978a7e'),sheenRoughness:1,envMapIntensity:.25});
+    // These are coat normals, not triangle normals. Both sides face outward from the skin.
+    material.onBeforeCompile=shader=>{
+      shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_begin>',
+        T.ShaderChunk.normal_fragment_begin.replace('normal *= faceDirection;',''));
+    };
+    material.customProgramCacheKey=()=> 'kitten-fibres-v3';return material;
   }
   async load(): Promise<void> {
     try {
       this.timeout=setTimeout(()=>this.abort.abort(),12000);
-      const response=await fetch(modelUrl,{signal:this.abort.signal});
-      if(!response.ok)throw new Error('model');
-      const bytes=await response.arrayBuffer();
+      const [bytes,furBlob]=await Promise.all([
+        fetch(modelUrl,{signal:this.abort.signal}).then(r=>{if(!r.ok)throw new Error('model');return r.arrayBuffer();}),
+        fetch(furUrl,{signal:this.abort.signal}).then(r=>{if(!r.ok)throw new Error('fur');return r.blob();}),
+      ]);
       if(this.disposed)return;
       const gltf=await new GLTFLoader().parseAsync(bytes,'');
       if(this.disposed){this.release(gltf.scene);return;}
-      this.cat=gltf.scene;this.cat.rotation.y=BASE_ANGLE;this.scene.add(this.cat);
-      this.cat.traverse(object=>{if(object instanceof T.Mesh)object.castShadow=true;});
+      this.cat=gltf.scene;this.cat.position.y=.02;this.cat.rotation.y=BASE_ANGLE;this.scene.add(this.cat);
+      const bitmap=await createImageBitmap(furBlob,{colorSpaceConversion:'none'});
+      if(this.disposed){bitmap.close();return;}this.furBitmap=bitmap;
+      const albedo=new T.Texture(bitmap);albedo.flipY=false;albedo.colorSpace=T.SRGBColorSpace;albedo.wrapS=albedo.wrapT=T.RepeatWrapping;albedo.repeat.set(4,4);albedo.anisotropy=Math.min(4,this.renderer.capabilities.getMaxAnisotropy());albedo.needsUpdate=true;this.textures.add(albedo);
+      // The albedo and bump follow the same strands, so detail doesn't look scratched on.
+      const height=albedo.clone();height.colorSpace=T.NoColorSpace;height.needsUpdate=true;this.textures.add(height);
+      const coats:T.SkinnedMesh[]=[];
+      this.cat.traverse(object=>{
+        if(!(object instanceof T.Mesh))return;
+        if(object.name==='KittenFur'){for(const m of Array.isArray(object.material)?object.material:[object.material])m.dispose();object.material=this.fibreMaterial();object.castShadow=false;object.receiveShadow=false;}
+        else {
+          object.castShadow=true;object.receiveShadow=true;
+          const coat=(m:T.Material):T.Material=>{
+            if(m instanceof T.MeshPhysicalMaterial&&m.name==='Iris'){
+              m.roughness=.65;m.clearcoat=.10;m.clearcoatRoughness=.30;
+              m.envMapIntensity=.06;m.specularIntensity=.02;
+            }
+            if(!(m instanceof T.MeshStandardMaterial)||!['FurGrey','FurWhite'].includes(m.name))return m;
+            const replacement=new T.MeshPhysicalMaterial({name:m.name,color:m.color,vertexColors:m.vertexColors,
+              roughness:1,map:albedo,bumpMap:height,bumpScale:.0014,sheen:.38,
+              sheenColor:new T.Color('#d8c8b6'),sheenRoughness:1,envMapIntensity:.3});
+            // Keep the colour design visible; the swatch supplies subtle fibre detail.
+            replacement.onBeforeCompile=shader=>{
+              shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',
+                T.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;',
+                  'diffuseColor *= vec4(mix(vec3(1.0), sampledDiffuseColor.rgb / 0.82, 0.35), sampledDiffuseColor.a);'));
+            };
+            replacement.customProgramCacheKey=()=> 'kitten-coat-v3';m.dispose();return replacement;
+          };
+          object.material=Array.isArray(object.material)?object.material.map(coat):coat(object.material);
+          if(object instanceof T.SkinnedMesh&&object.material instanceof T.MeshStandardMaterial&&['FurGrey','FurWhite'].includes(object.material.name))coats.push(object);
+        }
+      });
+      addUnderfur(coats);
+      this.host.dataset.furLayers=String(FUR_LAYERS);
       this.mixer=new T.AnimationMixer(this.cat);
       for(const clip of gltf.animations)this.clips.set(clip.name as ClipName,this.mixer.clipAction(clip));
       for(const name of ['idle','happy','stretch','play','sleep','care'] as ClipName[])if(!this.clips.has(name))throw new Error('clips');
       this.mixer.addEventListener('finished',()=>this.selectBase(false));
-      this.loaded=true;this.host.dataset.sceneStatus='ready';this.host.dataset.angle=String(BASE_ANGLE);
+      this.loaded=true;this.host.dataset.sceneStatus='ready';this.host.dataset.quality='full';this.host.dataset.angle=String(BASE_ANGLE);
       this.selectBase();this.draw();
       this.host.dataset.loadMs=(performance.now()-this.startTime).toFixed(0);
       this.status(this.reduced?'Hareket azaltıldı. Düğmelerle kedini döndürebilirsin.':'Kedine dokun veya yatay sürükleyerek döndür.');
@@ -166,9 +248,17 @@ export class ThreeCatScene implements CatScene {
     if(!this.sampleStart)this.sampleStart=time;this.sampleFrames++;
     if(time-this.sampleStart>=4000){
       const fps=this.sampleFrames*1000/(time-this.sampleStart);this.host.dataset.fps=fps.toFixed(1);
+      if(fps<26&&!this.balanced){this.balanceQuality();this.sampleStart=time;this.sampleFrames=0;return;}
       if(fps<20){this.fail('Bu cihaz için statik görünüm açıldı. Kayıtlarına devam edebilirsin.');return;}
       this.sampleStart=time;this.sampleFrames=0;
     }
+  }
+  private balanceQuality():void {
+    this.balanced=true;this.host.dataset.quality='balanced';this.renderer.setPixelRatio(Math.min(devicePixelRatio,1));this.renderer.shadowMap.enabled=false;
+    if(this.cat)reduceUnderfur(this.cat);
+    this.host.dataset.furLayers=String(BALANCED_FUR_LAYERS);
+    this.cat?.traverse(object=>{if(object instanceof T.Mesh&&object.name==='KittenFur'){const count=object.geometry.index?.count??0;object.geometry.setDrawRange(0,Math.floor(count/6)*3);}});
+    this.scene.traverse(object=>{if(object instanceof T.DirectionalLight){object.shadow.map?.dispose();object.shadow.map=null;object.shadow.mapSize.set(512,512);}});this.fit();
   }
   private draw():void {
     if(this.disposed)return;
@@ -177,14 +267,14 @@ export class ThreeCatScene implements CatScene {
   }
   private fail(reason:string):void {this.dispose();this.fallback(reason);}
   private release(root:T.Object3D):void {
-    const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>();
-    root.traverse(object=>{if(object instanceof T.Mesh){geometries.add(object.geometry);for(const m of Array.isArray(object.material)?object.material:[object.material])materials.add(m);if(object instanceof T.SkinnedMesh)object.skeleton.dispose();}if(object instanceof T.DirectionalLight)object.shadow.dispose();});
-    geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
+    const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>(),skeletons=new Set<T.Skeleton>();
+    root.traverse(object=>{if(object instanceof T.Mesh){geometries.add(object.geometry);for(const m of Array.isArray(object.material)?object.material:[object.material])materials.add(m);if(object instanceof T.SkinnedMesh)skeletons.add(object.skeleton);}if(object instanceof T.DirectionalLight)object.shadow.dispose();});
+    geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());skeletons.forEach(s=>s.dispose());
   }
   dispose():void {
     if(this.disposed)return;this.disposed=true;this.abort.abort();this.listeners.abort();if(this.timeout)clearTimeout(this.timeout);
     this.resize.disconnect();this.observer.disconnect();this.renderer.setAnimationLoop(null);
     this.mixer?.stopAllAction();if(this.cat)this.mixer?.uncacheRoot(this.cat);
-    this.release(this.scene);this.renderer.dispose();this.renderer.forceContextLoss();this.renderer.domElement.remove();
+    this.release(this.scene);this.textures.forEach(t=>t.dispose());this.textures.clear();this.environment.dispose();this.furBitmap?.close();this.furBitmap=null;this.renderer.dispose();this.renderer.forceContextLoss();this.renderer.domElement.remove();
   }
 }

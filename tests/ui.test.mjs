@@ -59,10 +59,10 @@ async function navigate(window, link) {
     link.click();
   });
 }
-test("beş ekran arasında gerçek linklerle geçiş ve başlık odağı", async () => {
+test("altı ekran arasında gerçek linklerle geçiş ve başlık odağı", async () => {
   const app = await launch();
   try {
-    for (const id of ["kayitlar", "planim", "ilerlemem", "ayarlar", "bugun"]) {
+    for (const id of ["kayitlar", "planim", "ilerlemem", "sosyal", "ayarlar", "bugun"]) {
       await navigate(
         app.window,
         app.document.querySelector(`nav a[href="#/${id}"]`),
@@ -101,7 +101,7 @@ test("boş gün sıfır kalori veya uydurma kişisel hedef göstermez", async ()
     assert.equal(app.document.querySelector("#calorie-form"), null);
     assert.equal(app.document.querySelector('.cat-card').dataset.catState,'neutral');
     assert.equal(app.document.querySelector('.cat-card').dataset.sceneStatus,'static');
-    assert.match(app.document.querySelector('.cat-message').textContent,/kendi hızında/);
+    assert.equal(app.document.querySelector('.cat-message').textContent,'Gün devam ediyor.');
     assert.deepEqual(app.errors, []);
   } finally {
     app.dom.window.close();
@@ -187,7 +187,7 @@ test("içeriğe geç bağlantısı ve semantik navigasyon mevcut", async () => {
     assert.equal(
       app.document.querySelectorAll('nav[aria-label="Ana navigasyon"] a')
         .length,
-      5,
+      6,
     );
   } finally {
     app.dom.window.close();
@@ -337,6 +337,45 @@ test('R3 hedefe ulaşıldığında koruma geçişi önizleme ve ileri tarihli on
   fill(app,'goal','lose');fill(app,'target-weight','80');await createProfile(app);
   await navigate(app.window,app.document.querySelector('nav a[href="#/kayitlar"]'));fill(app,'weight-kg','80');app.document.querySelector('#weight-form').requestSubmit();await until(()=>app.document.querySelector('main').getAttribute('aria-busy')==='false' && app.document.querySelector('.history-list').textContent.includes('80 kg'));
   await navigate(app.window,app.document.querySelector('nav a[href="#/planim"]'));app.document.querySelector('[data-action="maintain-plan"]').click();assert.equal(app.document.querySelector('#goal').value,'maintain');assert.equal(app.document.querySelector('#profile-weight').value,'80');
-  app.document.querySelector('#profile-form').requestSubmit();await until(()=>app.document.querySelector('.preview-card'));assert.match(app.document.querySelector('.preview-card').textContent,/Koruma modunda planlı açık yoktur/);app.document.querySelector('[data-action="save-profile"]').click();await until(()=>app.document.querySelector('.plan-summary') && app.document.querySelector('main').getAttribute('aria-busy')==='false');assert.match(app.document.querySelector('.plan-summary').textContent,/Sıradaki plan/);assert.match(app.document.querySelector('.plan-summary').textContent,/Hedef kilo 80/);
+  app.document.querySelector('#profile-form').requestSubmit();await until(()=>app.document.querySelector('.preview-card'));assert.match(app.document.querySelector('.preview-card').textContent,/Koruma modunda planlı açık yoktur/);app.document.querySelector('[data-action="save-profile"]').click();await until(()=>app.document.querySelector('.plan-summary') && app.document.querySelector('main').getAttribute('aria-busy')==='false');assert.match(app.document.querySelector('main').textContent,/Sıradaki plan/);assert.match(app.document.querySelector('.plan-summary').textContent,/80 kg/);
  }finally{app.dom.window.close();}
+});
+
+test('su miktarı ve hedefi navigasyonda korunur; başarısız yazı girişi kaybetmez', async()=>{
+  const app=await launch('/planim');
+  try {
+    await createProfile(app);
+    await navigate(app.window,app.document.querySelector('nav a[href="#/bugun"]'));
+    app.document.querySelector('[data-water]').click();
+    app.document.querySelector('[name="water-amount"]').value='1250';
+    app.document.querySelector('[name="water-target"]').value='3000';
+    app.document.querySelector('#water-form').requestSubmit();
+    assert.equal(app.document.querySelector('#water-summary').textContent,'1,25 L');
+    await navigate(app.window,app.document.querySelector('nav a[href="#/planim"]'));
+    assert.equal(app.document.querySelector('#water-target-summary').textContent,'3.000 ml');
+    app.document.querySelector('[data-water]').click();
+    assert.equal(app.document.querySelector('[name="water-amount"]').value,'1250');
+    const prototype=Object.getPrototypeOf(app.window.localStorage),original=prototype.setItem;
+    prototype.setItem=function(){throw new DOMException('quota','QuotaExceededError');};
+    try {
+      app.document.querySelector('[name="water-amount"]').value='1750';
+      app.document.querySelector('#water-form').requestSubmit();
+      assert.match(app.document.querySelector('#water-error').textContent,/saklanamadı/);
+      assert.equal(app.document.querySelector('[name="water-amount"]').value,'1750');
+    }finally{prototype.setItem=original;}
+    app.document.querySelector('#water-form').requestSubmit();
+    await navigate(app.window,app.document.querySelector('nav a[href="#/bugun"]'));
+    assert.equal(app.document.querySelector('#water-summary').textContent,'1,75 L');
+    assert.deepEqual(app.errors,[]);
+  }finally{app.dom.window.close();}
+});
+test('sosyal önizleme kayıt paylaşmaz ve gerçek hesap işlemi iddiası taşımaz',async()=>{
+  const app=await launch('/sosyal');
+  try {
+    assert.equal(app.document.querySelector('[aria-label="Sürecimi paylaş"]').disabled,true);
+    assert.equal(app.document.querySelector('[aria-label="Sürecimi paylaş"]').checked,false);
+    app.document.querySelector('[data-social="Arkadaş ekle"]').click();
+    assert.match(app.document.querySelector('dialog').textContent,/henüz kurulmadı/);
+    assert.deepEqual(app.errors,[]);
+  }finally{app.dom.window.close();}
 });
