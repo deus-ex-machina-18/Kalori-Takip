@@ -24,6 +24,7 @@ export class Tracker {
   weights: WeightMeasurement[] = [];
   activities: Activity[] = [];
   catPreferences: CatPreferences | null = null;
+  private completedCatDay: { date: LocalDate; revision: number } | null = null;
   private editingActivity: Activity | null = null;
   private deletingActivity: Activity | null = null;
   private planDraft: Record<string,string[]> | null = null;
@@ -83,6 +84,14 @@ export class Tracker {
   catSummary(): DaySummary {
     const date = this.today(), day = this.day(date);
     return day ? requireValue(engine.summarizeDay(day, this.linkedPlan(day,date))) : { kind:'incomplete', status:'missing', provisionalIntakeKcal:null, catState:'neutral' };
+  }
+  /** Consume the successful write event once. Loading or navigating cannot replay it. */
+  takeCatReaction(screen: string): boolean {
+    const event = this.completedCatDay;
+    this.completedCatDay = null;
+    const day = this.day(this.today());
+    return screen === 'bugun' && this.ready && !!event && event.date === this.today()
+      && day?.status === 'completed' && day.revision === event.revision;
   }
   saveCatSettings(input: { name: string; reducedMotion: boolean; sceneMode: CatPreferences['sceneMode'] }): void {
     if (!this.profile || !this.ready || this.busy) return;
@@ -248,7 +257,10 @@ export class Tracker {
         try {
           const updated = changeDay(day,change,!!oldDay), operationId=uuid();
           if (updated === day) return;
-          void this.persist(()=>this.repository.saveDay(updated,{operationId,expectedRevision:oldDay?.revision ?? 0}),()=>{this.switchTo=null;},change.type==='complete' ? 'Gün tamamlandı.' : 'Kalori kaydedildi. Gün kısmi; bitirdiğinde tekrar tamamla.');
+          void this.persist(()=>this.repository.saveDay(updated,{operationId,expectedRevision:oldDay?.revision ?? 0}),()=>{
+            this.switchTo=null;
+            this.completedCatDay = change.type === 'complete' ? { date, revision: updated.revision } : null;
+          },change.type==='complete' ? 'Gün tamamlandı.' : 'Kalori kaydedildi. Gün kısmi; bitirdiğinde tekrar tamamla.');
         } catch (e) { this.error=(e as Error).message; this.showMessages(); }
       };
       const mode = day.calories?.mode ?? this.selectedMode;

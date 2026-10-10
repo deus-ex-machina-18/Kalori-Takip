@@ -101,7 +101,7 @@ test("boş gün sıfır kalori veya uydurma kişisel hedef göstermez", async ()
     assert.equal(app.document.querySelector("#calorie-form"), null);
     assert.equal(app.document.querySelector('.cat-card').dataset.catState,'neutral');
     assert.equal(app.document.querySelector('.cat-card').dataset.sceneStatus,'static');
-    assert.match(app.document.querySelector('.cat-message').textContent,/kendi hızında/);
+    assert.equal(app.document.querySelector('.cat-message').textContent,'Gün devam ediyor.');
     assert.deepEqual(app.errors, []);
   } finally {
     app.dom.window.close();

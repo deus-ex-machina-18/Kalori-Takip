@@ -5,7 +5,7 @@ Repo: https://github.com/deus-ex-machina-18/Kalori-Takip · ana dal: main
 
 ## Ürün
 
-Türkçe, telefon öncelikli manuel günlük kalori takibi. Geçici ad **Kedi Kalori**; mevcut sıcak krem/adaçayı/şeftali arayüz korunur. Kullanıcı üç örnek arasından 1. yumuşak oyuncak yönünü gri-beyaz renkle seçti. Önce gerçek GLB üretildi; 6 Ekim 2026'da kullanıcı döndürmenin şart olmadığını belirterek sabit açılı, önceden hazırlanmış görsel/animasyon yöntemini kabul etti. Görsel kimlik gri-beyaz kalır; yeni yöntem henüz kodlanmadı. Beş ekran: Bugün, Kayıtlar, Planım, İlerlemem, Ayarlar. Kullanıcı kaloriyi dışarıda hesaplar; uygulama toplamı veya yalnızca kcal parçalarını kabul eder. Besin kataloğu, fotoğraf/barkod/porsiyon hesabı ve LLM yok.
+Türkçe, telefon öncelikli manuel günlük kalori takibi. Geçici ad **Kedi Kalori**; mevcut sıcak krem/adaçayı/şeftali arayüz korunur. Kullanıcı üç örnek arasından 1. yumuşak oyuncak yönünü gri-beyaz renkle seçti. Önce gerçek GLB üretildi; 6 Ekim 2026'da kullanıcı döndürmenin şart olmadığını belirterek sabit açılı, önceden hazırlanmış görsel/animasyon yöntemini kabul etti. Görsel kimlik gri-beyaz kalır; 10 Ekim 2026’da mevcut beş video ile uygulamaya geçirildi. Beş ekran: Bugün, Kayıtlar, Planım, İlerlemem, Ayarlar. Kullanıcı kaloriyi dışarıda hesaplar; uygulama toplamı veya yalnızca kcal parçalarını kabul eder. Besin kataloğu, fotoğraf/barkod/porsiyon hesabı ve LLM yok.
 
 Boş gün sıfır değildir. Hedef aşımı ile koruma ihtiyacı üzerindeki tüketim ayrıdır. Eksik veriye kesin sonuç/ödül verilmez; az yeme yarışı ve egzersiz borcu yok. Kedi günün kalorileriyle fiziksel olarak değişmez veya cezalandırmaz.
 
@@ -25,7 +25,7 @@ Boş gün sıfır değildir. Hedef aşımı ile koruma ihtiyacı üzerindeki tü
 - Veri tipleri: `src/domain/models.ts`; adaptör ve hesap arayüzleri: `src/domain/contracts.ts`.
 - Veri davranışı: `docs/DATA_CONTRACT.md`; doğrulama/hesap: `src/domain/tracking.ts`; atomik adaptör: `src/data/indexeddb.ts`.
 - Enerji/sınır kararları ve kaynaklar: `docs/ENERGY_POLICY.md`; R2 motoru bu politikayı uygular, UI formül kopyalamaz.
-- Güncel kedi yöntemi/sınırı: `CURRENT_TASK.md`; aktif varlık envanteri `public/models/asset-manifest.json`. `docs/CAT_ASSET_REQUIREMENTS.md` içindeki GLB şartları önceki 3D sürümün tarihsel envanteridir.
+- Güncel kedi yöntemi/sınırı: `CURRENT_TASK.md`; aktif varlık envanteri `public/cat-media/asset-manifest.json`. `docs/CAT_ASSET_REQUIREMENTS.md` içindeki GLB şartları önceki 3D sürümün tarihsel envanteridir.
 
 ## Erişilebilirlik ve tasarım
 
@@ -60,4 +60,10 @@ Kullanıcı serbest döndürmeyi zorunlu tutmuyor. Güncel yön sabit açılı, 
 
 Önce kaliteli ana kare gerçek Bugün kartında gösterilir; ardından aynı karakterin altı hareket/durum paketi hazırlanır. Yeni gösterim mevcut catState/CatPreferences ve yaşam döngüsü sınırlarını kullanır. Statik tercih, hareket azaltma, care önceliği, gizliyken durma ve medya hatasında formun çalışması korunur. Kalori motorları ve IndexedDB v1 değişmez. Aktif medya boyut/hash/provenance bilgisi tek envanterde tutulur; GLB katman/üçgen sınırı yeni medyaya uygulanmaz. İlk gerekli medya ≤5 MiB, diğer hareketler ihtiyaçta yüklenir.
 
-Yeni yöntem henüz uygulama koduna geçirilmedi. Eski test/performans ölçümleri yeni yöntemin kabulü değildir. Android ve kullanıcı görsel kabulü açık; R5'e geçiş, birleştirme ve yayın bu turun kapsamı dışında.
+Yeni yöntem 10 Ekim 2026’da uygulamaya geçirildi. Eski test/performans ölçümleri yeni yöntemin kabulü değildir. Android ve kullanıcı görsel kabulü açık; R5'e geçiş, birleştirme ve yayın bu turun kapsamı dışında.
+
+## 10 Ekim 2026 — aktif video yöntemi
+
+Bugün kartı `src/ui/cat-video.ts` ile beş mevcut MP4 kullanır. `src/ui/cat-result.ts` yalnız motorun DaySummary farklarını gösterir; eşikler tekrar kodlanmaz. Başarılı bugünkü tamamlama kaydı tek kullanımlık olay üretir; yenileme/navigasyon olay üretmez. Olay/oynatım geçmişi için veri şeması değiştirilmez. Sonuç yazısı kayıtlı summary'den kalır. Motor care önceliği korunur.
+
+Kare medya kırpılmaz; MP4 sessiz Baseline/fast-start; reaksiyonlar gerektiğinde yüklenir. Statik/hareket azaltma sadece ortak ilk kareden poster. Kart/sekme gizliyken video durur, medya hatası bağımsız kalori formunu etkilemez. Dönüş son 0,25 sn ortak başlangıca çözünür. Kaplı klibin içindeki belirme/kayma kusuru bilinen üretim sorunudur. Oyun/esneme/uyku ve alternatif tepkiler fiziksel telefon kabulünden sonra ayrı iştir. Eski GLB kaynak/varlıkları tarihsel olarak korunur; aktif kedi kartı onları yüklemez. Yeni yayın ve Android kabulü yapılmış sayılmaz.

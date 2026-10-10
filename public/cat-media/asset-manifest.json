@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "method": "existing AI-generated clips, re-encoded with a 0.25s dissolve to the canonical idle first frame",
+  "source": "User-provided idle and three Wan clips; previously generated free Wan target-met clip. No stock or paid assets added.",
+  "knownVisualIssues": [
+    "Below-target bowl appears and moves during the reaction; end dissolve only removes the final prop jump.",
+    "Above-target side glance and head shake are weak."
+  ],
+  "clips": {
+    "idle": {
+      "file": "idle.mp4",
+      "bytes": 275302,
+      "sha256": "4a65618c0137fb3123963c3ffa3c4d8ad2124bef6954f664e2c6ca4550f3c28a",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 5.166667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "da456591aa3552e2ad2bb6e92f78c17e7458b3a27e2879cfc33e7bc11133aa03",
+      "sourceBytes": 3163204
+    },
+    "target-met": {
+      "file": "target-met.mp4",
+      "bytes": 357422,
+      "sha256": "f3f01d1c4a00d675be92716757bd03dfb41388b3050399f850bd3ae2fea738bb",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.625,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "63fc3d2d6805a7939db7d7f027987edf65cae5b14c73eb4aa8f0ec91b001d788",
+      "sourceBytes": 454934
+    },
+    "above-target": {
+      "file": "above-target.mp4",
+      "bytes": 253544,
+      "sha256": "4fbc509bedec93ad454b6b075a74233ca2217015c3f1bd73321803b938bebfbf",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "51edceac79f3c9c2a455de5238109f44713c7e00bf665cbd4274c94fe6ee16bc",
+      "sourceBytes": 261405
+    },
+    "above-maintenance": {
+      "file": "above-maintenance.mp4",
+      "bytes": 311021,
+      "sha256": "a0096230105b3e086bcf0fd292bb33de20b9d9eb7bd033840332334ab1a48419",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "bc60532d04664a1f8fe18a6211c50c042cb86e50cbdc07f5549528066a0917df",
+      "sourceBytes": 296469
+    },
+    "below-target": {
+      "file": "below-target.mp4",
+      "bytes": 304707,
+      "sha256": "cee16b2f7b71f0f4132993041409e61864431e469484d1482fbc88785f5c9017",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "97415bea0b50f2b35c94a8a3067976101b5499c27e180a2dae50de363a3bda1e",
+      "sourceBytes": 289687
+    }
+  },
+  "poster": {
+    "file": "poster.webp",
+    "width": 640,
+    "height": 640,
+    "bytes": 37542,
+    "sha256": "97aa5025c9405decfa8d2c2331aa1a674c8b40a0a36eafa14fca87572e994675"
+  },
+  "totalBytes": 1539538,
+  "initialBytes": 312844
+}

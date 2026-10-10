@@ -218,7 +218,10 @@ main {
   overflow: hidden;
   background: #f3ece2;
 }
-.cat-poster, .cat-canvas { display: block; width: 100%; height: 100%; }
+.cat-poster, .cat-canvas, .cat-video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.cat-video { position: absolute; inset: 0; opacity: 0; transition: opacity 200ms ease; pointer-events: none; }
+.cat-video[data-visible="true"] { opacity: 1; }
+.cat-scene-status:empty { display: none; }
 .cat-canvas { position: absolute; inset: 0; touch-action: pan-y; cursor: grab; }
 .cat-canvas:active { cursor: grabbing; }
 .cat-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }

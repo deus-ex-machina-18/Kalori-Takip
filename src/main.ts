@@ -61,7 +61,7 @@ function settings(): string {
   <section class="card settings-card"><h2>Kedin ve görünüm</h2><form id="cat-settings-form">
   <label class="field" for="cat-name"><span>Kedinin adı</span><input id="cat-name" name="cat-name" value="${escape(preferences.name)}" maxlength="30" required ${!tracker.profile?'disabled':''}></label>
   <label class="setting-row" for="motion"><span><strong>Hareketi azalt</strong><span class="muted">Kedi animasyonlarını ve dekoratif geçişleri durdur.</span></span><input id="motion" name="motion" type="checkbox" role="switch" ${motion?'checked':''}></label>
-  <label class="field" for="scene-mode"><span>Kedi görünümü</span><select id="scene-mode" name="scene-mode" ${!tracker.profile?'disabled':''}><option value="auto" ${preferences.sceneMode==='auto'?'selected':''}>3D · cihaz destekliyorsa</option><option value="static" ${preferences.sceneMode==='static'?'selected':''}>Statik · düşük güç tüketimi</option></select></label>
+  <label class="field" for="scene-mode"><span>Kedi görünümü</span><select id="scene-mode" name="scene-mode" ${!tracker.profile?'disabled':''}><option value="auto" ${preferences.sceneMode==='auto'?'selected':''}>Animasyonlu</option><option value="static" ${preferences.sceneMode==='static'?'selected':''}>Statik · düşük güç tüketimi</option></select></label>
   <p class="hint">${tracker.profile?'Kaydettiğinde ad, hareket ve görünüm tercihin bu cihazda korunur.':'Kalıcı kedi ayarları için önce Planım’dan profil oluştur. Başlangıçta cihazının hareket tercihi kullanılır.'} Kedin gri-beyaz. Ses kapalı.</p>
   <button type="submit" class="button primary" ${!tracker.profile || !tracker.ready?'disabled':''}>Kedi ayarlarını kaydet</button>
   </form></section>
@@ -94,9 +94,11 @@ function render(moveFocus = false): void {
     if (tracker.profile) document.querySelector(".intro-strip")!.innerHTML = `<div><h2>Takibin kendi hızında.</h2><p>Planını ve başlangıç bilgilerini istediğinde gözden geçirebilirsin.</p></div>${link("planim", "Planıma bak", "button secondary")}`;
   }
   tracker.bind(current);
+  const playCatReaction = tracker.takeCatReaction(current);
   if (current === "bugun" && tracker.ready) {
     const host = document.querySelector<HTMLElement>('.cat-card')!;
-    mountedCat = mountCat(host, tracker.catSummary(), catPreferences());
+    mountedCat = mountCat(host, tracker.catSummary(), catPreferences(), playCatReaction);
+    if (playCatReaction) host.scrollIntoView?.({ block: 'start', behavior: 'instant' });
   }
   document.querySelector('#cat-settings-form')?.addEventListener('submit',event=>{
     event.preventDefault();

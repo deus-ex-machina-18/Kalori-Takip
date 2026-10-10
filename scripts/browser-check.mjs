@@ -2,9 +2,10 @@ import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { checkCatMedia } from './cat-browser-check.mjs';
 
 const server = spawn('npm', ['run', 'preview', '--', '--port', '4173'], { stdio: 'inherit' });
-const assetManifest=JSON.parse(await readFile('public/models/asset-manifest.json','utf8'));
+const assetManifest=JSON.parse(await readFile('public/cat-media/asset-manifest.json','utf8'));
 let browser;
 try {
   for (let i = 0; i < 100; i++) {
@@ -173,125 +174,11 @@ try {
     }
     assert.deepEqual(errors,[]);
   }
-  // R4: native preference writes + actual GLB/WebGL2 rendering in Chromium.
-  await page.setViewportSize({width:390,height:850});
-  await page.goto('http://127.0.0.1:4173/#/ayarlar');await page.locator('main[data-ready="true"]').waitFor();
-  await page.locator('#cat-name').fill('Duman');await page.locator('#motion').check();
-  await page.evaluate(()=>{const original=IDBDatabase.prototype.transaction;let fail=true;IDBDatabase.prototype.transaction=function(stores,mode,...args){if(fail && mode==='readwrite' && [...stores].includes('catPreferences')){fail=false;throw new DOMException('quota','QuotaExceededError');}return original.call(this,stores,mode,...args);};});
-  await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('[data-action="retry"]').waitFor();
-  assert.equal(await page.locator('#cat-name').inputValue(),'Duman');
-  await page.locator('[data-action="retry"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.reload();await page.locator('main[data-ready="true"]').waitFor();
-  assert.equal(await page.locator('#cat-name').inputValue(),'Duman');assert.equal(await page.locator('#motion').isChecked(),true);
-  await page.locator('nav a[href="#/bugun"]').click();await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  assert.equal(await page.locator('.cat-card canvas').count(),1);
-  assert.equal(await page.locator('#cat-heading').textContent(),'Duman');
-  await page.screenshot({path:'browser-results/r4-grey-white-390.png',fullPage:true});
-  const metrics={loadMs:await page.locator('.cat-card').getAttribute('data-load-ms'),triangles:await page.locator('.cat-card').getAttribute('data-triangles'),drawCalls:await page.locator('.cat-card').getAttribute('data-draw-calls'),renderer:'Chromium SwiftShader software WebGL2; not Android'};
-  assert.ok(Number(metrics.triangles)>0 && Number(metrics.triangles)<=assetManifest.rendering.sceneTriangleBudget);
-  assert.equal(Number(await page.locator('.cat-card').getAttribute('data-fur-layers')),assetManifest.rendering.furLayers);
-  await page.locator('[data-cat-action="right"]').click();
-  assert.notEqual(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');
-  await page.locator('[data-cat-action="reset"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');
-  const canvas=page.locator('.cat-card canvas'),box=await canvas.boundingBox();
-  await page.mouse.move(box.x+box.width*.4,box.y+box.height*.5);await page.mouse.down();await page.mouse.move(box.x+box.width*.7,box.y+box.height*.5,{steps:5});await page.mouse.up();
-  assert.notEqual(await page.locator('.cat-card').getAttribute('data-angle'),'-0.22');
-  await page.screenshot({path:'browser-results/r4-rotated-390.png',fullPage:true});
-  // Full-size stills above check actual visual rendering. Software-only animation
-  // mechanics use a small backbuffer; this does not claim full-size device FPS.
-  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#motion').uncheck();
-  await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.addStyleTag({content:'.cat-viewport{max-width:160px}'}).then(handle=>handle.evaluate(el=>el.id='mechanics-viewport'));
-  await page.locator('nav a[href="#/bugun"]').click();await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  await page.locator('[data-cat-action="play"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'play');
-  await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.clip==='idle');
-  // Each short control check starts with a fresh scene. Sustained software-GPU
-  // performance and the resulting static fallback are exercised separately below.
-  const freshAnimationScene=async()=>{
-    await page.locator('nav a[href="#/kayitlar"]').click();
-    await page.locator('nav a[href="#/bugun"]').click();
-    await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  };
-  await freshAnimationScene();
-  await page.locator('[data-cat-action="stretch"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'stretch');
-  await freshAnimationScene();
-  await page.locator('[data-cat-action="sleep"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'sleep');
-  await page.evaluate(()=>new Promise(requestAnimationFrame));
-  await page.screenshot({path:'browser-results/r4-sleep.png',fullPage:true});
-  await page.locator('[data-cat-action="sleep"]').click();
-  await freshAnimationScene();
-  // Pause when the card is outside the viewport, resume on return.
-  await page.setViewportSize({width:390,height:350});
-  await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));
-  await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.animating==='false');
-  await page.locator('.cat-card').scrollIntoViewIfNeeded();
-  await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.animating==='true');
-  await page.setViewportSize({width:390,height:850});
-  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#motion').check();
-  await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.evaluate(()=>document.querySelector('#mechanics-viewport')?.remove());
-  await page.locator('nav a[href="#/bugun"]').click();await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  // Actual complete day drives state. Care never plays happy or play.
-  await page.locator('#kcal').fill('0');await page.locator('#calorie-form button').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.locator('[data-action="complete"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.locator('.cat-card[data-scene-status="ready"][data-cat-state="care"]').waitFor();
-  assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'care');
-  await page.locator('[data-cat-action="play"]').click();assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'care');
-  await page.screenshot({path:'browser-results/r4-care.png',fullPage:true});
-  // Fixing intake returns to partial/neutral, without modifying calculations.
-  await page.locator('#kcal').fill('2300');await page.locator('#calorie-form button').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.locator('.cat-card[data-scene-status="ready"][data-cat-state="neutral"]').waitFor();
-  const dailyBalance=await page.locator('.day-card .metric-row').nth(1).textContent();
-  // Asset error and context loss retain the independently mounted calorie form.
-  await page.route('**/models/grey-white-kitten.glb',route=>route.fulfill({status:404,body:'missing'}));
-  await page.reload();await page.locator('main[data-ready="true"]').waitFor();await page.locator('.cat-card[data-scene-status="static"]').waitFor();
-  assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
-  assert.equal(await page.locator('.day-card .metric-row').nth(1).textContent(),dailyBalance);
-  await page.screenshot({path:'browser-results/r4-model-error.png',fullPage:true});
-  await page.unroute('**/models/grey-white-kitten.glb');await page.reload();await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  await page.route('**/models/white-fur-v1.jpg',route=>route.fulfill({status:404,body:'missing'}));
-  await page.reload();await page.locator('.cat-card[data-scene-status="static"]').waitFor();assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
-  await page.unroute('**/models/white-fur-v1.jpg');await page.reload();await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  await page.locator('.cat-card canvas').evaluate(el=>el.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
-  await page.locator('.cat-card[data-scene-status="static"]').waitFor();assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
-  // Static preference persists; reduced motion gives an actual still WebGL frame.
-  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#motion').check();await page.locator('#scene-mode').selectOption('static');
-  await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  await page.reload();await page.locator('main[data-ready="true"]').waitFor();assert.equal(await page.locator('#scene-mode').inputValue(),'static');assert.equal(await page.locator('#motion').isChecked(),true);
-  await page.locator('nav a[href="#/bugun"]').click();await page.locator('.cat-card[data-scene-status="static"]').waitFor();assert.equal(await page.locator('.cat-card canvas').count(),0);
-  await page.screenshot({path:'browser-results/r4-static.png',fullPage:true});
-  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#scene-mode').selectOption('auto');await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  for(const width of [320,360,390,768,1280]){
-    await page.setViewportSize({width,height:850});await page.goto('http://127.0.0.1:4173/#/bugun');
-    await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
-    assert.equal(await page.locator('.cat-card').getAttribute('data-animating'),'false');
-    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-    await page.screenshot({path:`browser-results/r4-ready-${width}.png`,fullPage:true});
-  }
+  await checkCatMedia(page, checks);
   assert.deepEqual(errors,[]);
-  await page.addInitScript(()=>Object.defineProperty(window,'WebGL2RenderingContext',{value:undefined}));
-  await page.reload();await page.locator('.cat-card[data-scene-status="static"]').waitFor();assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
-  // A deliberately throttled RAF exercises low-FPS fallback (not a device benchmark).
-  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#motion').uncheck();
-  await page.locator('#cat-settings-form button[type="submit"]').click();await page.locator('main[aria-busy="false"]').waitFor();
-  const slowPage=await page.context().newPage();
-  await slowPage.addInitScript(()=>{const raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=callback=>raf(()=>setTimeout(()=>callback(performance.now()),220));});
-  await slowPage.goto('http://127.0.0.1:4173/#/bugun');await slowPage.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  await slowPage.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.quality==='balanced');
-  assert.equal(Number(await slowPage.locator('.cat-card').getAttribute('data-fur-layers')),assetManifest.rendering.balancedFurLayers);
-  await slowPage.locator('.cat-card[data-scene-status="static"]').waitFor();
-  assert.match(await slowPage.locator('.cat-scene-status').textContent(),/Bu cihaz için statik/);
-  assert.equal(await slowPage.locator('#calorie-form button').isEnabled(),true);
-  await slowPage.close();
-  const posterPage=await browser.newPage({viewport:{width:900,height:900},deviceScaleFactor:2,reducedMotion:'reduce'});
-  await posterPage.goto('http://127.0.0.1:4173/#/bugun');await posterPage.locator('.cat-card[data-scene-status="ready"]').waitFor();
-  await posterPage.locator('.cat-viewport').screenshot({path:'browser-results/r4-poster.png'});await posterPage.close();
-  await writeFile('browser-results/r4-metrics.json',JSON.stringify(metrics,null,2));
-  checks.push('R4 full-size WebGL stills: model + albedo, shader error check, rotate/drag/reset, five widths. Animation mechanics: 160px software backbuffer play/stretch/sleep/pause. Full-size throttled RAF: balanced then static. Model/texture 404 and context loss preserve calorie form. Not Android performance acceptance: pass');
   await writeFile('browser-results/report.json', JSON.stringify({
     checks, errors, verifiedAt:new Date().toISOString(),
-    modelSha256:assetManifest.sha256,posterSha256:assetManifest.poster.sha256,
-    rendering:assetManifest.rendering,
+    media:assetManifest,
   }, null, 2));
   console.log(checks.join('\n'));
 } finally {
