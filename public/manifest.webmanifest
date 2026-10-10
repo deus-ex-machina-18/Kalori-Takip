@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "Kedi Kalori",
-  "short_name": "Kedi Kalori",
+  "name": "Kalori Takip",
+  "short_name": "Kalori Takip",
   "lang": "tr",
   "start_url": "./#/bugun",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f7f4ec",
-  "theme_color": "#f7f4ec",
+  "background_color": "#f8f2e6",
+  "theme_color": "#f8f2e6",
   "icons": [
     {
       "src": "./icon.svg",

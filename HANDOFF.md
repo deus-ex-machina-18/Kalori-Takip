@@ -1,3 +1,11 @@
+# 11 Ekim 2026 — arayüz teslim durumu
+
+Güncel görev ve kabul sınırları `CURRENT_TASK.md` içindedir. Onaylı görsel dil altı ekrana uygulandı; domain/depo mantığı korunuyor, su takibi ve açıkça etiketlenmiş Sosyal önizleme eklendi. 61 test, build ve medya doğrulaması geçti. Piksel eşleşmesi ve tarayıcı kabulü tamamlanmadı; GitHub push otomatik onay denetimince engellendi. Uzak repo ve PR #1 değişmedi.
+
+Yerel dal: `reference-ui`, taban: `a6291a3`. `npm ci && npm run check`; tarayıcı ortamı sağlanınca `node scripts/browser-check.mjs`. Sonraki tek görev: açık gönderim onayıyla uzak dal/PR, tarayıcı kanıtları, referansla görsel karşılaştırma.
+
+---
+
 # R4 video entegrasyonu — devir
 
 10 Ekim 2026 · `deus-ex-machina-18/Kalori-Takip` · dal `r4-visual-quality` · taslak PR #1.

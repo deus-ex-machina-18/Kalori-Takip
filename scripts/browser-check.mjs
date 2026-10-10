@@ -16,13 +16,14 @@ try {
   await mkdir('browser-results', { recursive: true });
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await context.newPage();
+  const openEditor = async () => { const details=page.locator('.calorie-details'); if(await details.count())await details.evaluate(el=>el.open=true); };
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error'&&/THREE.WebGLProgram|shader error/i.test(m.text()))errors.push(m.text());});
   const checks = [];
   for (const width of [320, 360, 390, 768, 1280]) {
     await page.setViewportSize({ width, height: 850 });
-    for (const screen of ['bugun', 'kayitlar', 'planim', 'ilerlemem', 'ayarlar']) {
+    for (const screen of ['bugun', 'kayitlar', 'planim', 'ilerlemem', 'sosyal', 'ayarlar']) {
       await page.goto(`http://127.0.0.1:4173/#/${screen}`);
       await page.locator(`nav a[aria-current="page"][href="#/${screen}"]`).waitFor();
       await page.locator('h1').waitFor();
@@ -85,8 +86,10 @@ try {
     await page.locator('[data-action="save-profile"]').click();
     await page.locator('.plan-summary').waitFor();
     await page.locator('nav a[href="#/bugun"]').click();
+    await openEditor();
     await page.locator('[data-mode="entries"]').click();
     for (const kcal of [650,800,500]) {
+    await openEditor();
       await page.locator('#kcal').fill(String(kcal));
       await page.locator('#calorie-form button').click();
       await page.locator('main[aria-busy="false"]').waitFor();
@@ -96,10 +99,14 @@ try {
     await page.locator('.status').filter({hasText:'Tamamlandı'}).waitFor();
     await page.reload(); await page.locator('main[data-ready="true"]').waitFor();
     assert.match(await page.locator('.calorie-value').textContent(),/1.950/);
+    await openEditor();
     assert.equal(await page.locator('.entry-form').count(),3);
+    await openEditor();
     await page.locator('[data-mode="total"]').click();
     await page.locator('[data-action="mode-cancel"]').click();
+    await openEditor();
     assert.equal(await page.locator('.entry-form').count(),3);
+    await openEditor();
     await page.locator('[data-mode="total"]').click();
     await page.locator('[data-action="mode-preserve"]').click();
     await page.locator('#kcal').filter({visible:true}).waitFor();
@@ -115,6 +122,7 @@ try {
         return original.call(this,stores,mode,...args);
       };
     });
+    await openEditor();
     await page.locator('#kcal').fill('2000'); await page.locator('#calorie-form button').click();
     await page.locator('[data-action="retry"]').waitFor();
     assert.equal(await page.locator('#kcal').inputValue(),'2000');
@@ -146,18 +154,18 @@ try {
     await page.locator('[data-delete-activity]').click();await page.locator('[data-action="confirm-delete-activity"]').click();await page.locator('main[aria-busy="false"]').waitFor();assert.equal(await page.locator('.activity-row').count(),0);
     // A persisted activity remains on populated layout screenshots.
     await page.locator('#activity-kind').selectOption('strength');await page.locator('#activity-minutes').fill('30');await page.locator('#activity-form button[type="submit"]').click();await page.locator('.activity-row').waitFor();await page.locator('main[aria-busy="false"]').waitFor();
-    await page.locator('nav a[href="#/planim"]').click();await page.locator('[data-action="edit-profile"]').click();
+    await page.locator('nav a[href="#/planim"]').click();await page.locator('[data-action="edit-profile"]').first().click();
     await page.locator('#movement-mode').selectOption('auto');await page.locator('[name="movement-day"][value="1"]').check();await page.locator('[name="movement-day"][value="5"]').check();await page.locator('[name="preferred-kind"][value="walk"]').uncheck();await page.locator('[name="preferred-kind"][value="cycle"]').check();await page.locator('[name="eligibility"][value="eligible"]').check();
     await page.locator('#profile-form button[type="submit"]').click();await page.locator('.preview-card').waitFor();assert.match(await page.locator('.preview-card').textContent(),/Pazartesi · Bisiklet/);
     await page.screenshot({path:'browser-results/movement-preview.png',fullPage:true});
     await page.locator('[data-action="cancel-profile"]').click();assert.equal(await page.locator('#movement-mode').inputValue(),'auto');assert.equal(await page.locator('[name="movement-day"][value="5"]').isChecked(),true);
     await page.locator('#profile-form button[type="submit"]').click();await page.locator('[data-action="save-profile"]').click();await page.locator('.plan-summary').waitFor();await page.locator('main[aria-busy="false"]').waitFor();
-    await page.reload();await page.locator('main[data-ready="true"]').waitFor();await page.locator('[data-action="edit-profile"]').click();assert.equal(await page.locator('[name="movement-day"][value="1"]').isChecked(),true);assert.equal(await page.locator('[name="movement-kind-1"]').inputValue(),'cycle');await page.locator('[data-action="close-profile"]').click();
+    await page.reload();await page.locator('main[data-ready="true"]').waitFor();await page.locator('[data-action="edit-profile"]').first().click();assert.equal(await page.locator('[name="movement-day"][value="1"]').isChecked(),true);assert.equal(await page.locator('[name="movement-kind-1"]').inputValue(),'cycle');await page.locator('[data-action="close-profile"]').click();
     checks.push('R3 native IndexedDB: activity CRUD, reload, failure/retry, balance unchanged, approved movement draft version and persistence: pass');
     checks.push('R2 native IndexedDB: profile approval, 650+800+500, complete, reload, mode conversion/cancel, storage failure retry, weight persistence: pass');
     for (const width of [320,360,390,768,1280]) {
       await page.setViewportSize({width,height:850});
-      for (const screen of ['bugun','kayitlar','planim','ilerlemem','ayarlar']) {
+      for (const screen of ['bugun','kayitlar','planim','ilerlemem','sosyal','ayarlar']) {
         await page.goto(`http://127.0.0.1:4173/#/${screen}`);
         await page.locator(`nav a[aria-current="page"][href="#/${screen}"]`).waitFor();
         await page.locator('main[data-ready="true"]').waitFor();
@@ -167,7 +175,7 @@ try {
       }
       await page.goto('http://127.0.0.1:4173/#/planim');
       await page.locator('nav a[aria-current="page"][href="#/planim"]').waitFor();
-      await page.locator('[data-action="edit-profile"]').click();
+      await page.locator('[data-action="edit-profile"]').first().click();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true,`profile editor ${width}: overflow`);
       await page.screenshot({path:`browser-results/profile-editor-${width}.png`,fullPage:true});
       await page.locator('[data-action="close-profile"]').click();
