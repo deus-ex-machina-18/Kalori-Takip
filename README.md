@@ -19,7 +19,7 @@ npm run build
 npm run preview
 ```
 
-`check`: TypeScript, üretim build'i, tarih/hesap/IndexedDB ve kalori-video sınır testleri, 20 DOM akış testi; ayrıca aktif MP4/poster hash, bütçe ve fast-start kontrolü. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
+`check`: TypeScript, üretim build'i, 39 tarih/hesap/IndexedDB ve kalori-video sınır testi, 20 DOM akış testi; ayrıca aktif MP4/poster hash, bütçe ve fast-start kontrolü. Depo testleri fake-indexeddb, DOM testleri jsdom kullanır; gerçek tarayıcı kontrolü ayrıdır.
 
 ```bash
 npx playwright install chromium

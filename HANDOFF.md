@@ -21,7 +21,11 @@ Başlangıç head: `6b0b9ecf32709626b11269bd44c7e82062e4df28`. Yeni head için G
 
 - Beş MP4 yerelde FFmpeg ile sonuna kadar hatasız çözüldü.
 - Yerel Chromium indirimi geçerli ZIP dönmedi; gerçek tarayıcı kabulü GitHub Actions'ta çalıştırılır.
-- Güncel `npm run check` ve Chromium sonucu/kanıtı aşağıya işlenecek. Eski 56 testi yeni video kabulü sayma.
+- `npm run check`: TypeScript/üretim build + 39 domain/depo/sınır + 20 DOM = **59 test**, medya hash/bütçe/fast-start geçti.
+- Gerçek Chromium: **başarılı** [Actions 38084061717](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38084061717), test edilen uygulama commit'i `4ccad767dfa40fdc0e897aa776438fc2d6d974f6`. Native IndexedDB/R2/R3 ve tercihler/retry, sekiz kcal/sınır sonucu, kısmi 800, gerçek video decode/ended/idle, sabit yazı, reload/navigasyon replay yok, başarılı completion retry, IntersectionObserver pause/resume, simüle görünmez sekme, beş genişlik contain, statik/hareket azaltma MP4 yok, idle/tepki 404 ve autoplay reddinde çalışan form. `errors=[]`.
+- Artifact 11681885098: 75 dosya. Kalıcı kanıt `docs/verification/r4-video-browser-report.json`, `r4-video-metrics.json`, `r4-video-mobile-390.png`. Kartın görsel kesiti `r4-video-cat-card-390.png`. Tam ekran görüntüsünde klavye testinden kalan odaklı “İçeriğe geç” bağlantısı görünür; kesit yalnız kartın görsel incelemesidir.
+- 390px ekranda medya kartı 304×304 CSS px; kaynak gerçekten 640×640 çözülür, object-fit contain. 320/360/768/1280 genişliklerde de taşma yok. Bunlar masaüstü Chromium'da mobil viewport sonuçlarıdır; fiziksel Android sonucu değildir.
+- Sonraki belge/kanıt commit'i aynı uygulama ağacını korur; yeni head'de CI sonucu ayrıca kontrol edilir.
 
 ## Açık
 

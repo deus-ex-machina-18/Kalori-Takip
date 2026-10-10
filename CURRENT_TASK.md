@@ -17,4 +17,4 @@ Kedi kartı, video adaptörü, sonuç sunumu, başarılı kayıt olayı, ilgili 
 
 TypeScript/build/domain/DOM ve medya hash/bütçe/fast-start; gerçek Chromium'da kişisel örnek aralığı 2200–2400/koruma 2700 ile 1900/2200/2300/2400/2401/2550/2700/3000, kısmi 800, tamamlamanın başarısızlığı/retry, gerçek decode/ended/idle, tek oynatma, sabit sonuç metni, hata/statik/gizlilik ve 320/360/390/768/1280 genişlik.
 
-Durum: entegrasyon hazır; güncel koşu/kanıt HANDOFF.md'de. Fiziksel Android ve görsel kullanıcı kabulü açık. Sonraki tek görev: telefonda kontrol; ardından sorunlu klip ve alternatif üretimi.
+Durum: entegrasyon, 59 test, medya kontrolü ve gerçek Chromium kabulü tamamlandı; güncel koşu/kanıt HANDOFF.md'de. Fiziksel Android ve görsel kullanıcı kabulü açık. Sonraki tek görev: telefonda kontrol; ardından sorunlu klip ve alternatif üretimi.
