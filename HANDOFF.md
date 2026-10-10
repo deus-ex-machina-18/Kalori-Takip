@@ -33,4 +33,6 @@ Hedef-altı videoda kap klip ortasında belirip kayıyor; son kare çözünmesi 
 
 ## Sonraki tek görev
 
-Önce aynı sürümü gerçek Android'de kontrol et. Sonra sorunlu klipleri/alternatifleri aynı ilk kare/kamera/ışıkla üret. R5 bildirim/ödül veya hesap değişikliği ekleme.
+Son kullanıcı yönlendirmesi: kedi adı **Zilli**; varsayılan ad güncellendi. Eski ekranlarda Duman test adı görünebilir. Kullanıcı ayrı sohbette mobil ekran tasarımını çalışacak; önce mevcut video kartını ve uzun sonuçları kullanan 390px Bugün tasarımı, sonra aynı dilde diğer dört ekran. Çalışan hesap/depo/video davranışını veya karakter kimliğini yeniden tasarlama. Yeni özellik, video üretimi ve R5 bu tura eklenmez.
+
+Tasarım uygulandıktan sonra aynı sürümü gerçek Android'de kontrol et. Sonra sorunlu klipleri/alternatifleri aynı ilk kare/kamera/ışıkla üret. Bildirim/ödül veya hesap değişikliği ekleme.

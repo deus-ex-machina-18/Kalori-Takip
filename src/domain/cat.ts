@@ -1,7 +1,7 @@
 import type { CatPreferences, CatState } from './models.ts';
 import { validId } from './tracking.ts';
 
-export const DEFAULT_CAT_NAME = 'Mırmır';
+export const DEFAULT_CAT_NAME = 'Zilli';
 export function defaultCatPreferences(userId: string, reducedMotion: boolean): CatPreferences {
   return { userId, name: DEFAULT_CAT_NAME, reducedMotion, sceneMode: 'auto', soundEnabled: false };
 }

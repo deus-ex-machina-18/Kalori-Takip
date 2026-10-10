@@ -5,6 +5,8 @@ Repo: https://github.com/deus-ex-machina-18/Kalori-Takip · ana dal: main
 
 ## Ürün
 
+Kedinin kullanıcı tarafından belirlenen adı **Zilli** (10 Ekim 2026). Varsayılan adın tek kaynağı `src/domain/cat.ts`. Daha önce Ayarlar'dan kaydedilmiş özel adlar zorla değiştirilmez. Eski doğrulama ekranlarında “Duman” test adı görünebilir; yeni tasarımda Zilli kullanılır.
+
 Türkçe, telefon öncelikli manuel günlük kalori takibi. Geçici ad **Kedi Kalori**; mevcut sıcak krem/adaçayı/şeftali arayüz korunur. Kullanıcı üç örnek arasından 1. yumuşak oyuncak yönünü gri-beyaz renkle seçti. Önce gerçek GLB üretildi; 6 Ekim 2026'da kullanıcı döndürmenin şart olmadığını belirterek sabit açılı, önceden hazırlanmış görsel/animasyon yöntemini kabul etti. Görsel kimlik gri-beyaz kalır; 10 Ekim 2026’da mevcut beş video ile uygulamaya geçirildi. Beş ekran: Bugün, Kayıtlar, Planım, İlerlemem, Ayarlar. Kullanıcı kaloriyi dışarıda hesaplar; uygulama toplamı veya yalnızca kcal parçalarını kabul eder. Besin kataloğu, fotoğraf/barkod/porsiyon hesabı ve LLM yok.
 
 Boş gün sıfır değildir. Hedef aşımı ile koruma ihtiyacı üzerindeki tüketim ayrıdır. Eksik veriye kesin sonuç/ödül verilmez; az yeme yarışı ve egzersiz borcu yok. Kedi günün kalorileriyle fiziksel olarak değişmez veya cezalandırmaz.

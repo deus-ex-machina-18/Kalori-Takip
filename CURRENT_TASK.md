@@ -17,4 +17,8 @@ Kedi kartı, video adaptörü, sonuç sunumu, başarılı kayıt olayı, ilgili 
 
 TypeScript/build/domain/DOM ve medya hash/bütçe/fast-start; gerçek Chromium'da kişisel örnek aralığı 2200–2400/koruma 2700 ile 1900/2200/2300/2400/2401/2550/2700/3000, kısmi 800, tamamlamanın başarısızlığı/retry, gerçek decode/ended/idle, tek oynatma, sabit sonuç metni, hata/statik/gizlilik ve 320/360/390/768/1280 genişlik.
 
-Durum: entegrasyon, 59 test, medya kontrolü ve gerçek Chromium kabulü tamamlandı; güncel koşu/kanıt HANDOFF.md'de. Fiziksel Android ve görsel kullanıcı kabulü açık. Sonraki tek görev: telefonda kontrol; ardından sorunlu klip ve alternatif üretimi.
+Durum: entegrasyon, 59 test, medya kontrolü ve gerçek Chromium kabulü tamamlandı; güncel koşu/kanıt HANDOFF.md'de. Fiziksel Android ve görsel kullanıcı kabulü açık.
+
+## Son kullanıcı yönlendirmesi — 10 Ekim 2026
+
+Kedi adı Zilli. Varsayılan ad güncellendi; kayıtlı özel tercihler korunur. Kullanıcı ekran görünümü çalışmasını ayrı sohbette yaptıracak. O sohbetin tek çıktısı mevcut beş ekranı temel alan mobil arayüz tasarımıdır; ilk olarak Bugün ekranı 390px gerçek medya/uzun sonuç metinleriyle hazırlanır. Var olan gri-beyaz karakter ve beş video kullanılır, yeni karakter veya video üretilmez. Yeni özellik/hesap/depo değişikliği bu tasarım turuna eklenmez. Kullanıcı tasarım yönünü seçtikten sonra arayüz uygulanıp yeniden doğrulanır. Fiziksel Android kontrolü ve ardından sorunlu/alternatif klip üretimi açık kalır.
