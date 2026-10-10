@@ -1,24 +1,20 @@
-# Güncel görev — beş kalori videosunun entegrasyonu
+# Güncel görev — onaylı mobil görsel dilin uygulanması
 
-10 Ekim 2026. Dal `r4-visual-quality`, taslak PR #1. Tek çıktı: mevcut beş klibi Bugün kartına bağlayıp mobil tarayıcıda doğrulamak. Yeni kedi/video üretimi yok.
+11 Ekim 2026 · `reference-ui` · başlangıç: `a6291a3` (`r4-visual-quality`).
 
-## Sınır ve kararlar
+Tek çıktı: kullanıcının altı referans görseline göre çalışan Kalori Takip arayüzü.
 
-Kedi kartı, video adaptörü, sonuç sunumu, başarılı kayıt olayı, ilgili stil/medya/test ve devir belgeleri. Kalori/aktivite/plan/haftalık motorları, veri tipleri ve IndexedDB v1 değişmez. Beş ekran ve mevcut tercihler kullanılır. Birleştirme/yayın/R5 bu turda yok.
+## Kapsam
 
-- Bekleme zaten vardı; aynı klip kullanılır. Başarı ve üç yeni tepki toplam beş durum oluşturur.
-- Kısmi gün bekleme. Tepki yalnız başarılı “Günü tamamla” kaydından sonra bir kez; 2–4 sn sonra bekleme. Sonuç yazısı kalır; yenileme/navigasyon replay yapmaz.
-- Kişisel planın motor farkları esas alınır. Aralık sınırları dahil başarı; motorun care önceliği korunur. Koruma tahminine eşit gün için aşım yazılmaz.
-- 1:1 kare, object-fit contain; kamera sabit. Dönüşler ortak ilk kareye çözünür.
-- Görünmez kart/sekmede durur; statik/hareket azaltma MP4 istemez; hata poster/form yedeği kullanır.
-- Oyun/esneme/uyku bu beşli pakette yok. Eski döndürme ve diğer 3D kontrol düğmeleri kaldırılır; ileride kendi klipleriyle eklenebilir.
+Bugün, Kayıtlar, Planım, İlerlemem, Sosyal, Ayarlar; ortak krem/desenli zemin, koyu yeşil düğmeler, altın çerçeveler, serif başlıklar, yeniden kullanılan referans ikonları ve altı sekmeli navigasyon. Bugün ekranında son Su / İlerlemem kısayolu referansı kullanılır. Kalori formu açılır bölümde; hesap, onay, retry ve geçmiş kayıt akışları korunur. Su takibi kullanıcı ve yerel gün bazında ayrı v1 cihaz kaydında tutulur.
 
-## Kabul
+Enerji/hareket/haftalık domain hesapları ve IndexedDB v1 değişmez. Mevcut beş video korunur. Gerçek hesap/arkadaş/grup/challenge altyapısı bu görsel turda kurulmaz. Sosyal ekran bunu açıkça belirtir; paylaşım kapalıdır, sahte arkadaş ve katılımcı kayıtları yoktur.
 
-TypeScript/build/domain/DOM ve medya hash/bütçe/fast-start; gerçek Chromium'da kişisel örnek aralığı 2200–2400/koruma 2700 ile 1900/2200/2300/2400/2401/2550/2700/3000, kısmi 800, tamamlamanın başarısızlığı/retry, gerçek decode/ended/idle, tek oynatma, sabit sonuç metni, hata/statik/gizlilik ve 320/360/390/768/1280 genişlik.
+## Kabul ve mevcut durum
 
-Durum: entegrasyon, 59 test, medya kontrolü ve gerçek Chromium kabulü tamamlandı; güncel koşu/kanıt HANDOFF.md'de. Fiziksel Android ve görsel kullanıcı kabulü açık.
+- TypeScript / üretim build / 39 domain ve depo + 22 DOM = 61 test: başarılı.
+- Video hash, fast-start, format ve boyut kontrolü: başarılı.
+- Mobil piksel eşleşmesi ve gerçek tarayıcı QA: açık. Playwright Chromium indirmesi geçerli ZIP dönmedi. Cloud Browser yerel önizlemeye `ERR_CONNECTION_REFUSED` verdi. Görsellerle birebir eşleşme onaylandı iddiası yok.
+- GitHub'a gönderim: 11 Ekim 2026'da kullanıcının açık onayıyla tamamlandı. Komut satırı kimlik doğrulaması bulunmadığı için bağlı GitHub bağlantısı kullanıldı. `reference-ui` dalı ve taslak PR #2 oluşturuldu; uygulama commit'i `1d0395fa1907c4da3f292a017ddcf1a424fa01a1`. Yerel/test edilen ve uzak kaynak ağacı aynı: `6305dc5bf94031724e438bef8edfb5ac6f79cea3`. Main'e birleştirme veya yayın yapılmadı.
 
-## Son kullanıcı yönlendirmesi — 10 Ekim 2026
-
-Kedi adı Zilli. Varsayılan ad güncellendi; kayıtlı özel tercihler korunur. Kullanıcı ekran görünümü çalışmasını ayrı sohbette yaptıracak. O sohbetin tek çıktısı mevcut beş ekranı temel alan mobil arayüz tasarımıdır; ilk olarak Bugün ekranı 390px gerçek medya/uzun sonuç metinleriyle hazırlanır. Var olan gri-beyaz karakter ve beş video kullanılır, yeni karakter veya video üretilmez. Yeni özellik/hesap/depo değişikliği bu tasarım turuna eklenmez. Kullanıcı tasarım yönünü seçtikten sonra arayüz uygulanıp yeniden doğrulanır. Fiziksel Android kontrolü ve ardından sorunlu/alternatif klip üretimi açık kalır.
+Sonraki tek görev: PR #2 üzerinde tarayıcı kontrollerini çalıştır, gerçek mobil ekran görüntülerini referanslarla karşılaştır ve yalnız bulunan görsel farkları düzelt.

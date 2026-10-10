@@ -1,3 +1,11 @@
+# 11 Ekim 2026 — arayüz teslim durumu
+
+Güncel görev ve kabul sınırları `CURRENT_TASK.md` içindedir. Onaylı görsel dil altı ekrana uygulandı; domain/depo mantığı korunuyor, su takibi ve açıkça etiketlenmiş Sosyal önizleme eklendi. 61 test, build ve medya doğrulaması geçti. Piksel eşleşmesi ve tarayıcı kabulü tamamlanmadı. Kullanıcının 11 Ekim 2026 tarihli açık onayıyla `reference-ui` dalı ve taslak PR #2 GitHub'a gönderildi. Uygulama commit'i `1d0395fa1907c4da3f292a017ddcf1a424fa01a1`; test edilen kaynak ağacı `6305dc5bf94031724e438bef8edfb5ac6f79cea3` ile aynı. Main ve PR #1 değişmedi.
+
+Yerel dal: `reference-ui`, taban: `a6291a3`. `npm ci && npm run check`; tarayıcı ortamı sağlanınca `node scripts/browser-check.mjs`. Sonraki tek görev: PR #2 üzerinde tarayıcı kanıtları ve referansla görsel karşılaştırma.
+
+---
+
 # R4 video entegrasyonu — devir
 
 10 Ekim 2026 · `deus-ex-machina-18/Kalori-Takip` · dal `r4-visual-quality` · taslak PR #1.

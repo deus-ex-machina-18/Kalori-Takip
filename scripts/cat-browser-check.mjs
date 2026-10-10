@@ -37,7 +37,7 @@ export async function checkCatMedia(page, checks) {
   assert.equal(await page.locator('.cat-card canvas').count(),0);
   assert.equal(await page.locator('[data-cat-action]').count(),0);
   const ready = async()=>{await page.locator('main[aria-busy="false"]').waitFor();};
-  const record = async kcal=>{await page.locator('#kcal').fill(String(kcal));await page.locator('#calorie-form button').click();await ready();};
+  const record = async kcal=>{await page.locator('.calorie-details').evaluate(el=>el.open=true);await page.locator('#kcal').fill(String(kcal));await page.locator('#calorie-form button').click();await ready();};
   const finish = async()=>{await page.locator('[data-action="complete"]').click();await ready();};
   await record(800); assert.equal(await page.locator('.cat-card').getAttribute('data-result'),'idle');
   const outcomes = [];
@@ -101,7 +101,7 @@ export async function checkCatMedia(page, checks) {
   await page.addInitScript(()=>{HTMLMediaElement.prototype.play=()=>Promise.reject(new DOMException('blocked','NotAllowedError'));});
   await page.reload();await page.locator('.cat-card[data-scene-status="static"]').waitFor();assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
   // Persisted static mode and reduced motion must request no MP4 even on completion.
-  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#scene-mode').selectOption('static');await page.locator('#motion').check();
+  await page.locator('nav a[href="#/ayarlar"]').click();await page.locator('#static-mode').check();await page.locator('#motion').check();
   await page.locator('#cat-settings-form button[type="submit"]').click();await ready();await page.reload();await page.locator('main[data-ready="true"]').waitFor();
   assert.equal(await page.locator('#scene-mode').inputValue(),'static');assert.equal(await page.locator('#motion').isChecked(),true);
   requests.length=0;await page.locator('nav a[href="#/bugun"]').click();await record(1900);await finish();

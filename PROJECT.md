@@ -69,3 +69,14 @@ Yeni yöntem 10 Ekim 2026’da uygulamaya geçirildi. Eski test/performans ölç
 Bugün kartı `src/ui/cat-video.ts` ile beş mevcut MP4 kullanır. `src/ui/cat-result.ts` yalnız motorun DaySummary farklarını gösterir; eşikler tekrar kodlanmaz. Başarılı bugünkü tamamlama kaydı tek kullanımlık olay üretir; yenileme/navigasyon olay üretmez. Olay/oynatım geçmişi için veri şeması değiştirilmez. Sonuç yazısı kayıtlı summary'den kalır. Motor care önceliği korunur.
 
 Kare medya kırpılmaz; MP4 sessiz Baseline/fast-start; reaksiyonlar gerektiğinde yüklenir. Statik/hareket azaltma sadece ortak ilk kareden poster. Kart/sekme gizliyken video durur, medya hatası bağımsız kalori formunu etkilemez. Dönüş son 0,25 sn ortak başlangıca çözünür. Kaplı klibin içindeki belirme/kayma kusuru bilinen üretim sorunudur. Oyun/esneme/uyku ve alternatif tepkiler fiziksel telefon kabulünden sonra ayrı iştir. Eski GLB kaynak/varlıkları tarihsel olarak korunur; aktif kedi kartı onları yüklemez. Yeni yayın ve Android kabulü yapılmış sayılmaz.
+
+## 11 Ekim 2026 — geçerli görsel kararlar
+
+- Uygulama adı Kalori Takip; varsayılan kedi Zilli. Kullanıcının altı referansı onaylı görsel yönün kaynağıdır; yeniden üç örnek/seçim gerekmez.
+- Altı ekran: Bugün, Kayıtlar, Planım, İlerlemem, Sosyal, Ayarlar. Mobil alt navigasyon masaüstünde de telefon genişliğindeki uygulama kabuğunda kalır.
+- Krem desenli zemin, orman yeşili, altın süslemeli çerçeveler; serif başlıklar. Tokenlar `src/styles.css`, ortak dekoratif varlıklar `public/design`, URL/varlık yardımcıları `src/ui/design.ts`.
+- Zilli'nin videoları ve hesap motoruna bağlı tepki politikası korunur. Kare videolar `object-fit: contain` ile kırpılmadan gösterilir.
+- Referansın ikonları ve nötr kedi resmi kullanıcı tarafından sağlanan çizimden yeniden kullanıldı. Raster sayfa ekran görüntüsü etkileşimli UI yerine konmadı.
+- Su kaydı `kalori-water-v1:<userId>` altında yerel gün bazında; kalori IndexedDB şeması değişmez. Sosyal paylaşım, kimlik ve yetkili sunucu kurulmadan aktif görünmez.
+- Referanstaki örnek sayılar, isimler ve grup üyeleri gerçek kullanıcı verisi gibi gösterilmez.
+- Bu kararlar önceki görsel/3D yön açıklamalarının yerini alır; tarihsel teknik kayıtlar geçmiş çalışmaların açıklamasıdır.
