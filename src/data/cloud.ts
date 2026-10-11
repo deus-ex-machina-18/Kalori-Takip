@@ -149,7 +149,9 @@ export class CloudRepository implements TrackingRepository {
         return success(operation.result as T);
       } catch (e) {
         return failure(
-          (e as { code?: string }).code === "40001" ? "conflict" : "storage",
+          ["PT409", "40001"].includes((e as { code?: string }).code ?? "")
+            ? "conflict"
+            : "storage",
           (e as Error).message,
         );
       }

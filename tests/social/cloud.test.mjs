@@ -67,6 +67,15 @@ test("stale second device gets conflict without overwriting recent writes", asyn
   await other.getLocalProfile();
   const date = localDateAt(new Date(), profile.timeZone);
   await cloud.saveWater(date, 750, 2500);
+  await assert.rejects(
+    adapter.call("snapshot_save", { revision: other.revision, data: other.data }, randomUUID()),
+    (error) => error.code === "PT409",
+  );
+  const staleProfile = await other.saveSetup(
+    { profile: { ...profile, updatedAt: new Date().toISOString() }, plan: null, weight: null, expectedProfileUpdatedAt: profile.updatedAt },
+    { operationId: randomUUID() },
+  );
+  assert.equal(staleProfile.code, "conflict");
   await assert.rejects(other.saveWater(date, 500, 2500), /başka cihazda/);
   await other.getLocalProfile();
   assert.equal(other.getWater().days[date], 750);

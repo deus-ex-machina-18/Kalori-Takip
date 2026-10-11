@@ -85,13 +85,25 @@ try {
     automaticPlanEligibility: "out-of-scope", updatedAt: new Date().toISOString(),
   };
   const cloud = new CloudRepository(a, ua.id);
-  await cloud.getLocalProfile();
-  const setup = await cloud.saveSetup({ profile, plan: null, weight: null, expectedProfileUpdatedAt: null }, { operationId: randomUUID() });
+  const loaded = await cloud.getLocalProfile();
+  assert.equal(loaded.ok, true, loaded.message);
+  // An interrupted acceptance run may already have a fixture profile/day.
+  // Resume through the same production version checks, without database resets.
+  const setup = await cloud.saveSetup({ profile, plan: null, weight: null, expectedProfileUpdatedAt: loaded.value?.updatedAt ?? null }, { operationId: randomUUID() });
   assert.equal(setup.ok, true, setup.message);
   const today = localDateAt(new Date(), profile.timeZone);
-  let day = changeDay(newDay(profile, today, []), { type: "total", kcal: 2200 }, false);
-  day = changeDay(day, { type: "complete" }, false);
-  const saved = await cloud.saveDay(day, { operationId: randomUUID(), expectedRevision: 0 });
+  const previousDay = cloud.data.days.find((d) => d.date === today);
+  let day;
+  if (previousDay) {
+    assert.equal(previousDay.calories?.mode, "total");
+    assert.equal(previousDay.calories.totalKcal, 2200);
+    assert.equal(previousDay.status, "completed");
+    day = { ...previousDay, revision: previousDay.revision + 1, updatedAt: new Date().toISOString() };
+  } else {
+    day = changeDay(newDay(profile, today, []), { type: "total", kcal: 2200 }, false);
+    day = changeDay(day, { type: "complete" }, false);
+  }
+  const saved = await cloud.saveDay(day, { operationId: randomUUID(), expectedRevision: previousDay?.revision ?? 0 });
   assert.equal(saved.ok, true, saved.message);
   const second = new CloudRepository(a, ua.id);
   await second.getLocalProfile();
