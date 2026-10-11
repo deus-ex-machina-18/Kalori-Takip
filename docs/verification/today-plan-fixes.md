@@ -5,7 +5,7 @@ Taban: `309c947bb85224feda871098a715cfe313bcc44a` · 11 Ekim 2026.
 ## Davranış
 
 - Video alanı artık `:disabled` durumunda opaklığını korur. Oyun ve gün sonucu sırasında düğmenin kilitlenmesi videoyu soluklaştırmaz.
-- Video kartı %80 yerine %100 genişlik kullanır; kare kaynak kırpılmaz. Bugün başlığı 23–28 px, kedi adı 17 px. Ayarlar düğmesinde 48 px çerçeve içinde 24 px ikon ortalanır. Tekrarlanan, dikişli kâğıt dokusu yerine tek arka plan kullanılır; kart dolgusu çerçevenin altına uzanır.
+- Video kartı %80 yerine %100 genişlik kullanır; kare kaynak kırpılmaz. Bugün başlığı 23–28 px, kedi adı 17 px. Ayarlar düğmesinde 48 px çerçeve içinde 24 px ikon ortalanır. Tekrarlanan, dikişli kâğıt dokusu yerine tek arka plan kullanılır; kart, düğme ve gezinme dolgusu çerçevenin altına uzanır.
 - Kilo verme planında isteğe bağlı 1–156 hafta seçilir. Önizleme, geri dönme, onay, yeniden açılış ve ileri tarihli plan sürümü süreyi saklar. Kilo korumada alan kapalıdır.
 - Günlük hedefi aşan kayıt için Bugün ve tamamlanmış günlerin dönem özeti, yürüyüş/bisiklet/koşu dakika aralıkları gösterir. Kısmi kayıt geçici olarak işaretlenir. Hedef fazlası ve koruma fazlası ayrı temellere sahiptir; seçenekler birbirinin alternatifidir.
 
@@ -26,6 +26,7 @@ Kaynaklar:
 ## Doğrulama
 
 - TypeScript/üretim derlemesi, 43 domain/depo ve 24 DOM testi geçti; dokuz MP4 ve poster doğrulandı.
+- İlk CI Chromium çalıştırması [38173198710](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38173198710) geçti; ekran görüntüleri incelendi. Son çerçeve dolgusu rötuşundan sonra aynı kontroller tekrarlanır.
 - Gerçek Chromium: dört hareket ve sekiz kalori sonucunda opaklık; beş genişlikte büyük kare video, küçük başlık ve ortalanmış ayar ikonu; süre sınırı/önizleme/geri/onay/yeniden açılış; kısmi ve tamamlanmış spor karşılığı kontrolleri `scripts/today-plan-browser-check.mjs` ve mevcut medya kontrolünde tanımlandı.
 - Yerel tarayıcı indirimi ortamda başarısız olduğundan Chromium ve görsel kabul GitHub Actions üzerinden yapılır. Fiziksel Android testi değildir.
 - Canlı yayın ve Chromium sonucu bu belgenin test commit'i için CI ve sonraki teslim mesajıyla doğrulanır.

@@ -170,7 +170,8 @@ small {
   border: 9px solid transparent;
   border-image: url("../public/design/frame.svg") 28 stretch;
   background: var(--surface);
-  background-clip: padding-box;
+  background-clip: border-box;
+  border-radius: 9px;
 }
 .date-chip .icon {
   width: 18px;
@@ -253,7 +254,7 @@ main > details.card {
   gap: 12px;
   border: 15px solid transparent;
   border-image: url("../public/design/frame.svg") 28 stretch;
-  border-radius: 0;
+  border-radius: 12px;
   min-height: 48px;
   padding: 0 7px;
   font-family: var(--serif);
@@ -262,7 +263,7 @@ main > details.card {
   text-align: center;
   width: 100%;
   background: var(--surface);
-  background-clip: padding-box;
+  background-clip: border-box;
   box-shadow: 0 3px 6px #694b2419;
 }
 .button.primary {
@@ -271,7 +272,7 @@ main > details.card {
     linear-gradient(110deg, #24614966, #0e332d55),
     url("../public/design/paper.webp");
   background-blend-mode: normal, multiply;
-  background-clip: padding-box;
+  background-clip: border-box;
   color: #fff9ec;
   border-image-source: url("../public/design/frame-dark.svg");
 }
@@ -280,7 +281,7 @@ main > details.card {
 }
 .button.secondary {
   background: var(--surface);
-  background-clip: padding-box;
+  background-clip: border-box;
 }
 .button .icon {
   width: 26px;
@@ -325,13 +326,14 @@ main > details.card {
   border: 10px solid transparent;
   border-image: url("../public/design/frame.svg") 28 stretch;
   background: var(--surface);
-  background-clip: padding-box;
+  background-clip: border-box;
+  border-radius: 9px;
   font-size: 10px;
   color: var(--muted);
 }
 .navigation a[aria-current="page"] {
   background: var(--sage-dark);
-  background-clip: padding-box;
+  background-clip: border-box;
   border-image-source: url("../public/design/frame-dark.svg");
   color: #fff8eb;
 }
@@ -357,7 +359,7 @@ main > details.card {
   border: 10px solid transparent;
   border-image: url("../public/design/frame.svg") 28 stretch;
   background: var(--surface);
-  background-clip: padding-box;
+  background-clip: border-box;
   padding: 0;
   overflow: hidden;
   display: block;

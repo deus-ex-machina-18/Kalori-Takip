@@ -67,6 +67,7 @@ export async function checkTodayPlanFixes(browser, checks) {
     await page.locator('.maintenance-equivalent').waitFor();
     await page.locator('.maintenance-equivalent summary').click();
     assert.equal(await page.locator('.maintenance-equivalent .link-row').count(), 3);
+    await page.locator('h1').focus();
     await page.screenshot({ path: 'browser-results/activity-equivalents-390.png', fullPage: true });
     assert.deepEqual(errors, []);
     checks.push('Today fixes: opaque video, enlarged scene, compact headings, centered settings and seamless background at five widths; duration cap/preview/back/save/reload; provisional and completed activity equivalents and separate maintenance basis: pass');
