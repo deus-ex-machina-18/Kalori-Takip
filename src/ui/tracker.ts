@@ -9,8 +9,11 @@ import {
   WEEKDAYS,
   createActivity,
   suggestMovement,
+  activityMinutesForKcal,
 } from "../domain/activity.ts";
 import { reviewWeek } from "../domain/weekly.ts";
+import { planTimeline, TIMELINE_POLICY } from "../domain/timeline.ts";
+import { ageOn } from "../domain/dates.ts";
 import {
   defaultCatPreferences,
   validateCatPreferences,
@@ -71,6 +74,12 @@ const field = (
   attrs = "",
 ) =>
   `<label class="field" for="${name}"><span>${label}</span><input id="${name}" name="${name}" type="${type}" value="${escape(value)}" ${attrs} required></label>`;
+
+function timelineMarkup(plan: PlanVersion): string {
+  const timeline = planTimeline(plan);
+  if (!timeline) return "";
+  return `<div class="plan-timeline"><p><strong>İstediğin süre: ${timeline.requestedWeeks} hafta</strong></p><p>Bu aralıkla yaklaşık enerji bütçesi: <strong>${timeline.estimatedWeeks === null ? "hesaplanamıyor" : `${Math.ceil(timeline.estimatedWeeks)} hafta`}</strong>.</p>${timeline.limited ? '<p>Seçtiğin süreye mevcut kalori sınırlarıyla ulaşılamıyor. Daha uzun süre seçebilir veya bu daha yavaş taslağı onaylayabilirsin.</p>' : ""}<p class="hint">Kilo azaldıkça ihtiyaç değişir. Bu hesap gerçek bitiş tarihi vaat etmez; ölçümlerine göre planı yeniden değerlendir.</p></div>`;
+}
 
 export class Tracker {
   readonly repository = new IndexedDbRepository();
@@ -281,6 +290,7 @@ export class Tracker {
       : "Belirlenmedi";
     const message = catResult(this.catSummary()).message;
     return `<section class="card day-card" aria-label="Günün kalori özeti"><div class="daily-numbers"><div class="daily-intake">${art("bowl")}<div><div class="calorie-value">${calories === null ? "—" : number(calories)} <span>kcal</span></div><p class="muted">Bugünkü kalori</p></div></div><div class="daily-target"><span>Hedef</span><strong>${range}<small>${plan ? " kcal" : ""}</small></strong></div></div><p class="day-note">${escape(message)}</p><span class="status sr-only">${statusLabel(day)}</span></section>
+    ${plan && calories !== null ? this.excessActivityContent(Math.max(0, calories - plan.calorieRangeKcal.max), Math.max(0, calories - plan.estimatedMaintenanceKcal), date, day?.status !== "completed") : ""}
     <div class="today-shortcuts"><button type="button" class="card shortcut" data-water>${art("water")}<span><strong>Su</strong><span id="water-summary">—</span></span>${icon("arrow")}</button><a class="card shortcut" href="#/ilerlemem">${art("chart")}<span><strong>İlerlemem</strong><span>Özeti gör</span></span>${icon("arrow")}</a></div>
     ${
       this.profile && this.ready
@@ -296,6 +306,19 @@ export class Tracker {
         : `<a class="button primary" href="#/planim">${icon("plus")} Profilini oluştur</a><button class="button secondary complete-day" disabled>${icon("check")} Günü tamamla</button>`
     }`;
   }
+  private excessActivityContent(targetExcess: number, maintenanceExcess: number, date: LocalDate, provisional = false, cumulative = false): string {
+    if (targetExcess <= 0 && maintenanceExcess <= 0) return "";
+    const weight = representativeWeights(this.weights.filter(w => w.date <= date))[0]?.weightKg ?? this.profile?.weightKg;
+    if (!weight || !this.profile) return "";
+    const age = ageOn(this.profile.birthDate, date);
+    if (age < 19 || age > 59) return "";
+    const rows = (kcal: number) => ([['walk', 'vigorous', 'shoe'], ['cycle', 'moderate', 'bike'], ['run', 'moderate', 'runner']] as const).map(([kind, intensity, image]) => {
+      const minutes = activityMinutesForKcal(kcal, kind, intensity, weight);
+      return `<a class="link-row" href="#/kayitlar">${art(image)}<span>${ACTIVITY_KINDS[kind]}<small>${ACTIVITY_MET[kind][intensity].label}</small></span><strong>${number(minutes.min)}–${number(minutes.max)} dk</strong></a>`;
+    }).join('');
+    const group = (kcal: number, basis: string) => kcal > 0 ? `<h3>${basis}: ${number(kcal)} kcal</h3>${rows(kcal)}` : "";
+    return `<section class="card activity-equivalent" aria-label="Fazla kalorinin hareket karşılığı"><h2>Tahmini spor karşılığı</h2>${provisional ? '<p class="hint">Geçici toplam · gün henüz tamamlanmadı.</p>' : ""}${group(targetExcess, cumulative ? 'Hedef üstü toplam' : 'Hedefin üzerinde')}${maintenanceExcess > 0 ? `<details class="maintenance-equivalent"><summary>Koruma ihtiyacının üzerindeki ${number(maintenanceExcess)} kcal için</summary>${rows(maintenanceExcess)}</details>` : '<p class="hint">Koruma ihtiyacının üzerinde değilsin; hedef aşımı tek başına kalori fazlası anlamına gelmez.</p>'}<p class="hint">${weightNumber(weight)} kg için dinlenme üzerindeki ek harcama tahmini. Aktiviteler birbirinin alternatifidir; süreler toplanmaz. ${cumulative ? "Dönemin toplamıdır; tek seans önerisi değildir. " : ""}Bunlar zorunlu telafi değildir. Olağan hareket zaten planında var; bu süreler kalori hedefine yeniden eklenmez.</p></section>`;
+  }
   private referencePlan(
     current: PlanVersion | null,
     future: PlanVersion[],
@@ -308,7 +331,7 @@ export class Tracker {
       : "Belirlenmedi";
     const goal = current?.targetWeightKg;
     return `<section class="card plan-summary"><h2>Kilo hedefim</h2><div class="weight-pair"><div>${art("scale")}<span><strong>${weightNumber(latestWeight)} kg</strong><small>Son ölçüm</small></span></div><div>${art("target")}<span><strong>${goal === null || goal === undefined ? "Koruma" : weightNumber(goal) + " kg"}</strong><small>Hedef</small></span></div></div><button class="link-row selected-row" data-action="edit-profile">${art("target")}<span>${current?.goal === "lose" ? "Kilo verme" : current ? "Kilo koruma" : "Plansız takip"}</span>${icon("arrow")}</button><button class="link-row" data-action="edit-profile">${icon("user")}<span>Profilimi düzenle</span>${icon("arrow")}</button>${current?.goal === "lose" && latestWeight <= current.targetWeightKg! ? button("maintain-plan", "Koruma planını önizle", true) : ""}</section>
-    <section class="card"><div class="card-top"><h2>Günlük kalori planı</h2><button class="mini-choice" data-action="edit-profile">Otomatik / Manuel</button></div><div class="plan-energy">${art("bowl")}<div><strong>${range} <small>${current ? "kcal" : ""}</small></strong><p class="muted">Günlük hedef aralığı</p></div></div><div class="ornate-divider"></div><div class="maintenance"><strong>${current ? number(current.estimatedMaintenanceKcal) + " kcal" : "—"}</strong><p class="muted">Tahmini koruma ${icon("info")}</p><p class="hint">Düzenli hareket bu tahmine dahildir.</p></div>${future.length ? `<p class="hint">Sıradaki plan ${future[0]!.effectiveFrom} tarihinde başlayacak.</p>` : ""}</section>
+    <section class="card"><div class="card-top"><h2>Günlük kalori planı</h2><button class="mini-choice" data-action="edit-profile">Otomatik / Manuel</button></div><div class="plan-energy">${art("bowl")}<div><strong>${range} <small>${current ? "kcal" : ""}</small></strong><p class="muted">Günlük hedef aralığı</p></div></div><div class="ornate-divider"></div><div class="maintenance"><strong>${current ? number(current.estimatedMaintenanceKcal) + " kcal" : "—"}</strong><p class="muted">Tahmini koruma ${icon("info")}</p><p class="hint">Düzenli hareket bu tahmine dahildir.</p></div>${current ? timelineMarkup(current) : ""}${future.length ? `<p class="hint">Sıradaki plan ${future[0]!.effectiveFrom} tarihinde başlayacak.</p>${timelineMarkup(future[0]!)}` : ""}</section>
     <section class="card"><div class="card-top"><h2>Hareket planım</h2><span class="muted">Hafta hedefi ${current ? current.movementDays.reduce((sum, d) => sum + d.minutes, 0) : 0} dk</span></div><div class="activity-choices">${[
       ["shoe", "Yürüyüş"],
       ["bike", "Bisiklet"],
@@ -368,7 +391,7 @@ export class Tracker {
     if (this.preview) {
       const { write, explanation } = this.preview,
         p = write.plan;
-      return `<section class="card preview-card"><h2>Plan önizlemen</h2><p class="hint">${escape(explanation)}</p>${p ? `<div class="metric-row"><span>Günlük hedef aralığı</span><strong>${number(p.calorieRangeKcal.min)}–${number(p.calorieRangeKcal.max)} kcal</strong></div><div class="metric-row"><span>Tahmini koruma ihtiyacı</span><strong>${number(p.estimatedMaintenanceKcal)} kcal</strong></div><div class="metric-row"><span>Başlangıç</span><strong>${p.effectiveFrom}</strong></div><p class="hint">Mifflin × günlük hareket yaklaşımı bir tahmindir. Olağan egzersiz bu yaklaşımın içindedir; ayrıca yemek hakkı eklenmez. ${p.goal === "lose" ? "Aralık %10–20 ve en fazla 500 kcal açık sınırlarıyla seçildi. Kesin kilo verme tarihi vaat edilmez." : "Koruma modunda planlı açık yoktur."}</p>` : '<p class="muted">Otomatik hedef üretilmedi. Plansız kalori ve kilo kaydı yapabilirsin.</p>'}${p ? this.movementList(p) : ""}<div class="actions">${button("save-profile", p ? "Profil ve planı onayla" : "Profilimi plansız kaydet")}${button("cancel-profile", "Bilgilere geri dön", true)}</div></section>`;
+      return `<section class="card preview-card"><h2>Plan önizlemen</h2><p class="hint">${escape(explanation)}</p>${p ? `<div class="metric-row"><span>Günlük hedef aralığı</span><strong>${number(p.calorieRangeKcal.min)}–${number(p.calorieRangeKcal.max)} kcal</strong></div><div class="metric-row"><span>Tahmini koruma ihtiyacı</span><strong>${number(p.estimatedMaintenanceKcal)} kcal</strong></div><div class="metric-row"><span>Başlangıç</span><strong>${p.effectiveFrom}</strong></div><p class="hint">Mifflin × günlük hareket yaklaşımı bir tahmindir. Olağan egzersiz bu yaklaşımın içindedir; ayrıca yemek hakkı eklenmez. ${p.goal === "lose" ? (p.timeline ? "Süreye göre, en fazla %20 / 500 kcal açık sınırlarıyla seçildi." : "Aralık %10–20 ve en fazla 500 kcal açık sınırlarıyla seçildi.") + " Kesin kilo verme tarihi vaat edilmez." : "Koruma modunda planlı açık yoktur."}</p>` : '<p class="muted">Otomatik hedef üretilmedi. Plansız kalori ve kilo kaydı yapabilirsin.</p>'}${p ? timelineMarkup(p) + this.movementList(p) : ""}<div class="actions">${button("save-profile", p ? "Profil ve planı onayla" : "Profilimi plansız kaydet")}${button("cancel-profile", "Bilgilere geri dön", true)}</div></section>`;
     }
     const current =
       this.profile?.automaticPlanEligibility === "eligible"
@@ -402,7 +425,7 @@ export class Tracker {
       )[0];
     const selected = (value: unknown, desired: unknown) =>
       value === desired ? "selected" : "";
-    return `<section class="card"><h2>${p ? "Profil ve plan düzenlemesi" : "Seni tanıyalım"}</h2><p class="hint">Bu cihazda tek profil tutulur. Bilgilerini başka cihaza aktarma veya hesapla giriş henüz yok.</p><form id="profile-form" class="tracking-form"><div class="form-grid">${field("birth-date", "Doğum tarihi", "date", p?.birthDate ?? "", `min="1900-01-01" max="${this.today()}"`)}${field("height-cm", "Boy (cm)", "number", p?.heightCm ?? "", 'min="100" max="250" step="any" inputmode="decimal"')}${field("profile-weight", "Güncel kilo (kg)", "number", p?.weightKg ?? "", 'min="20" max="400" step="any" inputmode="decimal"')}<label class="field" for="formula-sex"><span>Hesap formülü için cinsiyet</span><select id="formula-sex" name="formula-sex" required><option value="">Seç</option><option value="male" ${selected(p?.formulaSex, "male")}>Erkek formülü</option><option value="female" ${selected(p?.formulaSex, "female")}>Kadın formülü</option><option value="not-provided" ${selected(p?.formulaSex, "not-provided")}>Vermek istemiyorum</option></select></label><label class="field" for="pal"><span>Günlük hareket (olağan egzersiz dahil)</span><select id="pal" name="pal" required><option value="">Seç</option>${PAL_OPTIONS.map(({ pal: v, label: l }) => `<option value="${v}" ${selected(p?.baseline.pal, v)}>${l}</option>`).join("")}</select></label>${field("time-zone", "Saat dilimi", "text", p?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 'autocomplete="off"')}<label class="field" for="goal"><span>Hedefin</span><select id="goal" name="goal" required><option value="maintain" ${selected(this.draft?.goal ?? latest?.goal ?? "maintain", "maintain")}>Kilomu korumak</option><option value="lose" ${selected(this.draft?.goal ?? latest?.goal, "lose")}>Kilo vermek</option></select></label><label class="field" for="target-weight"><span>Hedef kilo (yalnız kilo verme)</span><input id="target-weight" name="target-weight" type="number" value="${escape(this.draft?.target ?? latest?.targetWeightKg ?? "")}" min="20" max="400" step="any" inputmode="decimal"></label></div>${this.planFields(latest)}<fieldset class="eligibility"><legend>Otomatik plan uygunluğu</legend><p>Gebelik/emzirme, yeme bozukluğu öyküsü veya riski, özel tıbbi beslenme ihtiyacı, ilgili tedavi ya da metabolizmayı etkileyen bir durum var mı?</p><label><input type="radio" name="eligibility" value="eligible" ${this.draft?.profile.automaticPlanEligibility === "eligible" ? "checked" : ""} required> Hayır</label><label><input type="radio" name="eligibility" value="out-of-scope" ${this.draft?.profile.automaticPlanEligibility === "out-of-scope" ? "checked" : ""} required> Evet / emin değilim</label><p class="hint">Ayrıntılı sağlık bilgisi saklanmaz. Otomatik plan 19–59 yaşla sınırlıdır; diğer durumlarda plansız kayıt açıktır.</p></fieldset><button type="submit" class="button primary">Önizlemeyi göster</button>${p ? button("close-profile", "Düzenlemeyi kapat", true) : ""}</form></section>`;
+    return `<section class="card"><h2>${p ? "Profil ve plan düzenlemesi" : "Seni tanıyalım"}</h2><p class="hint">Bu cihazda tek profil tutulur. Bilgilerini başka cihaza aktarma veya hesapla giriş henüz yok.</p><form id="profile-form" class="tracking-form"><div class="form-grid">${field("birth-date", "Doğum tarihi", "date", p?.birthDate ?? "", `min="1900-01-01" max="${this.today()}"`)}${field("height-cm", "Boy (cm)", "number", p?.heightCm ?? "", 'min="100" max="250" step="any" inputmode="decimal"')}${field("profile-weight", "Güncel kilo (kg)", "number", p?.weightKg ?? "", 'min="20" max="400" step="any" inputmode="decimal"')}<label class="field" for="formula-sex"><span>Hesap formülü için cinsiyet</span><select id="formula-sex" name="formula-sex" required><option value="">Seç</option><option value="male" ${selected(p?.formulaSex, "male")}>Erkek formülü</option><option value="female" ${selected(p?.formulaSex, "female")}>Kadın formülü</option><option value="not-provided" ${selected(p?.formulaSex, "not-provided")}>Vermek istemiyorum</option></select></label><label class="field" for="pal"><span>Günlük hareket (olağan egzersiz dahil)</span><select id="pal" name="pal" required><option value="">Seç</option>${PAL_OPTIONS.map(({ pal: v, label: l }) => `<option value="${v}" ${selected(p?.baseline.pal, v)}>${l}</option>`).join("")}</select></label>${field("time-zone", "Saat dilimi", "text", p?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 'autocomplete="off"')}<label class="field" for="goal"><span>Hedefin</span><select id="goal" name="goal" required><option value="maintain" ${selected(this.draft?.goal ?? latest?.goal ?? "maintain", "maintain")}>Kilomu korumak</option><option value="lose" ${selected(this.draft?.goal ?? latest?.goal, "lose")}>Kilo vermek</option></select></label><label class="field" for="target-weight"><span>Hedef kilo (yalnız kilo verme)</span><input id="target-weight" name="target-weight" type="number" value="${escape(this.draft?.target ?? latest?.targetWeightKg ?? "")}" min="20" max="400" step="any" inputmode="decimal"></label></div>${this.durationField(latest)}${this.planFields(latest)}<fieldset class="eligibility"><legend>Otomatik plan uygunluğu</legend><p>Gebelik/emzirme, yeme bozukluğu öyküsü veya riski, özel tıbbi beslenme ihtiyacı, ilgili tedavi ya da metabolizmayı etkileyen bir durum var mı?</p><label><input type="radio" name="eligibility" value="eligible" ${this.draft?.profile.automaticPlanEligibility === "eligible" ? "checked" : ""} required> Hayır</label><label><input type="radio" name="eligibility" value="out-of-scope" ${this.draft?.profile.automaticPlanEligibility === "out-of-scope" ? "checked" : ""} required> Evet / emin değilim</label><p class="hint">Ayrıntılı sağlık bilgisi saklanmaz. Otomatik plan 19–59 yaşla sınırlıdır; diğer durumlarda plansız kayıt açıktır.</p></fieldset><button type="submit" class="button primary">Önizlemeyi göster</button>${p ? button("close-profile", "Düzenlemeyi kapat", true) : ""}</form></section>`;
   }
   progress(period: "7" | "30" | "all" = "7"): string {
     const weights = representativeWeights(this.weights),
@@ -452,21 +475,17 @@ export class Tracker {
       current?.movementDays.reduce((sum, d) => sum + d.minutes, 0) ?? 0;
     const mpercent = planned ? Math.min(100, (movement / planned) * 100) : 0;
     return `<section class="card"><h2>Hedefine doğru</h2><div class="weight-triple"><div><small>Başlangıç</small><strong>${first ? weightNumber(first.weightKg) + " kg" : "—"}</strong></div><div><small>Son ölçüm</small><strong>${latest ? weightNumber(latest.weightKg) + " kg" : "—"}</strong></div><div><small>Hedef</small><strong>${target !== undefined && target !== null ? weightNumber(target) + " kg" : "—"}</strong></div></div><div class="weight-change"><div><strong>${advance === null ? "—" : weightNumber(advance)} <small>kg</small></strong><p class="muted">${advance !== null && advance < 0 ? "değişim." : "ilerledin."}</p></div><div><strong>${remaining === null ? "—" : weightNumber(Math.max(0, remaining))} <small>kg</small></strong><p class="muted">kaldı.</p></div></div>${progressBar(percent, "Kilo hedefine ilerleme")}</section>
-    <section class="card"><h2>Biriken kalori karşılığı</h2><div class="ornate-divider"></div><div class="excess-pair"><div>${art("flame")}<span>Hedef üzeri toplam<strong>${number(aboveTarget)} kcal</strong></span></div><div>${art("shield")}<span>Koruma üzeri toplam<strong>${number(aboveMaintenance)} kcal</strong></span></div></div><p class="hint center">Tamamlanan günler hesaplanır.</p><div class="ornate-divider"></div><p><strong>Hareket alternatiflerini gör</strong></p><p class="hint">Hareket kaydında tür, süre ve yoğunluğa göre tahmini kalori aralığı gösterilir.</p>${[
-      ["shoe", "Tempolu yürüyüş"],
-      ["bike", "Bisiklet"],
-      ["runner", "Koşu"],
-    ]
-      .map(
-        ([img, label]) =>
-          `<a class="link-row" href="#/kayitlar">${art(img!)}<span>${label}</span>${icon("arrow")}</a>`,
-      )
-      .join("")}</section>
+    <section class="card"><h2>Biriken kalori karşılığı</h2><div class="ornate-divider"></div><div class="excess-pair"><div>${art("flame")}<span>Hedef üzeri toplam<strong>${number(aboveTarget)} kcal</strong></span></div><div>${art("shield")}<span>Koruma üzeri toplam<strong>${number(aboveMaintenance)} kcal</strong></span></div></div><p class="hint center">Tamamlanan günler hesaplanır.</p></section>
+    ${this.excessActivityContent(aboveTarget, aboveMaintenance, this.today(), false, true)}
     <section class="card"><h2>${period === "7" ? "Haftalık" : "Seçilen dönemde"} hareket</h2><div class="plan-energy">${art("runner")}<div><strong>${number(movement)} / ${number(planned)} <small>dk</small></strong><p class="muted">Kaydedilen / haftalık planlanan</p></div></div>${progressBar(mpercent, "Haftalık hareket hedefi")}</section>
     <section class="card"><h2>${period === "7" ? "Haftalık" : "Dönem"} özet</h2><div class="excess-pair"><div>${icon("plan")}<span><strong>${completed.length} gün</strong>tamamlandı.</span></div><div>${art("drop")}<span><strong id="water-days-summary">— gün</strong>Su hedefi</span></div></div><button class="button primary" type="button" data-open-review>Haftayı değerlendir ${icon("arrow")}</button></section><details class="card review-details"><summary>Ayrıntılı kayıt değerlendirmesi</summary>${this.weekContent()}<h3>Kilo ölçümleri</h3>${this.weightList()}<p class="hint">Eksik günler sıfır sayılmaz. Son yedi kapalı günün değerlendirmesi dönem filtresinden bağımsızdır.</p></details>`;
   }
   private movementList(plan: PlanVersion): string {
     return `<div class="movement-plan"><h3>Haftalık hareket düzeni</h3>${plan.movementDays.length ? plan.movementDays.map((d) => `<div class="metric-row"><span>${WEEKDAYS[d.weekday - 1]} · ${ACTIVITY_KINDS[d.kind]}</span><strong>${number(d.minutes)} dk</strong></div>`).join("") : '<p class="hint">Hareket günü seçilmedi.</p>'}<p class="hint">Bu düzen tercihlerin ve uygun günlerin için bir başlangıçtır; egzersiz reçetesi değildir. Günlük hareket yaklaşımına dahildir.</p></div>`;
+  }
+  private durationField(plan?: PlanVersion): string {
+    const value = this.planDraft?.["target-weeks"]?.[0] ?? (this.planDraft ? "" : plan?.timeline?.requestedWeeks ?? "");
+    return `<label class="field" for="target-weeks"><span>Kaç haftada hedef kilona ulaşmak istiyorsun?</span><input id="target-weeks" name="target-weeks" type="number" min="${TIMELINE_POLICY.minWeeks}" max="${TIMELINE_POLICY.maxWeeks}" step="1" inputmode="numeric" value="${escape(value)}"><small>Kilo verme için isteğe bağlı. Örneğin 12 hafta yaklaşık 3 ay. Süreyi girersen otomatik kalori planı buna göre hesaplanır; manuel aralığı seçersen sürene uygunluğu gösterilir.</small></label>`;
   }
   private planFields(plan?: PlanVersion): string {
     const values = (key: string, fallback: string[]) =>
@@ -940,6 +959,15 @@ export class Tracker {
         e.preventDefault();
         this.prepareProfile(new FormData(e.currentTarget as HTMLFormElement));
       });
+    const goalInput = document.querySelector<HTMLSelectElement>('#goal');
+    const durationInput = document.querySelector<HTMLInputElement>('#target-weeks');
+    const syncDuration = () => {
+      if (!goalInput || !durationInput) return;
+      durationInput.disabled = goalInput.value !== 'lose';
+      durationInput.closest<HTMLElement>('.field')!.hidden = durationInput.disabled;
+    };
+    goalInput?.addEventListener('change', syncDuration);
+    syncDuration();
     document
       .querySelector('[data-action="save-profile"]')
       ?.addEventListener("click", () => {
@@ -1061,6 +1089,7 @@ export class Tracker {
           : null,
         calorieRangeKcal: customRange,
         movementDays,
+        targetDurationWeeks: data.get("goal") === "lose" && data.get("target-weeks") ? Number(data.get("target-weeks")) : undefined,
       });
       if (!result.ok && result.code !== "out-of-scope")
         throw new Error(result.message);

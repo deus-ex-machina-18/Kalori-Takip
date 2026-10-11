@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { checkCatMedia } from './cat-browser-check.mjs';
+import { checkTodayPlanFixes } from './today-plan-browser-check.mjs';
 
 const server = spawn('npm', ['run', 'preview', '--', '--port', '4173'], { stdio: 'inherit' });
 const assetManifest=JSON.parse(await readFile('public/cat-media/asset-manifest.json','utf8'));
@@ -190,6 +191,7 @@ try {
     assert.deepEqual(errors,[]);
   }
   await checkCatMedia(page, checks);
+  await checkTodayPlanFixes(browser, checks);
   assert.deepEqual(errors,[]);
   await writeFile('browser-results/report.json', JSON.stringify({
     checks, errors, verifiedAt:new Date().toISOString(),

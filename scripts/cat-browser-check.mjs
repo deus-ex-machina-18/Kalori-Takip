@@ -57,6 +57,7 @@ export async function checkCatMedia(page, checks) {
     await page.waitForFunction(()=>{const v=document.querySelectorAll('.cat-video')[1];return v?.currentTime>.5&&!v.paused;});
     const metric=await page.locator('.cat-video').nth(1).evaluate(v=>({currentTime:v.currentTime,videoWidth:v.videoWidth,videoHeight:v.videoHeight}));
     assert.equal(metric.videoWidth,640);assert.equal(metric.videoHeight,640);
+    assert.equal(await page.locator('.cat-viewport').evaluate(el => getComputedStyle(el).opacity), '1', 'playing action must not fade the video button');
     await page.screenshot({path:`browser-results/zilli-action-${action}-390.png`,fullPage:true});
     await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.actionState==='ready');
     assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
@@ -109,6 +110,7 @@ export async function checkCatMedia(page, checks) {
     assert.equal(await page.locator('[data-cat-action]:enabled').count(),0,'calorie result has priority');
     await page.waitForFunction(()=>{const v=document.querySelectorAll('.cat-video')[1];return v?.currentTime>.5&&!v.paused;});
     const message=await page.locator('.cat-message').textContent();
+    assert.equal(await page.locator('.cat-viewport').evaluate(el => getComputedStyle(el).opacity), '1', 'calorie reaction must not fade the video button');
     await page.screenshot({path:`browser-results/r4-reaction-${kcal}.png`,fullPage:true});
     await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.clip==='idle');
     assert.equal(await page.locator('.cat-message').textContent(),message);

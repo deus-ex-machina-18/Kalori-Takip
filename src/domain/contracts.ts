@@ -108,6 +108,7 @@ export interface PlanEngine {
 export interface PlanOptions {
   goal: "lose" | "maintain";
   targetWeightKg: number | null;
+  targetDurationWeeks?: number;
   calorieRangeKcal?: { min: number; max: number };
   movementDays?: PlanVersion["movementDays"];
 }

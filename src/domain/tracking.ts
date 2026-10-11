@@ -2,6 +2,7 @@ import type { DayLog, LocalDate, PlanVersion, Profile, UTCInstant, WeightMeasure
 import type { PlanEngine, PlanOptions, Result } from './contracts.ts';
 import { validateMovementDays } from './activity.ts';
 import { ageOn, parseLocalDate } from './dates.ts';
+import { durationCalorieRange, validateDuration } from './timeline.ts';
 
 export const PAL_OPTIONS = Object.freeze([{pal:1.4,label:'Çoğunlukla oturarak'},{pal:1.6,label:'Hafif hareketli'},{pal:1.8,label:'Hareketli'},{pal:2,label:'Çok hareketli'}]);
 export const POLICY = Object.freeze({ pals: PAL_OPTIONS.map(option=>option.pal), minAge: 19, maxAge: 59, minBmi: 18.5, floorKcal: 1300, minDeficit: .1, maxDeficit: .2, maxDeficitKcal: 500 });
@@ -75,17 +76,23 @@ export function validatePlan(plan: PlanVersion): void {
   const { min, max } = plan.calorieRangeKcal;
   ensure(Number.isFinite(min) && Number.isFinite(max) && min >= POLICY.floorKcal && max >= min, 'Hedef aralığı uygun değil.');
   ensure(Number.isFinite(plan.estimatedMaintenanceKcal) && plan.estimatedMaintenanceKcal > 0, 'Koruma tahmini geçersiz.');
-  ensure(plan.formulaVersion === 'mifflin-inclusive-pal-v1' && plan.safetyPolicyVersion === 'guardrails-v1', 'Plan yöntemi geçersiz.');
+  ensure(plan.formulaVersion === 'mifflin-inclusive-pal-v1' && ['guardrails-v1', 'guardrails-v2'].includes(plan.safetyPolicyVersion), 'Plan yöntemi geçersiz.');
+  ensure(Boolean(plan.timeline) === (plan.safetyPolicyVersion === 'guardrails-v2'), 'Planın süre ve sınır sürümü uyuşmuyor.');
   ensure(plan.baseline.method === 'inclusive-pal-v1' && plan.baseline.includesLoggedExercise && POLICY.pals.includes(plan.baseline.pal), 'Plan hareket yöntemi geçersiz.');
   validateMovementDays(plan.movementDays);
   ensure(['initial','user-edit','weekly-review','maintenance-transition'].includes(plan.reason), 'Plan değişim nedeni geçersiz.');
-  validateRange(plan.estimatedMaintenanceKcal, plan.goal, min, max);
+  if (plan.timeline) {
+    ensure(plan.goal === 'lose' && plan.targetWeightKg !== null && plan.timeline.method === 'midpoint-energy-budget-v1', 'Plan süre yöntemi geçersiz.');
+    validateDuration(plan.timeline.requestedWeeks); validWeight(plan.timeline.startingWeightKg);
+    ensure(plan.timeline.startingWeightKg > plan.targetWeightKg, 'Süre hesabının başlangıç kilosu hedef kilodan yüksek olmalı.');
+  }
+  validateRange(plan.estimatedMaintenanceKcal, plan.goal, min, max, Boolean(plan.timeline));
 }
-function validateRange(maintenance: number, goal: PlanOptions['goal'], min: number, max: number): void {
+function validateRange(maintenance: number, goal: PlanOptions['goal'], min: number, max: number, timed = false): void {
   if (goal === 'maintain') ensure(Math.abs(min - maintenance) < .001 && Math.abs(max - maintenance) < .001, 'Koruma hedefi koruma tahminine eşit olmalı.');
   else {
     const largeDeficit = maintenance - min, smallDeficit = maintenance - max;
-    ensure(largeDeficit <= POLICY.maxDeficitKcal + .001 && largeDeficit <= maintenance * POLICY.maxDeficit + .001 && smallDeficit >= maintenance * POLICY.minDeficit - .001, 'Kilo verme aralığı %10–20 ve en fazla 500 kcal açık sınırlarında olmalı.');
+    ensure(largeDeficit <= POLICY.maxDeficitKcal + .001 && largeDeficit <= maintenance * POLICY.maxDeficit + .001 && smallDeficit >= (timed ? 1 : maintenance * POLICY.minDeficit) - .001, timed ? 'Süreli plan, pozitif açık ve en fazla %20 / 500 kcal açık sınırlarında olmalı.' : 'Kilo verme aralığı %10–20 ve en fazla 500 kcal açık sınırlarında olmalı.');
   }
 }
 export function validateMeasurement(weight: WeightMeasurement): void {
@@ -113,14 +120,20 @@ export const engine: PlanEngine = {
       const ree = 10 * profile.weightKg + 6.25 * profile.heightCm - 5 * age + (profile.formulaSex === 'male' ? 5 : -161);
       const maintenance = ree * profile.baseline.pal;
       ensure(Number.isFinite(maintenance) && maintenance > 0, 'Girdilerle hesap yapılamıyor.');
+      const timed = options.goal === 'lose' && options.targetDurationWeeks !== undefined;
+      if (timed) validateDuration(options.targetDurationWeeks!);
       if (options.calorieRangeKcal) {
         const {min,max}=options.calorieRangeKcal;
         ensure(Number.isFinite(min) && Number.isFinite(max) && min>=POLICY.floorKcal && max>=min,'Manuel kalori aralığı uygun değil. Plan kaydedilmedi.');
-        validateRange(maintenance,options.goal,min,max);
+        validateRange(maintenance,options.goal,min,max,timed);
       }
-      const range = options.calorieRangeKcal ?? (options.goal === 'maintain' ? { min: maintenance, max: maintenance } : { min: maintenance - Math.min(POLICY.maxDeficitKcal, maintenance * POLICY.maxDeficit), max: maintenance * (1 - POLICY.minDeficit) });
+      const range = options.calorieRangeKcal ?? (options.goal === 'maintain' ? { min: maintenance, max: maintenance } : timed ? durationCalorieRange(maintenance, profile.weightKg, options.targetWeightKg!, profile.baseline.pal, options.targetDurationWeeks!, Math.max(POLICY.floorKcal, maintenance - Math.min(POLICY.maxDeficitKcal, maintenance * POLICY.maxDeficit))) : { min: maintenance - Math.min(POLICY.maxDeficitKcal, maintenance * POLICY.maxDeficit), max: maintenance * (1 - POLICY.minDeficit) });
       if (range.min < POLICY.floorKcal || range.min > range.max) return failure('out-of-scope', 'Bu girdiler ürünün başlangıç aralığı sınırlarını karşılamıyor. Otomatik hedef yerine plansız kayıt yapabilirsin.');
       const plan: PlanVersion = { id: uuid(), userId: profile.userId, previousVersionId: null, goal: options.goal, targetWeightKg: options.goal === 'lose' ? options.targetWeightKg : null, calorieRangeKcal: range, estimatedMaintenanceKcal: maintenance, baseline: { ...profile.baseline }, movementDays: options.movementDays ?? [], reason: 'initial', effectiveFrom, createdAt: nowUTC(), formulaVersion: 'mifflin-inclusive-pal-v1', safetyPolicyVersion: 'guardrails-v1' };
+      if (timed) {
+        plan.timeline = { requestedWeeks: options.targetDurationWeeks!, startingWeightKg: profile.weightKg, method: 'midpoint-energy-budget-v1' };
+        plan.safetyPolicyVersion = 'guardrails-v2';
+      }
       validatePlan(plan); return success(plan);
     } catch (e) { return failure('validation', (e as Error).message); }
   },

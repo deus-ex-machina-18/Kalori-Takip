@@ -379,3 +379,50 @@ test('sosyal önizleme kayıt paylaşmaz ve gerçek hesap işlemi iddiası taş�
     assert.deepEqual(app.errors,[]);
   }finally{app.dom.window.close();}
 });
+
+test('hedef süre önizleme, geri dönüş, onay ve yeniden açılışta korunur', async () => {
+  const factory = new IDBFactory(), app = await launch('/planim', false, factory);
+  try {
+    fill(app,'birth-date','2000-08-21'); fill(app,'height-cm','180'); fill(app,'profile-weight','91');
+    fill(app,'formula-sex','male'); fill(app,'pal','1.4'); fill(app,'time-zone','Europe/Istanbul');
+    assert.equal(app.document.getElementById('target-weeks').disabled, true);
+    fill(app,'goal','lose'); app.document.getElementById('goal').dispatchEvent(new app.window.Event('change'));
+    assert.equal(app.document.getElementById('target-weeks').disabled, false);
+    fill(app,'target-weight','80'); fill(app,'target-weeks','80');
+    app.document.querySelector('[name="eligibility"][value="eligible"]').checked = true;
+    app.document.querySelector('#profile-form').requestSubmit();
+    await until(() => app.document.querySelector('.preview-card'));
+    assert.match(app.document.querySelector('.plan-timeline').textContent, /80 hafta/);
+    app.document.querySelector('[data-action="cancel-profile"]').click();
+    assert.equal(app.document.getElementById('target-weeks').value, '80');
+    app.document.querySelector('#profile-form').requestSubmit();
+    app.document.querySelector('[data-action="save-profile"]').click();
+    await until(() => app.document.querySelector('.plan-summary'));
+    assert.match(app.document.querySelector('.plan-timeline').textContent, /80 hafta/);
+    const reopened = await launch('/planim', false, factory);
+    try { assert.match(reopened.document.querySelector('.plan-timeline').textContent, /80 hafta/); }
+    finally { reopened.dom.window.close(); }
+    assert.deepEqual(app.errors, []);
+  } finally { app.dom.window.close(); }
+});
+
+test('fazla kalori kaydında gerçek dakika seçenekleri ve koruma ayrımı görünür', async () => {
+  const app = await launch('/planim');
+  try {
+    await createProfile(app);
+    await navigate(app.window, app.document.querySelector('nav a[href="#/bugun"]'));
+    app.document.querySelector('.calorie-details').open = true;
+    fill(app,'kcal','3000'); app.document.querySelector('#calorie-form').requestSubmit();
+    await until(() => app.document.querySelector('.activity-equivalent'));
+    assert.match(app.document.querySelector('.activity-equivalent').textContent, /Geçici toplam/);
+    assert.equal(app.document.querySelectorAll('.activity-equivalent > .link-row').length, 3);
+    assert.match(app.document.querySelector('.activity-equivalent .link-row strong').textContent, /\d+–\d+ dk/);
+    assert.ok(app.document.querySelector('.maintenance-equivalent'));
+    app.document.querySelector('.complete-day').click();
+    await until(() => app.document.querySelector('.status').textContent === 'Tamamlandı');
+    assert.doesNotMatch(app.document.querySelector('.activity-equivalent').textContent, /Geçici toplam/);
+    await navigate(app.window, app.document.querySelector('nav a[href="#/ilerlemem"]'));
+    assert.match(app.document.querySelector('.activity-equivalent').textContent, /Dönemin toplamıdır/);
+    assert.deepEqual(app.errors, []);
+  } finally { app.dom.window.close(); }
+});

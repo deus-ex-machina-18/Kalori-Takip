@@ -120,7 +120,8 @@ export class IndexedDbRepository implements CoreRepository {
         if (plan.userId !== p.userId || plan.previousVersionId !== (latest?.id ?? null)) conflict('Plan geçmişi değişti. Güncel planı yükle.');
         if ((!old && plan.effectiveFrom !== today) || (old && plan.effectiveFrom <= today)) conflict('Yeni plan ilk kayıtta bugün, düzenlemede ileri tarihli başlamalı.');
         if (latest && plan.effectiveFrom <= latest.effectiveFrom) conflict('Bu başlangıç tarihi için zaten bir plan var.');
-        const calculated = engine.createInitialPlan(p, plan.effectiveFrom, { goal: plan.goal, targetWeightKg: plan.targetWeightKg, calorieRangeKcal: plan.calorieRangeKcal });
+        if (plan.timeline && plan.timeline.startingWeightKg !== p.weightKg) throw new RepositoryError('validation','Süre hesabı profilin başlangıç kilosuyla uyuşmuyor.');
+        const calculated = engine.createInitialPlan(p, plan.effectiveFrom, { goal: plan.goal, targetWeightKg: plan.targetWeightKg, calorieRangeKcal: plan.calorieRangeKcal, targetDurationWeeks: plan.timeline?.requestedWeeks });
         if (!calculated.ok) throw new RepositoryError('validation',calculated.message);
         if (Math.abs(calculated.value.estimatedMaintenanceKcal - plan.estimatedMaintenanceKcal) > .001 || canonical(plan.baseline) !== canonical(p.baseline)) throw new RepositoryError('validation','Plan profil hesabıyla uyuşmuyor.');
         await request(tx.objectStore('plans').add(plan));
