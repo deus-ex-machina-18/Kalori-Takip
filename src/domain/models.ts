@@ -26,6 +26,12 @@ export interface PlanVersion {
   previousVersionId: RecordId | null;
   goal: "lose" | "maintain";
   targetWeightKg: number | null;
+  /** Optional, so existing saved plans remain valid without a migration. */
+  timeline?: {
+    requestedWeeks: number;
+    startingWeightKg: number;
+    method: "midpoint-energy-budget-v1";
+  };
   calorieRangeKcal: { min: number; max: number };
   estimatedMaintenanceKcal: number;
   baseline: ActivityBaseline;
@@ -38,7 +44,7 @@ export interface PlanVersion {
   effectiveFrom: LocalDate;
   createdAt: UTCInstant;
   formulaVersion: "mifflin-inclusive-pal-v1";
-  safetyPolicyVersion: "guardrails-v1";
+  safetyPolicyVersion: "guardrails-v1" | "guardrails-v2";
 }
 export interface CalorieEntry {
   id: RecordId;

@@ -20,6 +20,7 @@
 * {
   box-sizing: border-box;
 }
+[hidden] { display: none !important; }
 body {
   margin: 0;
 }
@@ -108,7 +109,7 @@ small {
   max-width: 460px;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 26px 15px 100px;
+  padding: 18px 15px 100px;
   position: relative;
   background-image:
     url("../public/design/ribbon.webp"), url("../public/design/edge.webp"),
@@ -120,8 +121,8 @@ small {
   background-size:
     62% auto,
     15px auto,
-    140px 54px;
-  background-repeat: no-repeat, repeat-y, repeat;
+    100% 100%;
+  background-repeat: no-repeat, repeat-y, no-repeat;
   box-shadow: 0 0 50px #5b59441c;
 }
 .topbar {
@@ -149,14 +150,15 @@ small {
 .settings-link {
   display: grid;
   place-items: center;
-  width: 39px;
-  height: 39px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 }
 .settings-link .icon {
-  width: 25px;
-  height: 25px;
+  width: 24px;
+  height: 24px;
 }
+.settings-link.small-frame { padding: 0; border-width: 8px; }
 .date-chip {
   display: inline-flex;
   align-items: center;
@@ -188,7 +190,7 @@ small {
   height: 15px;
 }
 .today-date {
-  margin: 0 9px 22px;
+  margin: 0 9px 12px;
 }
 .today-date .date-chip {
   border: 0;
@@ -218,13 +220,17 @@ main > details.card {
   line-height: 1.3;
   margin-top: 7px;
 }
+.app-shell[data-screen="bugun"] .page-heading { margin: 0 10px 10px; }
+.app-shell[data-screen="bugun"] h1 { font-size: clamp(23px, 6.3cqw, 28px); letter-spacing: -0.6px; }
+.app-shell[data-screen="bugun"] .page-heading > p { font-size: 13px; margin-top: 4px; }
 .card,
 .small-frame {
   border: 15px solid transparent;
   border-image: url("../public/design/frame.svg") 28 stretch;
   background: linear-gradient(110deg, #fffaf1, #faf3e7);
-  background-clip: padding-box;
+  background-clip: border-box;
   padding: 2px 6px 5px;
+  border-radius: 12px;
   box-shadow: 0 4px 8px #694b2412;
 }
 .card-top {
@@ -345,10 +351,10 @@ main > details.card {
 }
 .cat-viewport {
   position: relative;
-  width: 80%;
+  width: 100%;
   aspect-ratio: 1/1;
   margin: 0 auto;
-  border: 14px solid transparent;
+  border: 10px solid transparent;
   border-image: url("../public/design/frame.svg") 28 stretch;
   background: var(--surface);
   background-clip: padding-box;
@@ -357,7 +363,7 @@ main > details.card {
   display: block;
   cursor: pointer;
 }
-.cat-viewport:disabled { cursor: default; }
+.cat-viewport:disabled { cursor: default; opacity: 1; }
 .cat-controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -373,7 +379,7 @@ main > details.card {
   font-size: 15px;
   color: var(--sage-dark);
 }
-.cat-action-button:disabled { opacity: 0.6; cursor: default; }
+.cat-action-button:disabled { opacity: 1; cursor: default; color: var(--muted); }
 .cat-poster,
 .cat-video {
   position: absolute;
@@ -390,10 +396,10 @@ main > details.card {
   opacity: 1;
 }
 .cat-card h2 {
-  font-size: 40px;
+  font-size: 17px;
   line-height: 1.05;
   margin: 7px 0 2px;
-  letter-spacing: -1px;
+  letter-spacing: 0;
 }
 .cat-intro {
   font-size: 13px;
@@ -407,6 +413,12 @@ main > details.card {
   font-size: 10px;
   margin: 4px 0;
 }
+.activity-equivalent { margin-top: 14px; }
+.activity-equivalent .link-row strong { margin-left: auto; white-space: nowrap; }
+.activity-equivalent .link-row span { min-width: 0; }
+.activity-equivalent .hint { overflow-wrap: anywhere; }
+.plan-timeline { margin: 14px 0; padding: 12px; background: var(--sage); border-left: 2px solid var(--line); }
+.plan-timeline p + p { margin-top: 6px; }
 .daily-numbers {
   display: grid;
   grid-template-columns: 1.15fr 1fr;

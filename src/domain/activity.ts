@@ -21,6 +21,17 @@ export function estimateActivity(kind: ActivityKind, intensity: Activity['intens
   const uncertainty=kind==='strength' ? ACTIVITY_POLICY.strengthUncertainty : ACTIVITY_POLICY.aerobicUncertainty;
   return { metCode:category.code, estimatedGrossKcal:{min:gross*(1-uncertainty),max:gross*(1+uncertainty)} };
 }
+/** Net energy above resting expenditure; this informational equivalent never
+ * adds another exercise credit to an inclusive-PAL calorie plan. */
+export function activityMinutesForKcal(kcal: number, kind: ActivityKind, intensity: Activity['intensity'], weightKg: number) {
+  ensure(Number.isFinite(kcal) && kcal >= 0, 'Kalori karşılığı sıfır veya pozitif olmalı.');
+  const oneMinute = estimateActivity(kind, intensity, 1, weightKg);
+  const restingPerMinute = 3.5 * weightKg / 200;
+  const uncertainty = kind === 'strength' ? ACTIVITY_POLICY.strengthUncertainty : ACTIVITY_POLICY.aerobicUncertainty;
+  const netPerMinute = (oneMinute.estimatedGrossKcal.min + oneMinute.estimatedGrossKcal.max) / 2 - restingPerMinute;
+  // Keep the same uncertainty convention as the activity estimate.
+  return kcal === 0 ? { min: 0, max: 0 } : { min: Math.max(1, Math.floor(kcal / (netPerMinute * (1 + uncertainty)))), max: Math.ceil(kcal / (netPerMinute * (1 - uncertainty))) };
+}
 export function createActivity(profile: Profile, date: LocalDate, kind: ActivityKind, intensity: Activity['intensity'], durationMinutes: number, weightKg: number, previous?: Activity): Activity {
   parseLocalDate(date);
   const age=ageOn(profile.birthDate,date);
