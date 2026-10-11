@@ -1,0 +1,41 @@
+{
+  "expected_bundle": "./assets/index-D-oZkSEy.js",
+  "served_bundle": "./assets/index-D-oZkSEy.js",
+  "bundle_matches_local_build": true,
+  "has_actions": true,
+  "clips": [
+    {
+      "clip": "touch",
+      "status": 200,
+      "content_type": "video/mp4",
+      "bytes": 286197,
+      "sha_matches": true
+    },
+    {
+      "clip": "play",
+      "status": 200,
+      "content_type": "video/mp4",
+      "bytes": 348567,
+      "sha_matches": true
+    },
+    {
+      "clip": "stretch",
+      "status": 200,
+      "content_type": "video/mp4",
+      "bytes": 373086,
+      "sha_matches": true
+    },
+    {
+      "clip": "sleep",
+      "status": 200,
+      "content_type": "video/mp4",
+      "bytes": 315550,
+      "sha_matches": true
+    }
+  ],
+  "verifiedAt": "2026-10-11T06:33:46.548942+00:00",
+  "site": "https://extraordinary-rolypoly-370c36.netlify.app/",
+  "applicationCommit": "7c3c311801d8597a1107153665ff88af6f7dbe6d",
+  "mergeCommit": "eadefe629dd03a2ba31623ca4661953017ddf304",
+  "method": "Public HTTP bundle byte comparison against tested local build and four MP4 SHA256 comparisons; browser acceptance from linked Chromium CI."
+}

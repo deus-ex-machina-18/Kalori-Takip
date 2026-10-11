@@ -6,42 +6,75 @@ import { IDBFactory } from "fake-indexeddb";
 import { webcrypto, randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
 import { database, user, rpc } from "./db-harness.mjs";
+import { createClient } from "@supabase/supabase-js";
+import { fixtureFetch } from "./fixture-fetch.mjs";
+// Live mode is opt-in and only accepts separately provisioned disposable fixtures.
+const fixturePath = process.env.KALORI_LIVE_FIXTURES_FILE;
+const live = fixturePath ? JSON.parse(readFileSync(fixturePath, "utf8")) : null;
+const outDir = live ? "artifacts/social-live-ui" : "artifacts/social-ui";
+if (live) {
+  assert.equal(live.users.length, 3);
+  for (const u of live.users) {
+    assert.match(u.email, /@example\.invalid$/);
+    assert.match(u.username, /^verify_/);
+  }
+}
+const config = live ? readFileSync("netlify.toml", "utf8") : "";
+const liveUrl = config.match(/VITE_SUPABASE_URL\s*=\s*"([^"]+)"/)?.[1];
+const liveKey = config.match(/VITE_SUPABASE_PUBLISHABLE_KEY\s*=\s*"([^"]+)"/)?.[1];
+const liveFetch = live ? fixtureFetch(new URL(liveUrl).origin) : null;
 await build({
-  build: { outDir: "artifacts/social-ui", emptyOutDir: true },
+  build: { outDir, emptyOutDir: true },
   define: {
     "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
-      "https://kalori-test.supabase.co",
+      live ? liveUrl : "https://kalori-test.supabase.co",
     ),
     "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
-      "sb_publishable_contract_test",
+      live ? liveKey : "sb_publishable_contract_test",
     ),
   },
 });
-const html = readFileSync("artifacts/social-ui/index.html", "utf8");
+const html = readFileSync(outDir + "/index.html", "utf8");
 const asset = html.match(/src="\.\/assets\/([^\"]+\.js)"/)[1];
 const source = readFileSync(
-  "artifacts/social-ui/assets/" + asset,
+  outDir + "/assets/" + asset,
   "utf8",
 ).replaceAll("import.meta", `({url:'https://kalori.test/assets/${asset}'})`);
-const db = await database();
+const db = live ? null : await database();
 const users = {};
 let tail = Promise.resolve();
 const windows = [];
 const checks = [];
-for (const name of ["alice", "bob", "outsider"]) {
-  const id = await user(db);
+for (const [index, name] of ["alice", "bob", "outsider"].entries()) {
+  const fixture = live?.users[index];
+  const id = fixture?.id ?? await user(db);
   users[name] = {
     id,
-    email: name + "@example.test",
+    email: fixture?.email ?? name + "@example.test",
+    password: fixture?.password ?? "fixture-password",
+    username: fixture?.username ?? name,
     aud: "authenticated",
     app_metadata: { provider: "email", providers: ["email"] },
     user_metadata: {},
     created_at: new Date().toISOString(),
   };
-  await rpc(db, id, "account_save", {
-    username: name,
-    name: name.toUpperCase(),
-  });
+  const payload = { username: users[name].username, name: name.toUpperCase() };
+  if (live) {
+    const client = createClient(liveUrl, liveKey, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      global: { fetch: liveFetch },
+    });
+    const login = await client.auth.signInWithPassword({
+      email: fixture.email, password: fixture.password,
+    });
+    if (login.error) throw new Error("Fixture Auth: " + login.error.message);
+    assert.equal(login.data.user.id, id);
+    const result = await client.rpc("kalori_rpc", {
+      action: "account_save", payload, operation_id: randomUUID(),
+    });
+    if (result.error) throw new Error(result.error.message);
+    await client.auth.signOut({ scope: "local" });
+  } else await rpc(db, id, "account_save", payload);
 }
 const tokens = new Map();
 function token(u) {
@@ -115,7 +148,7 @@ async function mockFetch(url, options = {}) {
 async function until(fn) {
   const start = Date.now();
   while (!fn()) {
-    if (Date.now() - start > 7000)
+    if (Date.now() - start > (live ? 60000 : 7000))
       throw new Error("Arayüz beklenen duruma geçmedi");
     await new Promise((r) => setTimeout(r, 10));
   }
@@ -133,7 +166,7 @@ function launch() {
   windows.push(dom);
   const w = dom.window;
   Object.assign(w, {
-    fetch: mockFetch,
+    fetch: live ? liveFetch : mockFetch,
     Headers,
     Request,
     Response,
@@ -176,7 +209,7 @@ try {
   const a = launch();
   await submit(a, "login", {
     email: users.alice.email,
-    password: "fixture-password",
+    password: users.alice.password,
   });
   await until(() => a.doc.querySelector('[data-social-action="add"]'));
   assert.match(a.doc.querySelector("main").textContent, /ALICE/);
@@ -184,11 +217,11 @@ try {
   const b = launch();
   await submit(b, "login", {
     email: users.bob.email,
-    password: "fixture-password",
+    password: users.bob.password,
   });
   await until(() => b.doc.querySelector('[data-social-action="add"]'));
   await click(a, "add");
-  await submit(a, "friend", { query: "bob" });
+  await submit(a, "friend", { query: users.bob.username });
   await until(() => !a.doc.querySelector("dialog[open]"));
   await refresh(b);
   await until(() => b.doc.querySelector('[data-social-action="accept"]'));
@@ -267,13 +300,14 @@ try {
   );
   checks.push("logout clears the previous account UI");
   for (const app of [a, b]) assert.deepEqual(app.errors, []);
-  mkdirSync("artifacts/social-ui", { recursive: true });
+  mkdirSync(outDir, { recursive: true });
   writeFileSync(
-    "artifacts/social-ui/verification.json",
+    outDir + "/verification.json",
     JSON.stringify(
       {
-        kind: "jsdom DOM + Supabase HTTP contract stub + PostgreSQL",
-        liveAuth: false,
+        kind: live ? "jsdom DOM + live Supabase Auth/JWT + live PostgreSQL" : "jsdom DOM + Supabase HTTP contract stub + PostgreSQL",
+        liveAuth: Boolean(live),
+        emailDelivery: false,
         checks,
       },
       null,
@@ -295,5 +329,5 @@ try {
   throw e;
 } finally {
   for (const dom of windows) dom.window.close();
-  await db.close();
+  await db?.close();
 }

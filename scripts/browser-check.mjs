@@ -16,7 +16,14 @@ try {
   await mkdir('browser-results', { recursive: true });
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await context.newPage();
-  const openEditor = async () => { const details=page.locator('.calorie-details'); if(await details.count())await details.evaluate(el=>el.open=true); };
+  const openEditor = async () => {
+    await page.locator('nav a[aria-current="page"][href="#/bugun"]').waitFor();
+    await page.locator('main[data-ready="true"]').waitFor();
+    const details=page.locator('.calorie-details');
+    await details.waitFor({state:'attached'});
+    if (!await details.evaluate(el=>el.open)) await details.locator('summary').click();
+    await page.locator('#calorie-form').waitFor({state:'visible'});
+  };
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error'&&/THREE.WebGLProgram|shader error/i.test(m.text()))errors.push(m.text());});
@@ -95,7 +102,7 @@ try {
       await page.locator('main[aria-busy="false"]').waitFor();
     }
     assert.match(await page.locator('.calorie-value').textContent(),/1.950/);
-    await page.locator('[data-action="complete"]').click();
+    await page.locator('.complete-day').click();
     await page.locator('.status').filter({hasText:'Tamamlandı'}).waitFor();
     await page.reload(); await page.locator('main[data-ready="true"]').waitFor();
     assert.match(await page.locator('.calorie-value').textContent(),/1.950/);

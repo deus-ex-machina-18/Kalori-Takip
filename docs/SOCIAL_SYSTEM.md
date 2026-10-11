@@ -1,6 +1,6 @@
 # Sosyal sistem — davetli pilot
 
-11 Ekim 2026. Kod ve yerel PostgreSQL/DOM kabulü hazır; ayrı canlı Supabase projesi henüz yok.
+11 Ekim 2026. Sosyal kodu hazır; kullanıcı tarafından sağlanan ayrı canlı Supabase projesi `cjlqnhegtdnkdoayeeks` üzerine şema ve dört FK indeksi kuruldu. Auth panel ayarları, e-posta ve yayın kabulü açık.
 
 ## Kullanıcı akışları
 
@@ -33,18 +33,24 @@ Pilot limitleri: kişi başına 20 grup, grup başına 50 üye, grup başına 10
 - `tests/social/`: gerçek PostgreSQL motorunda yetki ve veri kabulü.
 - `scripts/social/ui-check.mjs`: DOM + Supabase HTTP sözleşme taklidi + gerçek PostgreSQL senaryoları.
 
-## Canlı kurulum — açık kalan tek altyapı işi
+## Canlı kurulum — yapılanlar ve açık kalanlar
 
-Bağlı organizasyon `deus-ex-machina-18's Org`; kullanıcı bunu seçti. Ayrı Kalori projesi yok. `get_cost` iki kez UNAVAILABLE döndüğü için zorunlu maliyet onayı/proje oluşturma zinciri çalışmadı. BanaGöre ve diğer uygulamaların projeleri kullanılmadı, ücretli kaynak açılmadı.
+Kullanıcı `kalori-takip` / `cjlqnhegtdnkdoayeeks` projesini sağladı. Mevcut seçilmiş organizasyon içinde ACTIVE_HEALTHY; başlangıçta tabloları ve Auth kullanıcıları boştu. Diğer uygulamalara erişilmedi.
 
-1. Bu organizasyonda ayrı `kalori-takip` projesi oluştur; ücret/planı oluşturma ekranından doğrula. Proje bağlantısını paylaşmak yeterli, yönetici/servis anahtarı paylaşma.
-2. Sağlıklı proje açılınca migration'ı yalnız bu projeye uygula; güvenlik danışmanlarını çalıştır ve gerçek JWT ile erişim testlerini tekrar et.
-3. Project URL ve yayınlanabilir anahtarı hosting ortamına `VITE_SUPABASE_URL` ve `VITE_SUPABASE_PUBLISHABLE_KEY` olarak ekle. Frontend yeniden build edilmelidir; bu değişkenler çalışma anında okunmaz.
-4. Supabase Auth Site URL/Redirect URL listesini gerçek HTTPS uygulama adresine ayarla; e-posta doğrulaması açık kalır. Doğrulama ve şifre sıfırlama e-postalarını gerçek iki hesapla test et. E-posta gönderim kapasitesi/SMTP ayarını pilot öncesi kontrol et.
-5. İki ayrı telefon/oturumda arkadaşlık, davet, kayıt aktarımı, senkronizasyon, paylaşımı kapatma, engelleme ve challenge puanını doğrula. Gerçek 390 px sosyal/dialog ekran görüntülerini incele. Sonra yayını tamamla.
+- `social_foundation` ve `social_foreign_key_indexes` SQL transaction'ları uygulandı. `apply_migration` iki denemede requestState hatası verdiği için yetkili SQL bağlantısı kullanıldı. Aynı yerel iki sürüm, resmi CLI'nin migration history biçimiyle applied olarak kaydedildi; statements boş dizi (repair eşdeğeri). SQL dosyaları kaynak depoda kalır.
+- 13 uygulama tablosu RLS ile korunur; anon/authenticated tablo yetkileri kapalı; yalnız authenticated RPC erişir. Dört FK indeksi advisors bulgusuna göre eklendi. Kullanılmayan indeks INFO notları yeni ve boş veritabanında beklenir.
+- Security advisors, erişim/RLS ERROR veya WARN bulmadı. Özel şemada `RLS Enabled No Policy` INFO, bilinçli deny-all tasarımıdır; doğrudan tablo politikası eklenmez. Auth için `Leaked Password Protection Disabled` WARN bulundu: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection . Panel erişimi olmadan bu ayar değişmedi.
+- `netlify.toml` build ortamı yalnız Project URL ve `sb_publishable_` anahtarını içerir. Anahtar frontend için tasarlanmış halka açık yapılandırmadır; secret/service_role veya yönetici anahtarı yoktur. Hosting yeniden build edilmeden bağlantı açılmaz.
+- Gerçek Auth/JWT kontrolleri üç ayrı `example.invalid` geçici hesaba karşı yürütülür. Bu hesaplar yalnız test fixture'ı olarak önceden doğrulanmış şekilde kurulmuştur; bu işlem kullanıcı kayıt e-postası teslimini doğrulamaz. Parolalar/tokenlar git dışında kalır. Test bittiğinde oturumlar ve bu hesaplara ait test verileri temizlenir.
+
+Açık: Supabase Auth Site URL/Redirect URL listesi ve SMTP/e-posta teslimi. Güvenli panel girişinde kullanıcı GitHub, ardından Google yöntemini seçti; Google sayfasına erişim otomatik onay denetimi tarafından reddedildi. Bu tarayıcı giriş akışı durduruldu; farklı yoldan Google oturumu açılmadı. Gerekçe: Google sağlayıcısına erişim için güvenilir açık kullanıcı onayı bulunmaması.
+
+Supabase'in yerleşik SMTP hizmeti yalnız organizasyonun ekip e-postalarına gönderir; davetlilerin kayıt/doğrulama ve şifre sıfırlama e-postaları için özel SMTP gerekir. Resmi kaynak: https://supabase.com/docs/guides/auth/auth-smtp . E-posta doğrulaması kapatılarak bu sınır aşılmaz.
+
+Sonraki tek altyapı işi: panel oturumunu yetkili şekilde tamamla; gerçek HTTPS uygulama adresini Site/Redirect URL olarak ekle; kullanıcının seçtiği SMTP sağlayıcısını bağla; iki gerçek posta adresinde doğrulama ve şifre sıfırlama kabulünü yap. Sonra sosyal PR #4'ü ve hosting yayınını tamamla, iki cihazlı canlı kabulü yap.
 
 ## Kanıt ve sınır
 
 `npm run check`: 39 mevcut domain/depo + 22 mevcut DOM + 16 yeni sosyal PostgreSQL/adaptör = 77 test, ayrıca 7 çok kullanıcılı DOM senaryosu; üretim build ve video bütünlüğü kontrolleri başarılı.
 
-PGlite gerçek PostgreSQL yürütür; Auth kullanıcıları ve HTTP giriş servisi test fikstürleridir. Bu, canlı Supabase Auth, e-posta teslimi, hosting, Android tarayıcı veya piksel eşleşmesi kabulü değildir. Canlı migration ve Supabase advisors henüz çalıştırılamadı. Sunucu ayarı olmadan uygulama sosyal bağlantının eksik olduğunu açıkça gösterir ve mevcut yerel takip çalışır.
+PGlite gerçek PostgreSQL yürütür; Auth kullanıcıları ve HTTP giriş servisi test fikstürleridir. Bu, canlı Supabase Auth, e-posta teslimi, hosting, Android tarayıcı veya piksel eşleşmesi kabulü değildir. Canlı migration ve advisors tamamlandı; canlı testlerin son durumu CURRENT_TASK.md içindedir. Sunucu ayarı olmadan uygulama sosyal bağlantının eksik olduğunu açıkça gösterir ve mevcut yerel takip çalışır.

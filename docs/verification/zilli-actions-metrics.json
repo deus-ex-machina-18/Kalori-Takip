@@ -1,0 +1,115 @@
+{
+  "actionMetrics": [
+    {
+      "action": "touch",
+      "currentTime": 0.522088,
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "action": "play",
+      "currentTime": 0.516465,
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "action": "stretch",
+      "currentTime": 0.517605,
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "action": "sleep",
+      "currentTime": 0.517353,
+      "videoWidth": 640,
+      "videoHeight": 640
+    }
+  ],
+  "outcomes": [
+    {
+      "kcal": 1900,
+      "clip": "below-target",
+      "message": "Planın altında kaldın: −300 kcal."
+    },
+    {
+      "kcal": 2200,
+      "clip": "target-met",
+      "message": "Plan tuttu. Bugün tamam."
+    },
+    {
+      "kcal": 2300,
+      "clip": "target-met",
+      "message": "Plan tuttu. Bugün tamam."
+    },
+    {
+      "kcal": 2400,
+      "clip": "target-met",
+      "message": "Plan tuttu. Bugün tamam."
+    },
+    {
+      "kcal": 2401,
+      "clip": "above-target",
+      "message": "Hedef +1. Koruma tahmininin hâlâ 299 kcal altındasın."
+    },
+    {
+      "kcal": 2550,
+      "clip": "above-target",
+      "message": "Hedef +150. Koruma tahmininin hâlâ 150 kcal altındasın."
+    },
+    {
+      "kcal": 2700,
+      "clip": "above-maintenance",
+      "message": "Hedef +300. Koruma tahminindesin."
+    },
+    {
+      "kcal": 3000,
+      "clip": "above-maintenance",
+      "message": "Bugün fazla kaçtı. Koruma tahmininin +300 kcal üstündesin."
+    }
+  ],
+  "metrics": [
+    {
+      "viewport": 320,
+      "width": 238.390625,
+      "height": 238.390625,
+      "fit": "contain",
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "viewport": 360,
+      "width": 264,
+      "height": 264,
+      "fit": "contain",
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "viewport": 390,
+      "width": 288,
+      "height": 288,
+      "fit": "contain",
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "viewport": 768,
+      "width": 344,
+      "height": 344,
+      "fit": "contain",
+      "videoWidth": 640,
+      "videoHeight": 640
+    },
+    {
+      "viewport": 1280,
+      "width": 344,
+      "height": 344,
+      "fit": "contain",
+      "videoWidth": 640,
+      "videoHeight": 640
+    }
+  ],
+  "environment": "Chromium, desktop runner with mobile viewport; not physical Android",
+  "decodedFrameRgbaBytes": 1638400,
+  "maximumMountedVideos": 2
+}
