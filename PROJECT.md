@@ -80,3 +80,7 @@ Kare medya kırpılmaz; MP4 sessiz Baseline/fast-start; reaksiyonlar gerektiğin
 - Su kaydı `kalori-water-v1:<userId>` altında yerel gün bazında; kalori IndexedDB şeması değişmez. Sosyal paylaşım, kimlik ve yetkili sunucu kurulmadan aktif görünmez.
 - Referanstaki örnek sayılar, isimler ve grup üyeleri gerçek kullanıcı verisi gibi gösterilmez.
 - Bu kararlar önceki görsel/3D yön açıklamalarının yerini alır; tarihsel teknik kayıtlar geçmiş çalışmaların açıklamasıdır.
+
+## 11 Ekim 2026 — sosyal sistem
+
+Kullanıcı arkadaşlar ve davetli özel gruplar yönünü onayladı. Gerçek sistem için Supabase Auth + özel PostgreSQL şeması seçildi. Kalori sunucusu diğer uygulamalardan ayrı olacak; organizasyon kullanıcı tarafından seçildi. Kurulum henüz tamamlanmadı: proje oluşturma maliyet aracı kullanılamıyor. Davet, paylaşım, rol ve challenge kurallarının tek tanımı `docs/SOCIAL_SYSTEM.md`; sunucu uygulaması `supabase/migrations/20261010222524_social_foundation.sql`. Tipler `src/social/types.ts`; istemci hesap yetkisi üretmez. Misafir yerel takip korunur; bulut kayıtları ayrı adaptörde, aktarım açık onaylıdır. Güncel durum CURRENT_TASK.md; canlı sistem olduğu yalnız gerçek hesap/hosting kabulünden sonra söylenebilir.

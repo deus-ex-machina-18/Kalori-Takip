@@ -12,14 +12,16 @@
     "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "npm run build && npm run test:unit && npm run test:ui",
-    "check": "npm test && npm run test:assets",
+    "check": "npm test && npm run test:assets && npm run test:social",
     "dev:lan": "vite --host 0.0.0.0",
     "test:unit": "node --experimental-strip-types --test tests/*.test.ts",
     "test:ui": "node --test tests/*.test.mjs",
     "assets:cat": "node scripts/build-cat-texture.mjs && node scripts/build-cat.mjs",
-    "test:assets": "node scripts/validate-cat-media.mjs"
+    "test:assets": "node scripts/validate-cat-media.mjs",
+    "test:social": "node --experimental-strip-types --test tests/social/*.test.mjs && node scripts/social/ui-check.mjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@types/node": "^24.0.0",
     "@types/three": "^0.186.0",
     "fake-indexeddb": "^6.2.4",
@@ -31,6 +33,7 @@
     "vite": "^8.0.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.117.3",
     "three": "^0.186.1"
   }
 }

@@ -1,20 +1,19 @@
-# Güncel görev — onaylı mobil görsel dilin uygulanması
+# Güncel görev — gerçek sosyal sistem
 
-11 Ekim 2026 · `reference-ui` · başlangıç: `a6291a3` (`r4-visual-quality`).
+11 Ekim 2026 · dal: social-infrastructure · taban: reference-ui / f53015b.
 
-Tek çıktı: kullanıcının altı referans görseline göre çalışan Kalori Takip arayüzü.
+Tek çıktı: gerçek hesaplara bağlı arkadaşlık, davetli grup, paylaşım izni ve challenge sistemi.
 
-## Kapsam
+Kapsam: Supabase Auth; kullanıcıya özel bulut kayıtları ve açık onaylı yerel aktarım; karşılıklı arkadaşlık; özel gruplar ve süreli/iptal edilebilir davet; alan/hedef kitle bazlı paylaşım; günlük tamamlanma üzerinden challenge; uygulama içi bildirimler.
 
-Bugün, Kayıtlar, Planım, İlerlemem, Sosyal, Ayarlar; ortak krem/desenli zemin, koyu yeşil düğmeler, altın çerçeveler, serif başlıklar, yeniden kullanılan referans ikonları ve altı sekmeli navigasyon. Bugün ekranında son Su / İlerlemem kısayolu referansı kullanılır. Kalori formu açılır bölümde; hesap, onay, retry ve geçmiş kayıt akışları korunur. Su takibi kullanıcı ve yerel gün bazında ayrı v1 cihaz kaydında tutulur.
+Korunacak: altı ekranın onaylı krem/yeşil/altın tasarımı, Zilli videoları, kalori motoru ve yerel pilot verileri. Açık gruplar, serbest sohbet, push ve ücretli özellikler kapsam dışında.
 
-Enerji/hareket/haftalık domain hesapları ve IndexedDB v1 değişmez. Mevcut beş video korunur. Gerçek hesap/arkadaş/grup/challenge altyapısı bu görsel turda kurulmaz. Sosyal ekran bunu açıkça belirtir; paylaşım kapalıdır, sahte arkadaş ve katılımcı kayıtları yoktur.
+Kabul: ayrı kullanıcılar arasında gerçek sunucu işlemleri; oturumsuz/üçüncü kullanıcı erişiminin reddi; engelleme ve paylaşım kapatma sonrası erişimin kesilmesi; tekrarlı işlemlerin çift kayıt oluşturmaması; mevcut testler ve sosyal veri testleri.
 
-## Kabul ve mevcut durum
+Altyapı engeli: bağlı organizasyonda Kalori projesi yok. Kullanıcı mevcut organizasyonu seçti. get_cost iki kez UNAVAILABLE döndü; yeni proje oluşturmanın zorunlu maliyet doğrulaması çalışmıyor. Diğer uygulamaların projesi kullanılmaz. Kod ve PostgreSQL testleri tamamlanır; canlı proje bağlantısı olmadan yayına hazır/çalışan bulut iddiası yapılmaz.
 
-- TypeScript / üretim build / 39 domain ve depo + 22 DOM = 61 test: başarılı.
-- Video hash, fast-start, format ve boyut kontrolü: başarılı.
-- Mobil piksel eşleşmesi ve gerçek tarayıcı QA: açık. Playwright Chromium indirmesi geçerli ZIP dönmedi. Cloud Browser yerel önizlemeye `ERR_CONNECTION_REFUSED` verdi. Görsellerle birebir eşleşme onaylandı iddiası yok.
-- GitHub'a gönderim: 11 Ekim 2026'da kullanıcının açık onayıyla tamamlandı. Komut satırı kimlik doğrulaması bulunmadığı için bağlı GitHub bağlantısı kullanıldı. `reference-ui` dalı ve taslak PR #2 oluşturuldu; uygulama commit'i `1d0395fa1907c4da3f292a017ddcf1a424fa01a1`. Yerel/test edilen ve uzak kaynak ağacı aynı: `6305dc5bf94031724e438bef8edfb5ac6f79cea3`. Main'e birleştirme veya yayın yapılmadı.
+## Kod ve doğrulama sonucu
 
-Sonraki tek görev: PR #2 üzerinde tarayıcı kontrollerini çalıştır, gerçek mobil ekran görüntülerini referanslarla karşılaştır ve yalnız bulunan görsel farkları düzelt.
+Gerçek işlem kodu ve migration hazır. `npm run check`: 77 test + 7 DOM/HTTP sözleşme/PostgreSQL senaryosu; build ve medya kontrolleri başarılı. Yerel test Auth fikstürünü kullanır; canlı Supabase Auth/e-posta/Android kabulü açık. Ayrıntı `docs/SOCIAL_SYSTEM.md`.
+
+Sonraki tek görev: kullanıcı ayrı Kalori projesi bağlantısını sağladığında sunucu migration'ını kur, gerçek iki hesapla doğrula ve hosting ortamını bağla. Yalnız kodu göndermek canlı sosyal sistemi açmaz.
