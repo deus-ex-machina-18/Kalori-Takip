@@ -1,8 +1,10 @@
-# 11 Ekim 2026 — dört Zilli hareketi
+# 11 Ekim 2026 — dört Zilli hareketi tamamlandı
 
-Güncel kapsam/kabul `CURRENT_TASK.md` içinde. `zilli-four-actions`, `main` commit `3e8766b` tabanlıdır. Kullanıcı yeni dört klibi bağlama talimatı verdi. Kedi alanı sevme düğmesi; altın çerçeveli Oyun/Esneme/Uyuklama kontrolleri. Mevcut beş video değişmedi. Yeni dört kaynak: `tmp5db31o32` touch, `tmp74yqbwr6` play, `tmp9byihacv` stretch, `tmpjd43eswb` sleep. Orijinaller git dışındadır; hash/provenance aktif manifestte.
+Kedi alanına dokunma sevme tepkisini; altın çerçeveli Oyun, Esneme, Uyuklama kontrolleri ilgili videoyu oynatır. Tek tepki bittiğinde idle; kalori tepkisini kesmez, veri yazmaz, sonuç etiketini değiştirmez. Statik/hareket azaltma ve hata durumunda kontroller kapalı. Mevcut beş MP4 ve poster aynı; yeni klipler tıklamada yüklenir. Orijinaller git dışındadır, kaynak/hash/provenance aktif manifesttedir. Kaynaklar: `tmp5db31o32` touch, `tmp74yqbwr6` play, `tmp9byihacv` stretch, `tmpjd43eswb` sleep.
 
-61 test/build/medya ve tam FFmpeg decode başarılı; tarayıcı ve canlı yayın doğrulaması yürütülüyor. Dokuz medya toplam 2.862.938 bayt, ilk yük aynı 312.844 bayt. Yeni klipler tıklamada yüklenir; bitince idle. Yeni üretim/ücretli servis yok. Kalori/depo/su/Sosyal değiştirilmedi. Eski devirler aşağıda tarihsel olarak korunuyor.
+61 test/build/medya ve tam FFmpeg decode başarılı. [Chromium CI](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38118114893), commit `7c3c311801d8597a1107153665ff88af6f7dbe6d`, errors=[]. [PR #3](https://github.com/deus-ex-machina-18/Kalori-Takip/pull/3) main'e birleştirildi: `eadefe629dd03a2ba31623ca4661953017ddf304`. Canlı Netlify bundle test edilen yerel build ile aynı; dört yeni MP4 HTTP 200, video/mp4, manifest hash'leri ile aynı. Kanıtlar `docs/verification/zilli-actions-*`; Duman yalnız test adı, ürün varsayılanı Zilli.
+
+Dokuz MP4 + poster 2.862.938 bayt, ilk yük aynı 312.844 bayt. Yeni üretim/ücretli servis yok. Kalori/depo/v1 şema, su ve Sosyal bu görevde değişmedi. Gerçek Android kabulü açık. Sonraki tek iş Android'de dört etkileşimin görsel kabulü; kalan dokuz klip kullanıcı gönderince ayrı tur. Eski devirler aşağıda tarihsel olarak korunuyor.
 
 ---
 

@@ -14,10 +14,14 @@ Tek çıktı: kullanıcının gönderdiği dört hareketin onaylı görsel dilde
 
 Hesap/depo/v1 şema, su/spor kayıtları ve Sosyal altyapı bu görevde değişmez. Yeni video üretilmez.
 
-## Kabul
+## Kabul — tamamlandı
 
-Yerel TypeScript, build, 39 domain/depo + 22 DOM = 61 test ve dokuz medya doğrulaması başarılı. Yeni dört MP4 tam FFmpeg çözümü başarılı. Gerçek tarayıcı kontrolü ve canlı yayın doğrulaması yürütülüyor; henüz tamamlandı iddiası yok.
+- Yerel ve GitHub TypeScript/build, 39 domain/depo + 22 DOM = 61 test, dokuz medya doğrulaması başarılı. Dört yeni MP4 tam FFmpeg çözümü başarılı.
+- [Gerçek Chromium kontrolü](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38118114893) başarılı; uygulama/test commit'i `7c3c311801d8597a1107153665ff88af6f7dbe6d`, 35 kontrol mesajı, errors=[]. Dört actual decode/end/idle, lazy bir seçilen klip, no interrupt/queue/data writes/replay, klavye, hidden pause, yeni klip 404, kalori tepkisi önceliği, sekiz kalori/sınır durumu, native IndexedDB regresyonları ve beş genişlik kontrol edildi.
+- [PR #3](https://github.com/deus-ex-machina-18/Kalori-Takip/pull/3) main'e birleştirildi: `eadefe629dd03a2ba31623ca4661953017ddf304`. İlk CI, önceki arayüz testinin açılır paneli beklemeyen adımında takıldı; test gerçek panel açma akışına uyarlandı, kontroller gevşetilmedi.
+- [Canlı uygulama](https://extraordinary-rolypoly-370c36.netlify.app/#/bugun) doğrulandı: `index-D-oZkSEy.js` test edilen yerel build ile bayt düzeyinde aynı. touch/play/stretch/sleep MP4'lerinin dördü video/mp4 HTTP 200 ve manifest SHA256 ile aynı. Mevcut beş MP4/poster değişmedi.
+- Kalıcı kanıtlar: `docs/verification/zilli-actions-browser-report.json`, `zilli-actions-metrics.json`, `zilli-actions-live-check.json`, `zilli-actions-card-390.png`. Kart ekranında Duman, ad ayarının kalıcılık testi için kullanıldı; ürün varsayılanı Zilli'dir. Kesit gerçek 390px Chromium ekranından alınmıştır.
 
-Tarayıcı kontrolü: dört gerçek decode/ended/idle, tek seçilen medya, kalori tepkisi önceliği, veri yazmama, klavye, gizliyken durma, navigasyon/reload replay yok, yeni klip 404 yedeği, statik/hareket azaltma ve önceki kalori/depo regresyonları.
+Fiziksel Android görsel/oynatma kabulü açık. Masaüstü Chromium mobil viewport ve canlı HTTP doğrulaması, gerçek telefon testi iddiası değildir.
 
-Sonraki tek iş: tarayıcı kontrolünü tamamla, ana dala taşı ve mevcut Netlify sitesindeki yeni klip/kodları doğrula. Fiziksel Android kabulü açık.
+Sonraki tek iş: Android'de dört etkileşimin görsel kabulünü kontrol et. Kalan dokuz klip kullanıcı üretip gönderince ayrı medya turunda incelenecek.
