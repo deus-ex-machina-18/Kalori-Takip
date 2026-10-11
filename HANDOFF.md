@@ -1,3 +1,49 @@
+# 11 Ekim 2026 — sosyal canlı bağlantı ve kabul tamamlandı
+
+Arkadaşlık, davetli grup, paylaşım, challenge ve bulut kayıtları kullanıcı projesi cjlqnhegtdnkdoayeeks üzerinde çalışır. 13 private tablo/RPC, 4 FK indeksi ve üç applied migration var. Public frontend ayarı netlify.toml; gizli anahtar yok. Main 3d56083'ün dokuz Zilli MP4 ve dört etkileşimi korunur.
+
+77 test + 7 yerel DOM/PostgreSQL senaryosu; 7 gerçek Auth/JWT/PostgreSQL DOM senaryosu; son kaynakla 9 canlı API/kayıt kontrolü başarılı. Son kaynak dc18b07; GitHub Actions 38166822493 build/test/Chromium başarılı. Önizleme bundle son bağlantılı yerel build ile aynı. Kanıtlar docs/verification/social-*.
+
+Canlı çakışma testi 40001'in PostgREST 14.18 üzerinde sonsuz retry hatasını ortaya çıkardı. 20261011190752_social_conflict_http_status, PT409/HTTP409 kullanır; CloudRepository conflict sınıflandırır. İki logla eşleştirilen backend sonlandırıldı. Eski applied migration'ı değiştirme.
+
+Üç disposable test hesabı silme aracı Invalid or expired requestState verdiği için halen verileriyle durur. Yeni girişleri infinity ban ile kapalı; aktif refresh token sayısı 0. JWT'ler normal sürelerinde sona erer. Yalnız app_metadata kalori_test_run işaretli fixture'ları hedefle; gerçek hesap silme. Parola/JWT hiçbir kanıt dosyasında yok.
+
+Önizleme: https://deploy-preview-4--extraordinary-rolypoly-370c36.netlify.app/#/sosyal . PR #4 taslak ve birleştirilebilir; üretim main değişmedi. E-posta/gerçek Android kabulü tamamlanmadı.
+
+Sonraki tek görev: Google panel girişi için açık sağlayıcı onayını al. Otomatik ret geldi; farklı yoldan aşma. Site/Redirect URL + SMTP'yi ayarla; iki gerçek posta adresinde doğrulama/sıfırlama kabulünü yap, test fixture'larını sil ve PR/yayını tamamla. E-posta doğrulamasını kapatma; Auth leaked-password WARN'ı ve bilinçli private RLS/no-policy INFO'larını docs/SOCIAL_SYSTEM.md açıklar.
+
+---
+
+## Önceki görev kayıtları (tarihsel)
+
+# Devir — sosyal sistem
+
+11 Ekim 2026 · social-infrastructure · taban reference-ui; main'in güncel dosya ağacı aynı.
+
+## Kararlar
+
+Arkadaşlık + davetli özel gruplar. Mevcut altı sekme ve krem/yeşil/altın görsel dil korunur. Grup katılımı kişisel kayıtları açmaz; alan/hedef kitle bazlı paylaşım ayrı. Challenge ilerlemesi açık katılım izniyle gruba görünür. Manuel kayıt, günlük tamamlanma puanı, sabit hedef ve iki gün düzeltme penceresi. Serbest sohbet, açık gruplar, push ve yeni kedi videosu yok.
+
+## Tamamlanan
+
+Hesap/şifre akışları, sosyal profil; karşılıklı arkadaşlık ve engelleme; grup rolleri/devri/üyelik; süreli ve iptal edilebilir davetler; paylaşım izinleri; challenge ve sunucuda puan; uygulama içi bildirim. Bulut takip adaptörü, su senkronizasyonu ve açık onaylı yerel aktarım. Ücretli kaynak veya başka uygulama sunucusu kullanılmadı.
+
+## Kabul
+
+77 test + 7 DOM/HTTP sözleşme/PostgreSQL senaryosu; üretim build ve medya kontrolü başarılı. Giriş servisi ve auth kullanıcıları yerel test fikstürü. Gerçek Supabase/e-posta/Android ve görsel tarayıcı kabulü açık. Kaynak: docs/SOCIAL_SYSTEM.md; migration ve kurulum burada açıklanır.
+
+## Engel
+
+Organizasyon seçildi: deus-ex-machina-18's Org. Kalori projesi yok; Supabase get_cost iki kez UNAVAILABLE. Maliyet onayı/proje oluşturma zinciri bu nedenle tamamlanamadı. Başka proje seçerek bu engeli aşma. Yeni projeye migration uygulanmadı; ortam anahtarları ve hosting güncellenmedi.
+
+## Sonraki tek görev
+
+Kullanıcı ayrı kalori-takip Supabase projesini oluşturup proje linkini verdiğinde: bağlı araçlarla URL/yayınlanabilir anahtarı oku, migration'ı uygula, advisors + gerçek oturum testlerini yap, hosting ortamını bağla ve iki cihazlı canlı kabulü tamamla. Yeni modül/özellik ekleme.
+
+---
+
+## Önceki Zilli turunun devir kaydı
+
 # 11 Ekim 2026 — dört Zilli hareketi tamamlandı
 
 Kedi alanına dokunma sevme tepkisini; altın çerçeveli Oyun, Esneme, Uyuklama kontrolleri ilgili videoyu oynatır. Tek tepki bittiğinde idle; kalori tepkisini kesmez, veri yazmaz, sonuç etiketini değiştirmez. Statik/hareket azaltma ve hata durumunda kontroller kapalı. Mevcut beş MP4 ve poster aynı; yeni klipler tıklamada yüklenir. Orijinaller git dışındadır, kaynak/hash/provenance aktif manifesttedir. Kaynaklar: `tmp5db31o32` touch, `tmp74yqbwr6` play, `tmp9byihacv` stretch, `tmpjd43eswb` sleep.

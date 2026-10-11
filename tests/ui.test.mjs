@@ -350,7 +350,7 @@ test('su miktarı ve hedefi navigasyonda korunur; başarısız yazı girişi kay
     app.document.querySelector('[name="water-amount"]').value='1250';
     app.document.querySelector('[name="water-target"]').value='3000';
     app.document.querySelector('#water-form').requestSubmit();
-    assert.equal(app.document.querySelector('#water-summary').textContent,'1,25 L');
+    await until(()=>app.document.querySelector('#water-summary')?.textContent==='1,25 L');
     await navigate(app.window,app.document.querySelector('nav a[href="#/planim"]'));
     assert.equal(app.document.querySelector('#water-target-summary').textContent,'3.000 ml');
     app.document.querySelector('[data-water]').click();
@@ -360,22 +360,22 @@ test('su miktarı ve hedefi navigasyonda korunur; başarısız yazı girişi kay
     try {
       app.document.querySelector('[name="water-amount"]').value='1750';
       app.document.querySelector('#water-form').requestSubmit();
-      assert.match(app.document.querySelector('#water-error').textContent,/saklanamadı/);
+      await until(()=>/saklanamadı/.test(app.document.querySelector('#water-error')?.textContent??''));
       assert.equal(app.document.querySelector('[name="water-amount"]').value,'1750');
     }finally{prototype.setItem=original;}
     app.document.querySelector('#water-form').requestSubmit();
+    await until(()=>!app.document.querySelector('dialog[open]'));
     await navigate(app.window,app.document.querySelector('nav a[href="#/bugun"]'));
     assert.equal(app.document.querySelector('#water-summary').textContent,'1,75 L');
     assert.deepEqual(app.errors,[]);
   }finally{app.dom.window.close();}
 });
-test('sosyal önizleme kayıt paylaşmaz ve gerçek hesap işlemi iddiası taşımaz',async()=>{
+test('sunucu ayarı yokken sosyal ekran sahte hesap veya paylaşım açmaz',async()=>{
   const app=await launch('/sosyal');
   try {
-    assert.equal(app.document.querySelector('[aria-label="Sürecimi paylaş"]').disabled,true);
-    assert.equal(app.document.querySelector('[aria-label="Sürecimi paylaş"]').checked,false);
-    app.document.querySelector('[data-social="Arkadaş ekle"]').click();
-    assert.match(app.document.querySelector('dialog').textContent,/henüz kurulmadı/);
+    assert.equal(app.document.querySelector('[aria-label="Sürecimi paylaş"]'),null);
+    assert.equal(app.document.querySelector('[data-social-form="signup"]'),null);
+    assert.match(app.document.querySelector('main').textContent,/sunucu bağlantısı henüz yapılandırılmadı/);
     assert.deepEqual(app.errors,[]);
   }finally{app.dom.window.close();}
 });

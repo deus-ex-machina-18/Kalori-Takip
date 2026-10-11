@@ -1,27 +1,21 @@
-# Güncel görev — dört Zilli videosunu bağlamak
+# Güncel görev — sosyal sistemin canlı bağlantısı
 
-11 Ekim 2026 · `zilli-four-actions` · taban: `3e8766b` (`main`).
+11 Ekim 2026 · sosyal PR #4: https://github.com/deus-ex-machina-18/Kalori-Takip/pull/4
 
-Tek çıktı: kullanıcının gönderdiği dört hareketin onaylı görsel dildeki Bugün kartında çalışması.
+Arkadaşlık, davetli özel gruplar, paylaşım izinleri, challenge ve bulut kayıtları ayrı Supabase projesi cjlqnhegtdnkdoayeeks üzerine bağlandı. Mevcut krem/yeşil/altın dil ve dört Zilli etkileşimi korunur.
 
-## Kapsam ve davranış
+Kurulum: 13 private tablo, authenticated RPC, 4 FK indeksi ve üç applied migration. RLS açık; doğrudan anon/authenticated tablo okuması kapalı. Migration geçmişinde tam SQL statements bulunur.
 
-- Kedi alanına dokunma / klavye aktivasyonu: `touch`; kart altı üç kontrol: `play`, `stretch`, `sleep`.
-- Aynı anda tek tepki, sonra mevcut bekleme. Yüklemede/oynatımda/kalori tepkisinde kontroller bekler; tekrar dokunmalar sıraya alınmaz.
-- Statik/hareket azaltma ve hata yolu kontrolleri kapatır; kalori formu bağımsız kalır. Hareketler veri yazmaz, sonuç etiketini değiştirmez; yenileme/navigasyon hareketi tekrarlamaz.
-- İlk yük ve eski beş klip aynıdır. Yeni klipler ihtiyaca göre yüklenir. Dokuz MP4 + poster toplam 2.862.938 bayt; ilk yük 312.844 bayt. Dört yeni klip 640 kare, 24 fps, sessiz Baseline/yuv420p, fast-start, yaklaşık 3,54 sn.
-- Son 0,25 sn ortak idle ilk karesine çözünür. Oyun kuyruk ve esneme son poz farkları nedeniyle bu geçişe ihtiyaç duyar; uyuklama kulakları abartılı kapanır.
+Canlı kabul sırasında beklenen çakışmalar için kullanılan SQLSTATE 40001, PostgREST 14.18 üzerinde sonsuz yeniden denemeye yol açtı. social_conflict_http_status migration'ı bu iki hatayı PT409 / HTTP 409 yapar. CloudRepository conflict sonucunu doğru sınıflandırır. Loglardan eşleştirilen iki takılan test backend'i sonlandırıldı; eski migration değiştirilmedi.
 
-Hesap/depo/v1 şema, su/spor kayıtları ve Sosyal altyapı bu görevde değişmez. Yeni video üretilmez.
+Doğrulama tamam: 77 test + 7 yerel DOM/PostgreSQL senaryosu, build ve 9 MP4 kontrolü. Gerçek Supabase Auth/JWT/PostgreSQL ile 7 sosyal DOM senaryosu; son kaynak koduyla 9 canlı API/kayıt kontrolü geçti. Son kaynak commit dc18b07; GitHub Actions 38166822493 build/test/Chromium başarılı. CI canlı Supabase yapılandırması olmadan çalışır; canlı kanıt ayrı rapordadır.
 
-## Kabul — tamamlandı
+Önizleme: https://deploy-preview-4--extraordinary-rolypoly-370c36.netlify.app/#/sosyal . Doğru Project URL ve publishable key içerir; sunulan bundle son yerel bağlantılı build ile aynı. Cloud Chrome'da bağlı giriş formu görüldü. Kanıtlar docs/verification/social-*. PR taslak ve birleştirilebilir; üretim main değişmedi.
 
-- Yerel ve GitHub TypeScript/build, 39 domain/depo + 22 DOM = 61 test, dokuz medya doğrulaması başarılı. Dört yeni MP4 tam FFmpeg çözümü başarılı.
-- [Gerçek Chromium kontrolü](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38118114893) başarılı; uygulama/test commit'i `7c3c311801d8597a1107153665ff88af6f7dbe6d`, 35 kontrol mesajı, errors=[]. Dört actual decode/end/idle, lazy bir seçilen klip, no interrupt/queue/data writes/replay, klavye, hidden pause, yeni klip 404, kalori tepkisi önceliği, sekiz kalori/sınır durumu, native IndexedDB regresyonları ve beş genişlik kontrol edildi.
-- [PR #3](https://github.com/deus-ex-machina-18/Kalori-Takip/pull/3) main'e birleştirildi: `eadefe629dd03a2ba31623ca4661953017ddf304`. İlk CI, önceki arayüz testinin açılır paneli beklemeyen adımında takıldı; test gerçek panel açma akışına uyarlandı, kontroller gevşetilmedi.
-- [Canlı uygulama](https://extraordinary-rolypoly-370c36.netlify.app/#/bugun) doğrulandı: `index-D-oZkSEy.js` test edilen yerel build ile bayt düzeyinde aynı. touch/play/stretch/sleep MP4'lerinin dördü video/mp4 HTTP 200 ve manifest SHA256 ile aynı. Mevcut beş MP4/poster değişmedi.
-- Kalıcı kanıtlar: `docs/verification/zilli-actions-browser-report.json`, `zilli-actions-metrics.json`, `zilli-actions-live-check.json`, `zilli-actions-card-390.png`. Kart ekranında Duman, ad ayarının kalıcılık testi için kullanıldı; ürün varsayılanı Zilli'dir. Kesit gerçek 390px Chromium ekranından alınmıştır.
+Fixture temizliği: scoped DELETE aracı Invalid or expired requestState verdi. Yalnız üç işaretli geçici hesabın yeni girişi banned_until=infinity ile kapatıldı; aktif refresh token sayısı 0. Test verisi henüz silinmedi. Mevcut access JWT'ler normal sürelerinde sona erer. Gerçek hesaplara işlem yapılmadı.
 
-Fiziksel Android görsel/oynatma kabulü açık. Masaüstü Chromium mobil viewport ve canlı HTTP doğrulaması, gerçek telefon testi iddiası değildir.
+Açık: Auth Site URL/Redirect URL, özel SMTP ve iki gerçek posta adresinde doğrulama/şifre sıfırlama kabulü. Test hesapları önceden doğrulanmıştı; e-posta teslimi başarılı sayılmaz. Auth leaked-password protection WARN açık; private RLS/no-policy INFO bilinçli deny-all tasarımıdır.
 
-Sonraki tek iş: Android'de dört etkileşimin görsel kabulünü kontrol et. Kalan dokuz klip kullanıcı üretip gönderince ayrı medya turunda incelenecek.
+Panel girişi GitHub'dan Google'a geçti; Google sayfasına erişim otomatik onay denetiminde, sağlayıcıya özel açık kullanıcı onayı olmadığı gerekçesiyle reddedildi. Bu giriş farklı yoldan aşılmadı.
+
+Sonraki tek iş: Google panel girişi için açık onayı al; Site/Redirect URL ve kullanıcının SMTP sağlayıcısını ayarla; gerçek posta kabulünü yap; işaretli test hesaplarını sil; sonra PR/yayını tamamla. Gerçek iki cihaz/Android ve orijinal görsellerle piksel kabulü açık.

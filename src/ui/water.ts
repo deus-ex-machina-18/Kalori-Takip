@@ -1,12 +1,21 @@
 import { escape } from "./tracker.ts";
+import type { CloudRepository } from "../data/cloud.ts";
 /** Water has its own versioned device-local data, without changing calorie records. */
 type WaterData = { target: number; days: Record<string, number> };
 export class WaterTracker {
   error = "";
+  private cloud: CloudRepository | null = null;
+  connect(cloud: CloudRepository | null) {
+    this.cloud = cloud;
+  }
   private key(userId: string) {
     return `kalori-water-v1:${userId}`;
   }
   read(userId: string | undefined): WaterData {
+    if (this.cloud) return this.cloud.getWater();
+    return this.readLocal(userId);
+  }
+  readLocal(userId: string | undefined): WaterData {
     if (!userId) return { target: 2500, days: {} };
     try {
       const data = JSON.parse(localStorage.getItem(this.key(userId)) ?? "null");
@@ -61,8 +70,24 @@ export class WaterTracker {
       return false;
     }
   }
+  async saveConnected(
+    userId: string,
+    date: string,
+    amount: number,
+    target: number,
+  ): Promise<boolean> {
+    if (!this.cloud) return this.save(userId, date, amount, target);
+    try {
+      const ok = await this.cloud.saveWater(date, amount, target);
+      this.error = "";
+      return ok;
+    } catch (e) {
+      this.error = (e as Error).message;
+      return false;
+    }
+  }
   form(userId: string, date: string): string {
     const data = this.read(userId);
-    return `<form id="water-form" class="tracking-form"><h2>Su takibim</h2><p class="muted">${escape(date)} · bu cihazdaki kaydın</p><label class="field"><span>Bugünkü toplam (ml)</span><input name="water-amount" type="number" min="0" max="20000" step="50" value="${data.days[date] ?? 0}" required inputmode="numeric"></label><div class="actions">${[250, 500].map((amount) => `<button type="button" class="button secondary" data-water-add="${amount}">+${amount} ml</button>`).join("")}</div><label class="field"><span>Günlük hedef (ml)</span><input name="water-target" type="number" min="250" max="10000" step="50" value="${data.target}" required inputmode="numeric"></label><p id="water-error" role="alert">${escape(this.error)}</p><button class="button primary" type="submit">Suyu kaydet</button></form>`;
+    return `<form id="water-form" class="tracking-form"><h2>Su takibim</h2><p class="muted">${escape(date)} · ${this.cloud ? "hesabındaki kaydın" : "bu cihazdaki kaydın"}</p><label class="field"><span>Bugünkü toplam (ml)</span><input name="water-amount" type="number" min="0" max="20000" step="50" value="${data.days[date] ?? 0}" required inputmode="numeric"></label><div class="actions">${[250, 500].map((amount) => `<button type="button" class="button secondary" data-water-add="${amount}">+${amount} ml</button>`).join("")}</div><label class="field"><span>Günlük hedef (ml)</span><input name="water-target" type="number" min="250" max="10000" step="50" value="${data.target}" required inputmode="numeric"></label><p id="water-error" role="alert">${escape(this.error)}</p><button class="button primary" type="submit">Suyu kaydet</button></form>`;
   }
 }

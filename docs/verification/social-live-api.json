@@ -1,0 +1,20 @@
+{
+  "testedOn": "2026-10-11",
+  "sourceCommit": "dc18b07e092195ec9e8212f3fcadd43c50bf9be3",
+  "project": "cjlqnhegtdnkdoayeeks",
+  "kind": "live Supabase Auth/JWT/Data API/PostgreSQL + production CloudRepository",
+  "emailDelivery": false,
+  "fixtures": "three disposable preconfirmed users",
+  "checks": [
+    "three isolated users receive real Supabase Auth sessions and verified JWT identities",
+    "anonymous RPC and direct private-schema Data API reads are denied",
+    "friendship requires recipient acceptance; a third user cannot accept",
+    "group invite replay is idempotent; revoked tokens and outsider role escalation are rejected",
+    "real cloud repository persists calorie/water records; stale device writes cannot overwrite",
+    "only selected summary fields are returned; turning sharing off revokes later reads",
+    "challenge points come from saved water; repeats do not add points; outsiders cannot join",
+    "operation replay cannot change payload; support and recipient notification updates work",
+    "blocking removes friend, common-group and challenge identity access"
+  ],
+  "processExitCode": 0
+}

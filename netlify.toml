@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Public browser configuration. Never put a secret/service_role key here.
+[build.environment]
+  VITE_SUPABASE_URL = "https://cjlqnhegtdnkdoayeeks.supabase.co"
+  VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vtSopWQo58iksQI1RvPyog_BEHyaevL"

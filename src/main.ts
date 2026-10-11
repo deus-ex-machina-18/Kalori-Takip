@@ -5,6 +5,7 @@ import { catCard, mountCat } from "./ui/cat-card.ts";
 import { defaultCatPreferences } from "./domain/cat.ts";
 import { art, designUrl } from "./ui/design.ts";
 import { WaterTracker } from "./ui/water.ts";
+import { SocialController } from "./ui/social.ts";
 import { addLocalDays } from "./domain/dates.ts";
 
 type Screen =
@@ -20,6 +21,7 @@ const navigation: { id: Screen; label: string; icon: string }[] = [
 const app = document.querySelector<HTMLDivElement>("#app")!;
 const tracker = new Tracker(() => render());
 const water = new WaterTracker();
+const socialController = new SocialController(tracker, water, () => render());
 let reducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
 ).matches;
@@ -50,14 +52,10 @@ function settings() {
   <section class="card settings-cat"><h2>Kedin</h2><div class="cat-settings-grid"><img class="settings-poster" src="${designUrl("zilli.webp")}" alt="Yeşil halıda gri-beyaz Zilli" width="256" height="256"><div><p class="muted">Gri-beyaz dostun.</p><form id="cat-settings-form"><label class="field" for="cat-name"><span>Kedinin adı</span><input id="cat-name" name="cat-name" value="${escape(p.name)}" maxlength="30" required ${disabled}></label><p class="hint">Varsayılan ad Zilli. İstediğin adı kullanabilirsin.</p><button type="submit" class="button primary" ${disabled}>Adı kaydet</button></form></div></div>${!tracker.profile ? '<p class="hint">Kalıcı ayarlar için Planım’dan profil oluştur.</p>' : ""}</section>
   <section class="card settings-card"><h2>Görünüm ve hareket</h2><label class="setting-row" for="motion">${icon("cat")}<span><strong>Hareketi azalt</strong><span class="muted">Animasyonları azaltır.</span></span><input id="motion" name="motion" form="cat-settings-form" type="checkbox" role="switch" ${p.reducedMotion ? "checked" : ""}></label><div class="ornate-divider"></div><label class="setting-row" for="static-mode">${icon("image")}<span><strong>Statik kedi görünümü</strong><span class="muted">Video yerine sabit görsel kullanır.</span></span><input id="static-mode" type="checkbox" role="switch" ${p.sceneMode === "static" ? "checked" : ""} ${disabled}></label><select id="scene-mode" name="scene-mode" form="cat-settings-form" class="sr-only" aria-label="Kedi görünümü" ${disabled}><option value="auto" ${p.sceneMode === "auto" ? "selected" : ""}>Animasyonlu</option><option value="static" ${p.sceneMode === "static" ? "selected" : ""}>Statik</option></select><p class="hint">Tercihlerini Adı kaydet düğmesiyle birlikte kaydedebilirsin.</p></section>
   <section class="card"><h2>Profil ve hedefler</h2><a class="link-row" href="#/planim">${icon("user")}<span><strong>Profil bilgilerim</strong><small>Boy, kilo ve diğer kişisel bilgiler.</small></span>${icon("arrow")}</a><div class="ornate-divider"></div><a class="link-row" href="#/planim">${art("target")}<span><strong>Kalori ve su planım</strong><small>Planım ekranından düzenleyebilirsin.</small></span>${icon("arrow")}</a></section>
-  <section class="card"><h2>Kayıtların</h2><div class="link-row">${icon("journal")}<span><strong>Kayıtların bu cihazda saklanır.</strong><small>Tarayıcı verilerini silmek kayıtlarını da silebilir.</small></span></div></section>`;
+  <section class="card"><h2>Kayıtların</h2><div class="link-row">${icon("journal")}<span><strong>${socialController.accountLabel()}</strong><small>Hesap ve sosyal profil ayarları için Sosyal bölümüne git.</small></span></div></section>`;
 }
 function social() {
-  return `${heading("Sosyal", "Birlikte ilerlemek daha güzel.")}
-  <section class="card"><h2>Sürecimi paylaş</h2><div class="sharing-row">${art("lock")}<p class="muted">Kapalıyken kayıtlarını yalnız sen görürsün.</p><span class="sharing-switch"><input type="checkbox" role="switch" aria-label="Sürecimi paylaş" disabled><small>Kapalı</small></span></div><div class="ornate-divider"></div><button class="link-row" data-social="Paylaşımı düzenle">${icon("settings")}<span><strong>Paylaşımı düzenle</strong><small>Kimler görebilir, neleri görebilir?</small></span>${icon("arrow")}</button></section>
-  <section class="card"><div class="card-top"><h2>Arkadaşlarım</h2><button class="text-button" data-social="Arkadaşlarım">Tümünü gör ${icon("arrow")}</button></div><div class="social-empty">${icon("users")}<span>Henüz arkadaş eklenmedi.<small>Birlikte takip edeceğin kişileri burada göreceksin.</small></span></div><button class="button primary" data-social="Arkadaş ekle">${icon("user")}<span>Arkadaş ekle</span></button></section>
-  <section class="card"><div class="card-top"><h2>Gruplarım</h2><button class="text-button" data-social="Grup kur">${icon("plus")} Grup kur</button></div><div class="social-empty">${art("group")}<span>Birlikte küçük adımlar.<small>Yürüyüş ve hareket grupların burada yer alacak.</small></span></div></section>
-  <section class="card"><h2>Challenge’lar</h2><div class="link-row">${art("shoe")}<span><strong>7 gün hareket</strong><small>Günde 20 dk · başlangıç fikri</small></span></div><div class="ornate-divider"></div><div class="link-row">${art("water")}<span><strong>Su alışkanlığı</strong><small>7 gün · başlangıç fikri</small></span></div><button class="button primary" data-social="Challenge başlat">${icon("flag")}<span>Challenge başlat</span></button></section><p class="hint center">Sosyal ekran önizlemesi. Hesap bağlantısı henüz kurulmadı; kayıtların paylaşılmıyor.</p>`;
+  return socialController.content();
 }
 const screens: Record<Screen, () => string> = {
   bugun: today,
@@ -164,11 +162,11 @@ function render(moveFocus = false) {
       );
       dialog
         .querySelector("#water-form")
-        ?.addEventListener("submit", (event) => {
+        ?.addEventListener("submit", async (event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget as HTMLFormElement);
           if (
-            water.save(
+            await water.saveConnected(
               userId,
               date,
               Number(form.get("water-amount")),
@@ -182,15 +180,7 @@ function render(moveFocus = false) {
         });
     }),
   );
-  document
-    .querySelectorAll<HTMLElement>("[data-social]")
-    .forEach((el) =>
-      el.addEventListener("click", () =>
-        modal(
-          `<h2>${escape(el.dataset.social)}</h2><p>Gerçek arkadaş, grup ve challenge işlemleri için hesap ve sunucu bağlantısı gerekiyor. Bu bağlantı henüz kurulmadı.</p><p class="muted">Kayıtların yalnızca bu cihazda; paylaşım kapalı.</p>`,
-        ),
-      ),
-    );
+  socialController.bind(modal);
   document.querySelectorAll<HTMLElement>("[data-period]").forEach((el) =>
     el.addEventListener("click", () => {
       period = el.dataset.period as typeof period;
@@ -247,8 +237,13 @@ document.querySelector(".skip-link")?.addEventListener("click", (event) => {
     main.focus();
   }
 });
-render();
-void tracker.load();
+if (
+  !/(access_token|error_description|code)=/.test(
+    location.hash + location.search,
+  )
+)
+  render();
+void socialController.init();
 setInterval(() => tracker.checkMidnight(), 30000);
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) tracker.checkMidnight();

@@ -1,0 +1,20 @@
+{
+  "preview": "https://deploy-preview-4--extraordinary-rolypoly-370c36.netlify.app/#/sosyal",
+  "sourceCommit": "dc18b07e092195ec9e8212f3fcadd43c50bf9be3",
+  "project": "cjlqnhegtdnkdoayeeks",
+  "expectedAsset": "index-2P2WLYkR.js",
+  "matchesLatestLocalBuild": true,
+  "includesProjectUrl": true,
+  "includesPublishableKey": true,
+  "liveUiBuildCommit": "e3731e85aa74b17ca998a7eb3c638eb4678a0e9c",
+  "liveApiSourceCommit": "dc18b07e092195ec9e8212f3fcadd43c50bf9be3",
+  "emailDelivery": false,
+  "productionMerged": false,
+  "githubActions": {
+    "run": 38166822493,
+    "buildTests": "success",
+    "chromiumBrowserCheck": "success"
+  },
+  "browserPreviewCheck": "Cloud Chrome: connected social login form visible; no login or email delivery tested",
+  "screenshot": "social-preview.jpg"
+}

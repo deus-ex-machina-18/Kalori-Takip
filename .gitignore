@@ -7,3 +7,4 @@ coverage/
 artifacts/
 browser-results/
 video-inputs/
+supabase/.temp/

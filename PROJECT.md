@@ -81,6 +81,10 @@ Kare medya kırpılmaz; MP4 sessiz Baseline/fast-start; reaksiyonlar gerektiğin
 - Referanstaki örnek sayılar, isimler ve grup üyeleri gerçek kullanıcı verisi gibi gösterilmez.
 - Bu kararlar önceki görsel/3D yön açıklamalarının yerini alır; tarihsel teknik kayıtlar geçmiş çalışmaların açıklamasıdır.
 
+## 11 Ekim 2026 — sosyal sistem
+
+Kullanıcı arkadaşlar ve davetli özel gruplar yönünü onayladı. Gerçek sistem için Supabase Auth + özel PostgreSQL şeması seçildi. Kalori sunucusu diğer uygulamalardan ayrı olacak; organizasyon kullanıcı tarafından seçildi. Ayrı canlı proje cjlqnhegtdnkdoayeeks kullanıcı tarafından sağlandı; şema, indeksler ve PT409 çakışma migration'ı kuruldu; 7 canlı DOM ve 9 canlı API/kayıt senaryosu geçti. Önizleme bağlı build ile çalışır; üretim main değişmedi. Auth yönlendirmeleri/e-posta ve frontend yayın kabulü CURRENT_TASK.md üzerinden izlenir. Davet, paylaşım, rol ve challenge kurallarının tek tanımı `docs/SOCIAL_SYSTEM.md`; sunucu uygulaması `supabase/migrations/20261010222524_social_foundation.sql`. Tipler `src/social/types.ts`; istemci hesap yetkisi üretmez. Misafir yerel takip korunur; bulut kayıtları ayrı adaptörde, aktarım açık onaylıdır. Güncel durum CURRENT_TASK.md; canlı sistem olduğu yalnız gerçek hesap/hosting kabulünden sonra söylenebilir.
+
 ## 11 Ekim 2026 — dört Zilli etkileşimi
 
 Kullanıcının gönderdiği dokunma, kuyrukla oyun, esneme ve oturarak uyuklama klipleri mevcut beşliye eklenir. Mevcut idle ve dört kalori videosu değiştirilmez. Kullanıcının “onları bağla” talimatı bu hareketlerin şimdi eklenmesini yetkilendirir; önceki “telefon kabulünden sonra” planı bu dört klip için güncellendi. Gerçek Android kabulü ayrıca açıktır.

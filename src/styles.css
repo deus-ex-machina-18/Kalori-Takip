@@ -7,6 +7,7 @@
   --sage: #e8ead9;
   --sage-dark: #174938;
   --amber: #ac6b26;
+  --error: #8d3224;
   --radius: 0;
   --serif: Georgia, "Times New Roman", serif;
   --font: "Arial", system-ui, sans-serif;
@@ -1309,4 +1310,104 @@ html[data-reduced-motion="true"] *:before {
   .navigation {
     box-shadow: 0 -8px 30px #44331a18;
   }
+}
+/* Social flows reuse the same card, gold frame, field and green button tokens. */
+.social-person {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.social-person:last-child {
+  border-bottom: 0;
+}
+.social-person > .art {
+  width: 48px;
+  height: 48px;
+  flex: none;
+}
+.social-person-body {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 5px;
+}
+.social-person small {
+  color: var(--muted);
+}
+.social-person .actions {
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.social-person .button {
+  min-height: 44px;
+  width: auto;
+  font-size: 0.83rem;
+  padding: 8px 12px;
+}
+.social-person .tag {
+  width: fit-content;
+  max-width: 100%;
+}
+.auth-card > .art {
+  display: block;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 12px;
+}
+.auth-card details {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.auth-card summary {
+  cursor: pointer;
+  min-height: 44px;
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+.social-form-error {
+  color: var(--error);
+  overflow-wrap: anywhere;
+}
+.check-line {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  min-height: 44px;
+}
+.check-line input {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.invite-code {
+  overflow-wrap: anywhere;
+  font-family: monospace;
+  font-size: 0.82rem;
+}
+.social-notification {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.social-notification small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.social-notification.unread {
+  font-weight: 600;
+}
+.challenge-link > span {
+  flex: 1;
+  min-width: 0;
+}
+#app-dialog {
+  max-height: 85dvh;
+  overflow: auto;
+}
+#app-dialog .actions {
+  flex-wrap: wrap;
 }

@@ -2,6 +2,7 @@ import { art, progressBar } from "./design.ts";
 import { icon } from "../icons.ts";
 import { catResult } from "./cat-result.ts";
 import { IndexedDbRepository } from "../data/indexeddb.ts";
+import type { TrackingRepository } from "../data/cloud.ts";
 import type { SetupWrite } from "../data/indexeddb.ts";
 import {
   ACTIVITY_KINDS,
@@ -73,7 +74,34 @@ const field = (
   `<label class="field" for="${name}"><span>${label}</span><input id="${name}" name="${name}" type="${type}" value="${escape(value)}" ${attrs} required></label>`;
 
 export class Tracker {
-  readonly repository = new IndexedDbRepository();
+  repository: TrackingRepository = new IndexedDbRepository();
+  accountUserId: string | null = null;
+  useRepository(
+    repository: TrackingRepository,
+    accountUserId: string | null = null,
+  ): void {
+    ++this.refreshEpoch;
+    this.repository = repository;
+    this.accountUserId = accountUserId;
+    this.profile = null;
+    this.plans = [];
+    this.days = [];
+    this.activities = [];
+    this.weights = [];
+    this.catPreferences = null;
+    this.completedCatDay = null;
+    this.ready = false;
+    this.retry = null;
+    this.preview = null;
+    this.draft = null;
+    this.planDraft = null;
+    this.selectedDate = null;
+    this.editingActivity = null;
+    this.deletingActivity = null;
+    this.editingProfile = false;
+    this.notice = "";
+    this.error = "";
+  }
   profile: Profile | null = null;
   plans: PlanVersion[] = [];
   days: DayLog[] = [];
@@ -228,7 +256,7 @@ export class Tracker {
             expectedCatPreferences,
           }),
         () => {},
-        "Kedi ayarların bu cihazda kaydedildi.",
+        "Kedi ayarların kaydedildi.",
       );
     } catch (e) {
       this.error = (e as Error).message;
@@ -402,7 +430,7 @@ export class Tracker {
       )[0];
     const selected = (value: unknown, desired: unknown) =>
       value === desired ? "selected" : "";
-    return `<section class="card"><h2>${p ? "Profil ve plan düzenlemesi" : "Seni tanıyalım"}</h2><p class="hint">Bu cihazda tek profil tutulur. Bilgilerini başka cihaza aktarma veya hesapla giriş henüz yok.</p><form id="profile-form" class="tracking-form"><div class="form-grid">${field("birth-date", "Doğum tarihi", "date", p?.birthDate ?? "", `min="1900-01-01" max="${this.today()}"`)}${field("height-cm", "Boy (cm)", "number", p?.heightCm ?? "", 'min="100" max="250" step="any" inputmode="decimal"')}${field("profile-weight", "Güncel kilo (kg)", "number", p?.weightKg ?? "", 'min="20" max="400" step="any" inputmode="decimal"')}<label class="field" for="formula-sex"><span>Hesap formülü için cinsiyet</span><select id="formula-sex" name="formula-sex" required><option value="">Seç</option><option value="male" ${selected(p?.formulaSex, "male")}>Erkek formülü</option><option value="female" ${selected(p?.formulaSex, "female")}>Kadın formülü</option><option value="not-provided" ${selected(p?.formulaSex, "not-provided")}>Vermek istemiyorum</option></select></label><label class="field" for="pal"><span>Günlük hareket (olağan egzersiz dahil)</span><select id="pal" name="pal" required><option value="">Seç</option>${PAL_OPTIONS.map(({ pal: v, label: l }) => `<option value="${v}" ${selected(p?.baseline.pal, v)}>${l}</option>`).join("")}</select></label>${field("time-zone", "Saat dilimi", "text", p?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 'autocomplete="off"')}<label class="field" for="goal"><span>Hedefin</span><select id="goal" name="goal" required><option value="maintain" ${selected(this.draft?.goal ?? latest?.goal ?? "maintain", "maintain")}>Kilomu korumak</option><option value="lose" ${selected(this.draft?.goal ?? latest?.goal, "lose")}>Kilo vermek</option></select></label><label class="field" for="target-weight"><span>Hedef kilo (yalnız kilo verme)</span><input id="target-weight" name="target-weight" type="number" value="${escape(this.draft?.target ?? latest?.targetWeightKg ?? "")}" min="20" max="400" step="any" inputmode="decimal"></label></div>${this.planFields(latest)}<fieldset class="eligibility"><legend>Otomatik plan uygunluğu</legend><p>Gebelik/emzirme, yeme bozukluğu öyküsü veya riski, özel tıbbi beslenme ihtiyacı, ilgili tedavi ya da metabolizmayı etkileyen bir durum var mı?</p><label><input type="radio" name="eligibility" value="eligible" ${this.draft?.profile.automaticPlanEligibility === "eligible" ? "checked" : ""} required> Hayır</label><label><input type="radio" name="eligibility" value="out-of-scope" ${this.draft?.profile.automaticPlanEligibility === "out-of-scope" ? "checked" : ""} required> Evet / emin değilim</label><p class="hint">Ayrıntılı sağlık bilgisi saklanmaz. Otomatik plan 19–59 yaşla sınırlıdır; diğer durumlarda plansız kayıt açıktır.</p></fieldset><button type="submit" class="button primary">Önizlemeyi göster</button>${p ? button("close-profile", "Düzenlemeyi kapat", true) : ""}</form></section>`;
+    return `<section class="card"><h2>${p ? "Profil ve plan düzenlemesi" : "Seni tanıyalım"}</h2><p class="hint">${this.repository.scope === "authenticated-cloud" ? "Bu profil hesabında saklanır; aynı hesapla diğer cihazlarından erişebilirsin." : "Bu cihazda tek profil tutulur. Sosyal bölümünden hesap açıp kayıtlarını aktarabilirsin."}</p><form id="profile-form" class="tracking-form"><div class="form-grid">${field("birth-date", "Doğum tarihi", "date", p?.birthDate ?? "", `min="1900-01-01" max="${this.today()}"`)}${field("height-cm", "Boy (cm)", "number", p?.heightCm ?? "", 'min="100" max="250" step="any" inputmode="decimal"')}${field("profile-weight", "Güncel kilo (kg)", "number", p?.weightKg ?? "", 'min="20" max="400" step="any" inputmode="decimal"')}<label class="field" for="formula-sex"><span>Hesap formülü için cinsiyet</span><select id="formula-sex" name="formula-sex" required><option value="">Seç</option><option value="male" ${selected(p?.formulaSex, "male")}>Erkek formülü</option><option value="female" ${selected(p?.formulaSex, "female")}>Kadın formülü</option><option value="not-provided" ${selected(p?.formulaSex, "not-provided")}>Vermek istemiyorum</option></select></label><label class="field" for="pal"><span>Günlük hareket (olağan egzersiz dahil)</span><select id="pal" name="pal" required><option value="">Seç</option>${PAL_OPTIONS.map(({ pal: v, label: l }) => `<option value="${v}" ${selected(p?.baseline.pal, v)}>${l}</option>`).join("")}</select></label>${field("time-zone", "Saat dilimi", "text", p?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 'autocomplete="off"')}<label class="field" for="goal"><span>Hedefin</span><select id="goal" name="goal" required><option value="maintain" ${selected(this.draft?.goal ?? latest?.goal ?? "maintain", "maintain")}>Kilomu korumak</option><option value="lose" ${selected(this.draft?.goal ?? latest?.goal, "lose")}>Kilo vermek</option></select></label><label class="field" for="target-weight"><span>Hedef kilo (yalnız kilo verme)</span><input id="target-weight" name="target-weight" type="number" value="${escape(this.draft?.target ?? latest?.targetWeightKg ?? "")}" min="20" max="400" step="any" inputmode="decimal"></label></div>${this.planFields(latest)}<fieldset class="eligibility"><legend>Otomatik plan uygunluğu</legend><p>Gebelik/emzirme, yeme bozukluğu öyküsü veya riski, özel tıbbi beslenme ihtiyacı, ilgili tedavi ya da metabolizmayı etkileyen bir durum var mı?</p><label><input type="radio" name="eligibility" value="eligible" ${this.draft?.profile.automaticPlanEligibility === "eligible" ? "checked" : ""} required> Hayır</label><label><input type="radio" name="eligibility" value="out-of-scope" ${this.draft?.profile.automaticPlanEligibility === "out-of-scope" ? "checked" : ""} required> Evet / emin değilim</label><p class="hint">Ayrıntılı sağlık bilgisi saklanmaz. Otomatik plan 19–59 yaşla sınırlıdır; diğer durumlarda plansız kayıt açıktır.</p></fieldset><button type="submit" class="button primary">Önizlemeyi göster</button>${p ? button("close-profile", "Düzenlemeyi kapat", true) : ""}</form></section>`;
   }
   progress(period: "7" | "30" | "all" = "7"): string {
     const weights = representativeWeights(this.weights),
@@ -994,7 +1022,7 @@ export class Tracker {
         ),
       ).toISOString() as Profile["updatedAt"];
       const p: Profile = {
-        userId: this.profile?.userId ?? uuid(),
+        userId: this.profile?.userId ?? this.accountUserId ?? uuid(),
         birthDate: parseLocalDate(String(data.get("birth-date"))),
         heightCm: Number(data.get("height-cm")),
         weightKg: Number(data.get("profile-weight")),
@@ -1041,13 +1069,11 @@ export class Tracker {
               data.getAll("movement-day").map(Number),
               data.getAll("preferred-kind") as ActivityKind[],
             )
-          : data
-              .getAll("movement-day")
-              .map((day) => ({
-                weekday: Number(day) as 1 | 2 | 3 | 4 | 5 | 6 | 7,
-                kind: data.get(`movement-kind-${day}`) as ActivityKind,
-                minutes: Number(data.get(`movement-minutes-${day}`)),
-              }));
+          : data.getAll("movement-day").map((day) => ({
+              weekday: Number(day) as 1 | 2 | 3 | 4 | 5 | 6 | 7,
+              kind: data.get(`movement-kind-${day}`) as ActivityKind,
+              minutes: Number(data.get(`movement-minutes-${day}`)),
+            }));
       const customRange = data.get("custom-range")
         ? {
             min: Number(data.get("range-min")),

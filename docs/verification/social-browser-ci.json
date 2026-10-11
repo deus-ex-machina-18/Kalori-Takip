@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "dc18b07e092195ec9e8212f3fcadd43c50bf9be3",
+  "run": 38166822493,
+  "buildTests": "success",
+  "chromiumBrowserCheck": "success",
+  "previousLayoutArtifact": {
+    "commit": "e3731e85aa74b17ca998a7eb3c638eb4678a0e9c",
+    "run": 38124718729,
+    "artifactId": 11696059836,
+    "crcVerified": true,
+    "widths": [
+      320,
+      360,
+      390,
+      768,
+      1280
+    ],
+    "layout": "six screens: no overflow and controls reachable",
+    "errors": []
+  },
+  "limits": [
+    "CI runs without live Supabase build configuration; multiuser live proof is separate",
+    "Real Android and original-reference pixel acceptance remain open"
+  ]
+}
