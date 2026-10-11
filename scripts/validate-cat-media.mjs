@@ -3,7 +3,8 @@ import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 const base = new URL('../public/cat-media/',import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('asset-manifest.json',base),'utf8'));
-assert.deepEqual(Object.keys(manifest.clips),['idle','target-met','above-target','above-maintenance','below-target']);
+const actions = await import('../src/ui/cat-actions.ts');
+assert.deepEqual(Object.keys(manifest.clips),['idle','target-met','above-target','above-maintenance','below-target',...actions.CAT_ACTIONS.map(action=>action.clip)]);
 let total = 0;
 for (const item of [...Object.values(manifest.clips),manifest.poster]) {
   const file = new URL(item.file,base), bytes = await readFile(file);
@@ -20,4 +21,5 @@ for (const item of [...Object.values(manifest.clips),manifest.poster]) {
   }
 }
 assert.equal(total,manifest.totalBytes);assert.ok(manifest.initialBytes<5*1024*1024);
-console.log(`Five verified MP4s + poster: ${total} bytes, initial ${manifest.initialBytes}, fast-start Baseline.`);
+assert.equal(manifest.initialBytes,manifest.clips.idle.bytes+manifest.poster.bytes);
+console.log(`${Object.keys(manifest.clips).length} verified MP4s + poster: ${total} bytes, initial ${manifest.initialBytes}, fast-start Baseline.`);
