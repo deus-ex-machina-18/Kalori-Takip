@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "method": "existing AI-generated clips, re-encoded with a 0.25s dissolve to the canonical idle first frame",
   "source": "User-provided idle and three Wan clips; previously generated free Wan target-met clip. No stock or paid assets added.",
   "knownVisualIssues": [
@@ -81,6 +81,66 @@
       "silent": true,
       "sourceSha256": "97415bea0b50f2b35c94a8a3067976101b5499c27e180a2dae50de363a3bda1e",
       "sourceBytes": 289687
+    },
+    "touch": {
+      "file": "touch.mp4",
+      "bytes": 286197,
+      "sha256": "e0f0fe54ab1ba4ab57c1a5d9641d1e31f5e58ab8b6d221b562eefb4a14c0f707",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "30d00561aa02b58ad0b614642044096e10ec9895accc2be4a2e94cd54f70e219",
+      "sourceBytes": 299123
+    },
+    "play": {
+      "file": "play.mp4",
+      "bytes": 348567,
+      "sha256": "3a63d283ad9dca59174590d18dd16fd811bf66899b1e628d6b2eb9faff903c6d",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "62289447634ddd5ff109823bfb1544c184376c7edcc2a268cce02c2c54a8982a",
+      "sourceBytes": 336347
+    },
+    "stretch": {
+      "file": "stretch.mp4",
+      "bytes": 373086,
+      "sha256": "3273b12394822eef9ac03a070962e9a748e99fbc23ddd2b5c462f86c7b5ab31b",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "0fb3960acf90f5d9d492c4ca5db6172cd838b181746cd56b53780e7674a36388",
+      "sourceBytes": 353450
+    },
+    "sleep": {
+      "file": "sleep.mp4",
+      "bytes": 315550,
+      "sha256": "d635f5a239e03f8c37948e7ba0b22563e1d6891bae0f618921def04a3be6317f",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "d83eb88cf134edbc1e94cb1c2246af1882dbf968d79120b792345eba1a7465a0",
+      "sourceBytes": 332429
     }
   },
   "poster": {
@@ -90,6 +150,12 @@
     "bytes": 37542,
     "sha256": "97aa5025c9405decfa8d2c2331aa1a674c8b40a0a36eafa14fca87572e994675"
   },
-  "totalBytes": 1539538,
-  "initialBytes": 312844
+  "totalBytes": 2862938,
+  "initialBytes": 312844,
+  "interactionSource": "Four user-provided free Wan clips: touch, tail play, stretch, seated doze. No new generation.",
+  "knownInteractionVisualIssues": [
+    "Play ends with a different tail position; the final dissolve restores the canonical idle frame.",
+    "Stretch moves forward before sitting; the final dissolve restores the canonical idle frame.",
+    "Sleep ears fold more than the prompt requested."
+  ]
 }

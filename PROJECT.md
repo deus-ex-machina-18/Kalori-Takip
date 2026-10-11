@@ -80,3 +80,11 @@ Kare medya kırpılmaz; MP4 sessiz Baseline/fast-start; reaksiyonlar gerektiğin
 - Su kaydı `kalori-water-v1:<userId>` altında yerel gün bazında; kalori IndexedDB şeması değişmez. Sosyal paylaşım, kimlik ve yetkili sunucu kurulmadan aktif görünmez.
 - Referanstaki örnek sayılar, isimler ve grup üyeleri gerçek kullanıcı verisi gibi gösterilmez.
 - Bu kararlar önceki görsel/3D yön açıklamalarının yerini alır; tarihsel teknik kayıtlar geçmiş çalışmaların açıklamasıdır.
+
+## 11 Ekim 2026 — dört Zilli etkileşimi
+
+Kullanıcının gönderdiği dokunma, kuyrukla oyun, esneme ve oturarak uyuklama klipleri mevcut beşliye eklenir. Mevcut idle ve dört kalori videosu değiştirilmez. Kullanıcının “onları bağla” talimatı bu hareketlerin şimdi eklenmesini yetkilendirir; önceki “telefon kabulünden sonra” planı bu dört klip için güncellendi. Gerçek Android kabulü ayrıca açıktır.
+
+Dokunma kare kedi alanındaki gerçek düğmeden, diğer üç hareket kart altındaki altın çerçeveli kontrollerden tetiklenir. Hareketler otomatik döngü veya veri kaydı üretmez. Mevcut kalori tepkisi oynarken etkileşimler bekler; kayıtlı sonuç etiketi korunur. Sonunda idle oynar, tekrar dokunmalar sıraya alınmaz. Kontrol listesi tek kaynak `src/ui/cat-actions.ts`; medya bilgisi mevcut manifesttedir.
+
+Statik/hareket azaltma ve medya hatasında kontroller devre dışıdır; yeni MP4'ler yalnız kullanıcı seçince yüklenir. Gizli sahne/sekme durur, navigasyonla oynatıcı kaldırılır. İki video elemanı sınırı ve kare contain korunur. Yeni dört klibin son 0,25 saniyesi ortak idle ilk karesine çözünür; oyundaki kuyruk ve esnemedeki konum farkı üretim kusuru olarak manifestte kayıtlıdır.

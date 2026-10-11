@@ -1,3 +1,11 @@
+# 11 Ekim 2026 — dört Zilli hareketi
+
+Güncel kapsam/kabul `CURRENT_TASK.md` içinde. `zilli-four-actions`, `main` commit `3e8766b` tabanlıdır. Kullanıcı yeni dört klibi bağlama talimatı verdi. Kedi alanı sevme düğmesi; altın çerçeveli Oyun/Esneme/Uyuklama kontrolleri. Mevcut beş video değişmedi. Yeni dört kaynak: `tmp5db31o32` touch, `tmp74yqbwr6` play, `tmp9byihacv` stretch, `tmpjd43eswb` sleep. Orijinaller git dışındadır; hash/provenance aktif manifestte.
+
+61 test/build/medya ve tam FFmpeg decode başarılı; tarayıcı ve canlı yayın doğrulaması yürütülüyor. Dokuz medya toplam 2.862.938 bayt, ilk yük aynı 312.844 bayt. Yeni klipler tıklamada yüklenir; bitince idle. Yeni üretim/ücretli servis yok. Kalori/depo/su/Sosyal değiştirilmedi. Eski devirler aşağıda tarihsel olarak korunuyor.
+
+---
+
 # 11 Ekim 2026 — arayüz teslim durumu
 
 Güncel görev ve kabul sınırları `CURRENT_TASK.md` içindedir. Onaylı görsel dil altı ekrana uygulandı; domain/depo mantığı korunuyor, su takibi ve açıkça etiketlenmiş Sosyal önizleme eklendi. 61 test, build ve medya doğrulaması geçti. Piksel eşleşmesi ve tarayıcı kabulü tamamlanmadı. Kullanıcının 11 Ekim 2026 tarihli açık onayıyla `reference-ui` dalı ve taslak PR #2 GitHub'a gönderildi. Uygulama commit'i `1d0395fa1907c4da3f292a017ddcf1a424fa01a1`; test edilen kaynak ağacı `6305dc5bf94031724e438bef8edfb5ac6f79cea3` ile aynı. Main ve PR #1 değişmedi.

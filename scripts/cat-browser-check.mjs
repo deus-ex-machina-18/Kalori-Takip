@@ -17,6 +17,7 @@ export async function checkCatMedia(page, checks) {
   await page.locator('nav a[href="#/bugun"]').click(); await page.locator('.cat-card[data-scene-status="static"]').waitFor();
   assert.equal(await page.locator('#cat-heading').textContent(),'Duman');
   assert.equal(await page.locator('.cat-card video').count(),0); assert.equal(requests.some(url=>url.endsWith('.mp4')),false);
+  assert.equal(await page.locator('[data-cat-action]:enabled').count(),0);
   await page.screenshot({path:'browser-results/r4-video-mobile-390.png',fullPage:true});
 
   // Isolated browser fixture, not a production threshold: same example as the acceptance table.
@@ -33,18 +34,79 @@ export async function checkCatMedia(page, checks) {
   requests.length=0;
   await page.locator('nav a[href="#/bugun"]').click(); await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
   await page.waitForFunction(()=>document.querySelector('.cat-video')?.currentTime>0);
-  assert.equal(requests.filter(url=>/\/(target-met|above-target|above-maintenance|below-target)\.mp4/.test(url)).length,0);
+  assert.equal(requests.filter(url=>/\/(target-met|above-target|above-maintenance|below-target|touch|play|stretch|sleep)\.mp4/.test(url)).length,0);
   assert.equal(await page.locator('.cat-card canvas').count(),0);
-  assert.equal(await page.locator('[data-cat-action]').count(),0);
+  assert.equal(await page.locator('[data-cat-action]').count(),4);
+  await page.locator('.cat-card[data-action-state="ready"]').waitFor();
+  const dataSnapshot = () => page.evaluate(()=>new Promise((resolve,reject)=>{
+    const open=indexedDB.open('kedi-kalori-v1',1);open.onerror=()=>reject(open.error);
+    open.onsuccess=()=>{const db=open.result,names=[...db.objectStoreNames],tx=db.transaction(names,'readonly'),data={};
+      for(const name of names){const request=tx.objectStore(name).getAll();request.onsuccess=()=>{data[name]=request.result;};}
+      tx.oncomplete=()=>{db.close();resolve(JSON.stringify(data));};tx.onabort=()=>reject(tx.error);
+    };
+  }));
+  const beforeActions=await dataSnapshot();
+  const initialMessage=await page.locator('.cat-message').textContent();
+  const actionMetrics=[];
+  for(const action of ['touch','play','stretch','sleep']) {
+    requests.length=0;
+    await page.locator(`[data-cat-action="${action}"]`).click();
+    await page.waitForFunction(clip=>document.querySelector('.cat-card')?.dataset.clip===clip,action);
+    assert.equal(await page.locator('[data-cat-action]:enabled').count(),0,'no interruption or queued taps');
+    await page.locator('[data-cat-action="touch"]').evaluate(button=>button.click());
+    await page.waitForFunction(()=>{const v=document.querySelectorAll('.cat-video')[1];return v?.currentTime>.5&&!v.paused;});
+    const metric=await page.locator('.cat-video').nth(1).evaluate(v=>({currentTime:v.currentTime,videoWidth:v.videoWidth,videoHeight:v.videoHeight}));
+    assert.equal(metric.videoWidth,640);assert.equal(metric.videoHeight,640);
+    await page.screenshot({path:`browser-results/zilli-action-${action}-390.png`,fullPage:true});
+    await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.actionState==='ready');
+    assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
+    await page.waitForFunction(()=>{const v=document.querySelector('.cat-video');return v?.currentTime>.2&&!v.paused;});
+    assert.equal(await page.locator('.cat-message').textContent(),initialMessage);
+    assert.equal(await page.locator('.cat-video').nth(1).getAttribute('src'),null);
+    const loadedActions=[...new Set(requests.filter(url=>/\/(touch|play|stretch|sleep)\.mp4/.test(url)))];
+    assert.equal(loadedActions.length,1,'one selected action only, allowing media range requests');
+    assert.ok(loadedActions[0].endsWith(`/${action}.mp4`));
+    actionMetrics.push({action,...metric});
+  }
+  assert.equal(await dataSnapshot(),beforeActions,'cat interactions do not write calorie/profile/plan data');
+  // Keyboard activation, navigation during a clip, and reload never replay an action.
+  await page.locator('[data-cat-action="touch"]').focus();await page.keyboard.press('Enter');
+  await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.clip==='touch');
+  await page.locator('nav a[href="#/kayitlar"]').click();requests.length=0;
+  await page.locator('nav a[href="#/bugun"]').click();await page.locator('.cat-card[data-action-state="ready"]').waitFor();
+  assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
+  assert.equal(requests.some(url=>/\/(touch|play|stretch|sleep)\.mp4/.test(url)),false);
+  await page.locator('[data-cat-action="play"]').click();
+  await page.reload();requests.length=0;await page.locator('.cat-card[data-action-state="ready"]').waitFor();
+  assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
+  assert.equal(requests.some(url=>/\/(touch|play|stretch|sleep)\.mp4/.test(url)),false);
+  // An interaction also pauses in a hidden document and resumes the same clip.
+  await page.locator('[data-cat-action="sleep"]').click();
+  await page.waitForFunction(()=>document.querySelectorAll('.cat-video')[1]?.currentTime>.3);
+  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
+  const hiddenActionTime=await page.locator('.cat-video').nth(1).evaluate(v=>v.currentTime);
+  await page.waitForTimeout(250);
+  assert.equal(await page.locator('.cat-video').nth(1).evaluate(v=>v.currentTime),hiddenActionTime);
+  await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
+  await page.locator('.cat-card[data-action-state="ready"]').waitFor();
+  // A missing new clip falls back safely; a page reload can recover.
+  await page.route('**/cat-media/stretch.mp4',route=>route.fulfill({status:404,body:'missing'}));
+  await page.locator('[data-cat-action="stretch"]').click();await page.locator('.cat-card[data-scene-status="static"]').waitFor();
+  assert.equal(await page.locator('[data-cat-action]:enabled').count(),0);
+  assert.equal(await page.locator('#calorie-form button').isEnabled(),true);
+  await page.unroute('**/cat-media/stretch.mp4');
+  await page.reload();await page.locator('.cat-card[data-action-state="ready"]').waitFor();
+  checks.push('Zilli interactions: four decoded clips, end returns to playing idle, lazy one-clip loads, no interrupt/queue, keyboard, no data writes, hidden pause/resume, no navigation/reload replay, missing clip fallback: pass');
   const ready = async()=>{await page.locator('main[aria-busy="false"]').waitFor();};
   const record = async kcal=>{await page.locator('.calorie-details').evaluate(el=>el.open=true);await page.locator('#kcal').fill(String(kcal));await page.locator('#calorie-form button').click();await ready();};
-  const finish = async()=>{await page.locator('[data-action="complete"]').click();await ready();};
+  const finish = async()=>{await page.locator('.complete-day').click();await ready();};
   await record(800); assert.equal(await page.locator('.cat-card').getAttribute('data-result'),'idle');
   const outcomes = [];
   for(const [kcal,clip] of [[1900,'below-target'],[2200,'target-met'],[2300,'target-met'],[2400,'target-met'],[2401,'above-target'],[2550,'above-target'],[2700,'above-maintenance'],[3000,'above-maintenance']]) {
     await record(kcal); await finish();
     assert.equal(await page.locator('.cat-card').getAttribute('data-result'),clip);
     assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),clip);
+    assert.equal(await page.locator('[data-cat-action]:enabled').count(),0,'calorie result has priority');
     await page.waitForFunction(()=>{const v=document.querySelectorAll('.cat-video')[1];return v?.currentTime>.5&&!v.paused;});
     const message=await page.locator('.cat-message').textContent();
     await page.screenshot({path:`browser-results/r4-reaction-${kcal}.png`,fullPage:true});
@@ -62,7 +124,7 @@ export async function checkCatMedia(page, checks) {
   // Failed completion cannot celebrate; retry of the saved operation triggers once.
   await record(2300);
   await page.evaluate(()=>{const original=IDBDatabase.prototype.transaction;let fail=true;IDBDatabase.prototype.transaction=function(stores,mode,...args){if(fail&&mode==='readwrite'&&[...stores].includes('days')){fail=false;throw new DOMException('quota','QuotaExceededError');}return original.call(this,stores,mode,...args);};});
-  await page.locator('[data-action="complete"]').click(); await page.locator('[data-action="retry"]').waitFor();
+  await page.locator('.complete-day').click(); await page.locator('[data-action="retry"]').waitFor();
   assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
   await page.locator('[data-action="retry"]').click();await ready();
   assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'target-met');
@@ -106,6 +168,7 @@ export async function checkCatMedia(page, checks) {
   assert.equal(await page.locator('#scene-mode').inputValue(),'static');assert.equal(await page.locator('#motion').isChecked(),true);
   requests.length=0;await page.locator('nav a[href="#/bugun"]').click();await record(1900);await finish();
   assert.equal(await page.locator('.cat-card').getAttribute('data-scene-status'),'static');assert.equal(requests.some(url=>url.endsWith('.mp4')),false);
-  await writeFile('browser-results/r4-video-metrics.json',JSON.stringify({outcomes,metrics,environment:'Chromium, desktop runner with mobile viewport; not physical Android',decodedFrameRgbaBytes:640*640*4,maximumMountedVideos:2},null,2));
+  assert.equal(await page.locator('[data-cat-action]:enabled').count(),0);
+  await writeFile('browser-results/r4-video-metrics.json',JSON.stringify({actionMetrics,outcomes,metrics,environment:'Chromium, desktop runner with mobile viewport; not physical Android',decodedFrameRgbaBytes:640*640*4,maximumMountedVideos:2},null,2));
   checks.push('R4 video: eight calorie/boundary cases, partial idle, successful completion/retry only, actual MP4 decode/end/idle, persistent label, no replay on reload/navigation, visibility pause, five widths contain, static/reduced no MP4, idle/reaction 404 and autoplay fallback preserve form: pass');
 }
