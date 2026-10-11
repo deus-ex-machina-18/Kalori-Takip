@@ -1,6 +1,6 @@
 # Sosyal sistem — davetli pilot
 
-11 Ekim 2026. Sosyal kodu hazır; kullanıcı tarafından sağlanan ayrı canlı Supabase projesi `cjlqnhegtdnkdoayeeks` üzerine şema ve dört FK indeksi kuruldu. Auth panel ayarları, e-posta ve yayın kabulü açık.
+11 Ekim 2026. Sosyal kodu hazır; kullanıcı tarafından sağlanan ayrı canlı Supabase projesi `cjlqnhegtdnkdoayeeks` üzerine şema, dört FK indeksi ve HTTP 409 çakışma düzeltmesi kuruldu. Auth panel ayarları, e-posta ve yayın kabulü açık.
 
 ## Kullanıcı akışları
 
@@ -37,11 +37,11 @@ Pilot limitleri: kişi başına 20 grup, grup başına 50 üye, grup başına 10
 
 Kullanıcı `kalori-takip` / `cjlqnhegtdnkdoayeeks` projesini sağladı. Mevcut seçilmiş organizasyon içinde ACTIVE_HEALTHY; başlangıçta tabloları ve Auth kullanıcıları boştu. Diğer uygulamalara erişilmedi.
 
-- `social_foundation` ve `social_foreign_key_indexes` SQL transaction'ları uygulandı. `apply_migration` iki denemede requestState hatası verdiği için yetkili SQL bağlantısı kullanıldı. Aynı yerel iki sürüm, resmi CLI'nin migration history biçimiyle applied olarak kaydedildi; statements boş dizi (repair eşdeğeri). SQL dosyaları kaynak depoda kalır.
+- `social_foundation` ve `social_foreign_key_indexes` SQL transaction'ları uygulandı. `apply_migration` iki denemede requestState hatası verdiği için yetkili SQL bağlantısı kullanıldı. Aynı yerel iki sürüm, resmi CLI'nin migration history biçimiyle applied olarak kaydedildi; her history kaydı tam SQL statements içerir. SQL dosyaları kaynak depoda kalır.
 - 13 uygulama tablosu RLS ile korunur; anon/authenticated tablo yetkileri kapalı; yalnız authenticated RPC erişir. Dört FK indeksi advisors bulgusuna göre eklendi. Kullanılmayan indeks INFO notları yeni ve boş veritabanında beklenir.
 - Security advisors, erişim/RLS ERROR veya WARN bulmadı. Özel şemada `RLS Enabled No Policy` INFO, bilinçli deny-all tasarımıdır; doğrudan tablo politikası eklenmez. Auth için `Leaked Password Protection Disabled` WARN bulundu: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection . Panel erişimi olmadan bu ayar değişmedi.
-- `netlify.toml` build ortamı yalnız Project URL ve `sb_publishable_` anahtarını içerir. Anahtar frontend için tasarlanmış halka açık yapılandırmadır; secret/service_role veya yönetici anahtarı yoktur. Hosting yeniden build edilmeden bağlantı açılmaz.
-- Gerçek Auth/JWT kontrolleri üç ayrı `example.invalid` geçici hesaba karşı yürütülür. Bu hesaplar yalnız test fixture'ı olarak önceden doğrulanmış şekilde kurulmuştur; bu işlem kullanıcı kayıt e-postası teslimini doğrulamaz. Parolalar/tokenlar git dışında kalır. Test bittiğinde oturumlar ve bu hesaplara ait test verileri temizlenir.
+- `netlify.toml` build ortamı yalnız Project URL ve `sb_publishable_` anahtarını içerir. Anahtar frontend için tasarlanmış halka açık yapılandırmadır; secret/service_role veya yönetici anahtarı yoktur. PR #4 Netlify önizlemesi bağlı yapılandırma ile build edildi; son sunulan bundle bağlantılı yerel build ile aynı. Cloud Chrome'da hesap giriş formu görüldü; üretim main değişmedi.
+- Gerçek Auth/JWT kontrolleri üç ayrı `example.invalid` geçici hesaba karşı yürütülür. Bu hesaplar yalnız test fixture'ı olarak önceden doğrulanmış şekilde kurulmuştur; bu işlem kullanıcı kayıt e-postası teslimini doğrulamaz. Parolalar/tokenlar git dışında kalır. Test sonunda global signout tamamlandı. Scoped DELETE bağlantısı Invalid or expired requestState verdi: yalnız üç işaretli test hesabı banned_until=infinity ile yeni girişe kapatıldı; aktif refresh token sayısı 0. Test verileri halen durur, mevcut access JWT'ler normal sürelerinde sona erer. Gerçek hesaplara dokunulmadı.
 
 Açık: Supabase Auth Site URL/Redirect URL listesi ve SMTP/e-posta teslimi. Güvenli panel girişinde kullanıcı GitHub, ardından Google yöntemini seçti; Google sayfasına erişim otomatik onay denetimi tarafından reddedildi. Bu tarayıcı giriş akışı durduruldu; farklı yoldan Google oturumu açılmadı. Gerekçe: Google sağlayıcısına erişim için güvenilir açık kullanıcı onayı bulunmaması.
 
@@ -53,4 +53,18 @@ Sonraki tek altyapı işi: panel oturumunu yetkili şekilde tamamla; gerçek HTT
 
 `npm run check`: 39 mevcut domain/depo + 22 mevcut DOM + 16 yeni sosyal PostgreSQL/adaptör = 77 test, ayrıca 7 çok kullanıcılı DOM senaryosu; üretim build ve video bütünlüğü kontrolleri başarılı.
 
-PGlite gerçek PostgreSQL yürütür; Auth kullanıcıları ve HTTP giriş servisi test fikstürleridir. Bu, canlı Supabase Auth, e-posta teslimi, hosting, Android tarayıcı veya piksel eşleşmesi kabulü değildir. Canlı migration ve advisors tamamlandı; canlı testlerin son durumu CURRENT_TASK.md içindedir. Sunucu ayarı olmadan uygulama sosyal bağlantının eksik olduğunu açıkça gösterir ve mevcut yerel takip çalışır.
+PGlite gerçek PostgreSQL yürütür; Auth kullanıcıları ve HTTP giriş servisi test fikstürleridir. Bu, canlı Supabase Auth, e-posta teslimi, hosting, Android tarayıcı veya piksel eşleşmesi kabulü değildir. Canlı migration ve advisors tamamlandı. 7 gerçek Auth/JWT/PostgreSQL DOM senaryosu ve son kaynakla 9 canlı API/kayıt senaryosu başarılı. Son kaynak dc18b07 için GitHub Actions 38166822493 build/test/Chromium başarılı. CI canlı Supabase yapılandırması olmadan çalışır; CURRENT_TASK.md kabul sınırlarını kaydeder. Sunucu ayarı olmadan uygulama sosyal bağlantının eksik olduğunu açıkça gösterir ve mevcut yerel takip çalışır.
+
+## Canlı çakışma düzeltmesi ve kanıtlar
+
+PostgREST 14.18, beklenen kayıt/işlem kimliği çakışması için kullanılan SQLSTATE 40001 kodunu sürekli yeniden denedi. 20261011190752_social_conflict_http_status migration'ı iki beklenen çakışmayı PT409 / HTTP 409 yapar; eski applied migration korunur. CloudRepository PT409'u conflict olarak döndürür. Sunucu loglarından doğrulanan iki takılan test backend'i sonlandırıldı. Yerel regresyon doğru hata kodunu ve güncel kaydın korunmasını, canlı kabul eski cihaz yazısının reddini doğrular.
+
+Resmi açıklama: https://supabase.com/docs/guides/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions-77326b .
+
+- social-live-ui.json: gerçek Auth/JWT/PostgreSQL ile 7 JSDOM uygulama senaryosu; kaynak e3731e8. Gerçek tarayıcı/Android veya e-posta kabulü değildir.
+- social-live-api.json: son kaynak dc18b07 ve üretim CloudRepository ile 9 canlı senaryo; süreç exit 0.
+- social-browser-ci.json: son kaynak için başarılı CI; önceki indirilen/CRC doğrulanan Chromium kanıtında 5 genişlik ve altı ekranda taşma yok.
+- social-deployment.json ve social-preview.jpg: doğru public config, son build ile byte eşitliği ve Cloud Chrome'da bağlı giriş ekranı.
+- social-database.json: üç applied migration, erişim/advisors ve fixture temizliğinin gerçek sınırı.
+
+Kanıtlarda e-posta teslimi false; üretim birleştirmesi, gerçek iki cihaz/Android ve orijinal referanslara piksel eşleşmesi açık.

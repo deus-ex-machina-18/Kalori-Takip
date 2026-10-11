@@ -1,12 +1,16 @@
-# 11 Ekim 2026 — sosyal canlı bağlantı durumu
+# 11 Ekim 2026 — sosyal canlı bağlantı ve kabul tamamlandı
 
-Tek iş: sosyal PR #4'ün canlı kabulü. Ayrı Supabase projesi `cjlqnhegtdnkdoayeeks` kullanıcıdan alındı; 13 tablo, RPC, 4 FK indeksi ve iki applied migration kuruldu. Public frontend ayarı netlify.toml; gizli anahtar yok. En güncel main `3d56083` ile birleştirildi; dokuz Zilli MP4 ve dört etkileşimi aynı kaldı.
+Arkadaşlık, davetli grup, paylaşım, challenge ve bulut kayıtları kullanıcı projesi cjlqnhegtdnkdoayeeks üzerinde çalışır. 13 private tablo/RPC, 4 FK indeksi ve üç applied migration var. Public frontend ayarı netlify.toml; gizli anahtar yok. Main 3d56083'ün dokuz Zilli MP4 ve dört etkileşimi korunur.
 
-Yerel npm run check: 77 test + 7 sözleşme/DOM/PostgreSQL senaryosu, build ve 9 MP4 doğrulaması başarılı. Canlı testler yürütülüyor; final sonuç CURRENT_TASK.md'ye yazılacak. Test kimlikleri ve gerçek JWT değerleri git dışındadır.
+77 test + 7 yerel DOM/PostgreSQL senaryosu; 7 gerçek Auth/JWT/PostgreSQL DOM senaryosu; son kaynakla 9 canlı API/kayıt kontrolü başarılı. Son kaynak dc18b07; GitHub Actions 38166822493 build/test/Chromium başarılı. Önizleme bundle son bağlantılı yerel build ile aynı. Kanıtlar docs/verification/social-*.
 
-Panel/SMTP/yayın açık. Google giriş sayfasına otomatik ret geldi; aynı oturuma farklı yoldan erişme. Kullanıcı açıkça izin verirse güvenli giriş akışını yeniden başlat. SMTP olmadan ekip dışı arkadaşların e-posta kaydı çalışmış sayılmaz. E-posta doğrulamasını kapatma. Advisors'daki Auth leaked-password WARN ve bilinçli private RLS/no policy INFO notları docs/SOCIAL_SYSTEM.md'de açıklanır.
+Canlı çakışma testi 40001'in PostgREST 14.18 üzerinde sonsuz retry hatasını ortaya çıkardı. 20261011190752_social_conflict_http_status, PT409/HTTP409 kullanır; CloudRepository conflict sınıflandırır. İki logla eşleştirilen backend sonlandırıldı. Eski applied migration'ı değiştirme.
 
-Sonraki tek görev: test sonucunu kaydet ve PR #4'e gönder; kalan panel ve SMTP ayarı için gerekli kullanıcı girdisini al.
+Üç disposable test hesabı silme aracı Invalid or expired requestState verdiği için halen verileriyle durur. Yeni girişleri infinity ban ile kapalı; aktif refresh token sayısı 0. JWT'ler normal sürelerinde sona erer. Yalnız app_metadata kalori_test_run işaretli fixture'ları hedefle; gerçek hesap silme. Parola/JWT hiçbir kanıt dosyasında yok.
+
+Önizleme: https://deploy-preview-4--extraordinary-rolypoly-370c36.netlify.app/#/sosyal . PR #4 taslak ve birleştirilebilir; üretim main değişmedi. E-posta/gerçek Android kabulü tamamlanmadı.
+
+Sonraki tek görev: Google panel girişi için açık sağlayıcı onayını al. Otomatik ret geldi; farklı yoldan aşma. Site/Redirect URL + SMTP'yi ayarla; iki gerçek posta adresinde doğrulama/sıfırlama kabulünü yap, test fixture'larını sil ve PR/yayını tamamla. E-posta doğrulamasını kapatma; Auth leaked-password WARN'ı ve bilinçli private RLS/no-policy INFO'larını docs/SOCIAL_SYSTEM.md açıklar.
 
 ---
 

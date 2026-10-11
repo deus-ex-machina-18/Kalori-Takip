@@ -1,0 +1,43 @@
+{
+  "project": "cjlqnhegtdnkdoayeeks",
+  "migrations": [
+    "20261010222524",
+    "20261011074457",
+    "20261011190752"
+  ],
+  "migrationStatementsStored": true,
+  "expectedConflicts": "PT409 / HTTP 409; application 40001 removed",
+  "loopingTestBackendsTerminated": 2,
+  "accessVerification": {
+    "privateTables": 13,
+    "allRls": true,
+    "noDirectReads": true,
+    "anonRpcDenied": true,
+    "authenticatedRpc": true,
+    "conflictHttp409": true
+  },
+  "securityAdvisors": [
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    }
+  ],
+  "infoExplanation": "Private table RLS/no-policy and no direct table grants implement intentional deny-all.",
+  "fixtureCleanup": {
+    "permanentDeletion": "blocked by connector Invalid or expired requestState",
+    "remainingDisposableUsers": 3,
+    "newSignInDisabled": true,
+    "bannedUntil": "infinity",
+    "activeRefreshTokens": 0,
+    "data": "retained, limited to marked test accounts",
+    "accessJwtCaveat": "Existing access JWTs expire normally; refresh tokens are revoked."
+  },
+  "authEmailDeliveryVerified": false,
+  "conflictReference": "https://supabase.com/docs/guides/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions-77326b"
+}

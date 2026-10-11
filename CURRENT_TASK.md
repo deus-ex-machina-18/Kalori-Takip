@@ -2,16 +2,20 @@
 
 11 Ekim 2026 · sosyal PR #4: https://github.com/deus-ex-machina-18/Kalori-Takip/pull/4
 
-Tek çıktı: sağlanan ayrı Supabase projesini mevcut sosyal koduna bağlayıp gerçek sunucuda doğrulamak.
+Arkadaşlık, davetli özel gruplar, paylaşım izinleri, challenge ve bulut kayıtları ayrı Supabase projesi cjlqnhegtdnkdoayeeks üzerine bağlandı. Mevcut krem/yeşil/altın dil ve dört Zilli etkileşimi korunur.
 
-Proje: kalori-takip / cjlqnhegtdnkdoayeeks · seçilen mevcut organizasyon · ACTIVE_HEALTHY.
+Kurulum: 13 private tablo, authenticated RPC, 4 FK indeksi ve üç applied migration. RLS açık; doğrudan anon/authenticated tablo okuması kapalı. Migration geçmişinde tam SQL statements bulunur.
 
-Değişen bölüm: sosyal migration/indeksler, public frontend sunucu yapılandırması, canlı kabul betiği ve devir belgeleri. Mevcut görsel dil, kalori motoru ve IndexedDB v1 korunur. Main'e yeni eklenen dört Zilli etkileşimi sosyal dalıyla birleştirilir.
+Canlı kabul sırasında beklenen çakışmalar için kullanılan SQLSTATE 40001, PostgREST 14.18 üzerinde sonsuz yeniden denemeye yol açtı. social_conflict_http_status migration'ı bu iki hatayı PT409 / HTTP 409 yapar. CloudRepository conflict sonucunu doğru sınıflandırır. Loglardan eşleştirilen iki takılan test backend'i sonlandırıldı; eski migration değiştirilmedi.
 
-Kabul: gerçek Auth parolalı oturum/JWT ile arkadaşlık, davet, paylaşım, engelleme, bulut senkronizasyonu ve challenge; anonim/üçüncü kişi erişimi reddi; migration geçmişi; advisors; hosting build doğrulaması. E-posta teslimi ayrı gerçek posta kabulüdür.
+Doğrulama tamam: 77 test + 7 yerel DOM/PostgreSQL senaryosu, build ve 9 MP4 kontrolü. Gerçek Supabase Auth/JWT/PostgreSQL ile 7 sosyal DOM senaryosu; son kaynak koduyla 9 canlı API/kayıt kontrolü geçti. Son kaynak commit dc18b07; GitHub Actions 38166822493 build/test/Chromium başarılı. CI canlı Supabase yapılandırması olmadan çalışır; canlı kanıt ayrı rapordadır.
 
-Kuruldu: 13 kalori_private tablosu ve kontrol edilen RPC. Doğrudan anon/authenticated tablo erişimi yok. Veritabanı erişim kontrolünde ERROR/WARN yok; Auth leaked-password protection WARN açık; RLS/no policy bilgi notları bilinçli deny-all tasarımıdır. Dört FK indeksi eklendi. apply_migration iki kez requestState hatası verdi; aynı SQL transaction üzerinden execute_sql ile uygulandı.
+Önizleme: https://deploy-preview-4--extraordinary-rolypoly-370c36.netlify.app/#/sosyal . Doğru Project URL ve publishable key içerir; sunulan bundle son yerel bağlantılı build ile aynı. Cloud Chrome'da bağlı giriş formu görüldü. Kanıtlar docs/verification/social-*. PR taslak ve birleştirilebilir; üretim main değişmedi.
 
-Panel oturumu: kullanıcı güvenli girişte GitHub, ardından Google yöntemini seçti. Google sayfasına geçiş otomatik denetimde reddedildi; bu akış durduruldu. Auth Site URL/Redirect URL ve SMTP ayarı henüz değişmedi. Gizli/yönetici anahtarı kullanılmaz.
+Fixture temizliği: scoped DELETE aracı Invalid or expired requestState verdi. Yalnız üç işaretli geçici hesabın yeni girişi banned_until=infinity ile kapatıldı; aktif refresh token sayısı 0. Test verisi henüz silinmedi. Mevcut access JWT'ler normal sürelerinde sona erer. Gerçek hesaplara işlem yapılmadı.
 
-Canlı test/yayın sonucu tamamlanınca bu dosya güncellenir. Sonraki tek iş: doğrulamayı tamamla, panel girişi için gerekli açık onayı ve e-posta ayarını netleştir.
+Açık: Auth Site URL/Redirect URL, özel SMTP ve iki gerçek posta adresinde doğrulama/şifre sıfırlama kabulü. Test hesapları önceden doğrulanmıştı; e-posta teslimi başarılı sayılmaz. Auth leaked-password protection WARN açık; private RLS/no-policy INFO bilinçli deny-all tasarımıdır.
+
+Panel girişi GitHub'dan Google'a geçti; Google sayfasına erişim otomatik onay denetiminde, sağlayıcıya özel açık kullanıcı onayı olmadığı gerekçesiyle reddedildi. Bu giriş farklı yoldan aşılmadı.
+
+Sonraki tek iş: Google panel girişi için açık onayı al; Site/Redirect URL ve kullanıcının SMTP sağlayıcısını ayarla; gerçek posta kabulünü yap; işaretli test hesaplarını sil; sonra PR/yayını tamamla. Gerçek iki cihaz/Android ve orijinal görsellerle piksel kabulü açık.

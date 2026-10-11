@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "e3731e85aa74b17ca998a7eb3c638eb4678a0e9c",
+  "kind": "jsdom DOM + live Supabase Auth/JWT + live PostgreSQL",
+  "liveAuth": true,
+  "emailDelivery": false,
+  "checks": [
+    "login verifies account and displays cloud social profile",
+    "friend request and recipient acceptance work through UI + PostgreSQL",
+    "private group creation and invite redemption work without automatic health sharing",
+    "challenge creation and explicit participant consent work through UI",
+    "field-level sharing and turning it off revoke subsequent friend reads",
+    "blocking removes friend access and hides common-group identity",
+    "logout clears the previous account UI"
+  ]
+}
