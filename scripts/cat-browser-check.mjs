@@ -99,7 +99,7 @@ export async function checkCatMedia(page, checks) {
   checks.push('Zilli interactions: four decoded clips, end returns to playing idle, lazy one-clip loads, no interrupt/queue, keyboard, no data writes, hidden pause/resume, no navigation/reload replay, missing clip fallback: pass');
   const ready = async()=>{await page.locator('main[aria-busy="false"]').waitFor();};
   const record = async kcal=>{await page.locator('.calorie-details').evaluate(el=>el.open=true);await page.locator('#kcal').fill(String(kcal));await page.locator('#calorie-form button').click();await ready();};
-  const finish = async()=>{await page.locator('[data-action="complete"]').click();await ready();};
+  const finish = async()=>{await page.locator('.complete-day').click();await ready();};
   await record(800); assert.equal(await page.locator('.cat-card').getAttribute('data-result'),'idle');
   const outcomes = [];
   for(const [kcal,clip] of [[1900,'below-target'],[2200,'target-met'],[2300,'target-met'],[2400,'target-met'],[2401,'above-target'],[2550,'above-target'],[2700,'above-maintenance'],[3000,'above-maintenance']]) {
@@ -124,7 +124,7 @@ export async function checkCatMedia(page, checks) {
   // Failed completion cannot celebrate; retry of the saved operation triggers once.
   await record(2300);
   await page.evaluate(()=>{const original=IDBDatabase.prototype.transaction;let fail=true;IDBDatabase.prototype.transaction=function(stores,mode,...args){if(fail&&mode==='readwrite'&&[...stores].includes('days')){fail=false;throw new DOMException('quota','QuotaExceededError');}return original.call(this,stores,mode,...args);};});
-  await page.locator('[data-action="complete"]').click(); await page.locator('[data-action="retry"]').waitFor();
+  await page.locator('.complete-day').click(); await page.locator('[data-action="retry"]').waitFor();
   assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
   await page.locator('[data-action="retry"]').click();await ready();
   assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'target-met');
