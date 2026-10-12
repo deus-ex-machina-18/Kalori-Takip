@@ -1,5 +1,8 @@
 import type { CatClip } from './cat-result.ts';
 import { CAT_ACTIONS, type CatActionClip } from './cat-actions.ts';
+import { createCatMediaSelector } from './cat-media.ts';
+
+const selectMedia = createCatMediaSelector();
 
 export const catMediaUrl = (file: string): string => `${import.meta.env.BASE_URL}cat-media/${file}`;
 
@@ -71,7 +74,7 @@ export class VideoCatScene {
     this.host.dataset.sceneStatus = 'loading';
     this.updateControls();
     this.timer = setTimeout(() => this.fail(), 12000);
-    this.reaction.src = catMediaUrl(`${clip}.mp4`);
+    this.reaction.src = catMediaUrl(selectMedia(clip));
   }
   private updateControls(): void {
     const enabled = !this.disposed && this.active === this.idle && !this.transitioning && this.idle.readyState >= 2;
