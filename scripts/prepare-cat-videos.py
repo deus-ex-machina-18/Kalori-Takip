@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 import tempfile
 
@@ -32,8 +33,10 @@ def info(path):
 
 args = argparse.ArgumentParser()
 args.add_argument('--source-dir', required=True, type=pathlib.Path)
-args.add_argument('--clips', nargs='+', choices=NAMES, default=NAMES)
+args.add_argument('--clips', nargs='+', default=NAMES)
 options = args.parse_args()
+if any(not re.fullmatch(r'[a-z]+(?:-[a-z]+)*', name) for name in options.clips):
+    args.error('Clip names must contain only lowercase letters and hyphens.')
 source = options.source_dir
 OUT.mkdir(parents=True, exist_ok=True)
 manifest = {'version': 1, 'method': 'existing AI-generated clips, re-encoded with a 0.25s dissolve to the canonical idle first frame',
@@ -41,10 +44,10 @@ manifest = {'version': 1, 'method': 'existing AI-generated clips, re-encoded wit
             'knownVisualIssues': ['Below-target bowl appears and moves during the reaction; end dissolve only removes the final prop jump.',
                                   'Above-target side glance and head shake are weak.'],
             'clips': {}}
-if (OUT / 'asset-manifest.json').exists() and options.clips != NAMES:
+if (OUT / 'asset-manifest.json').exists():
     manifest = json.loads((OUT / 'asset-manifest.json').read_text())
 if any(name in options.clips for name in ['touch', 'play', 'stretch', 'sleep']):
-    manifest['version'] = 2
+    manifest['version'] = max(2, manifest['version'])
     manifest['interactionSource'] = 'Four user-provided free Wan clips: touch, tail play, stretch, seated doze. No new generation.'
     manifest['knownInteractionVisualIssues'] = [
         'Play ends with a different tail position; the final dissolve restores the canonical idle frame.',
@@ -74,7 +77,8 @@ with tempfile.TemporaryDirectory() as temp:
         entry['sourceSha256'] = hashlib.sha256(original.read_bytes()).hexdigest()
         entry['sourceBytes'] = original.stat().st_size
         manifest['clips'][name] = entry
-    manifest['clips'] = {name: manifest['clips'][name] for name in NAMES if name in manifest['clips']}
+    ordered = dict.fromkeys([*NAMES, *manifest['clips']])
+    manifest['clips'] = {name: manifest['clips'][name] for name in ordered if name in manifest['clips']}
     poster = OUT / 'poster.webp'
     manifest['poster'] = {'file': poster.name, 'width': 640, 'height': 640,
                           'bytes': poster.stat().st_size, 'sha256': hashlib.sha256(poster.read_bytes()).hexdigest()}

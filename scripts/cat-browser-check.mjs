@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
+import { CAT_REACTION_VARIANTS } from '../src/ui/cat-media.ts';
 
 export async function checkCatMedia(page, checks) {
   const requests = [];
@@ -110,6 +111,9 @@ export async function checkCatMedia(page, checks) {
     assert.equal(await page.locator('[data-cat-action]:enabled').count(),0,'calorie result has priority');
     await page.waitForFunction(()=>{const v=document.querySelectorAll('.cat-video')[1];return v?.currentTime>.5&&!v.paused;});
     const message=await page.locator('.cat-message').textContent();
+    const mediaFile = await page.locator('.cat-video').nth(1).evaluate(v => new URL(v.src).pathname.split('/').pop());
+    const allowed = CAT_REACTION_VARIANTS[clip] ?? [clip];
+    assert.ok(allowed.some(name => mediaFile === `${name}.mp4`), `${clip} loaded incorrect media: ${mediaFile}`);
     assert.equal(await page.locator('.cat-viewport').evaluate(el => getComputedStyle(el).opacity), '1', 'calorie reaction must not fade the video button');
     await page.screenshot({path:`browser-results/r4-reaction-${kcal}.png`,fullPage:true});
     await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.clip==='idle');
@@ -121,7 +125,17 @@ export async function checkCatMedia(page, checks) {
     await page.locator('nav a[href="#/kayitlar"]').click(); await page.locator('nav a[href="#/bugun"]').click();
     await page.locator('.cat-card[data-scene-status="ready"]').waitFor();
     assert.equal(await page.locator('.cat-card').getAttribute('data-clip'),'idle');
-    outcomes.push({kcal,clip,message});
+    outcomes.push({kcal,clip,mediaFile,message});
+  }
+  // Reloads above reset rotation; completing twice in one session reaches each alternate.
+  for (const [kcal,clip] of [[3000,'above-maintenance'],[1900,'below-target']]) {
+    for (const file of [`${clip}.mp4`,`${clip}-alt.mp4`]) {
+      await record(kcal); await finish();
+      await page.waitForFunction(()=>{const v=document.querySelectorAll('.cat-video')[1];return v?.currentTime>.5&&!v.paused;});
+      assert.equal(await page.locator('.cat-card').getAttribute('data-result'),clip);
+      assert.ok((await page.locator('.cat-video').nth(1).getAttribute('src')).endsWith(`/${file}`));
+      await page.waitForFunction(()=>document.querySelector('.cat-card')?.dataset.clip==='idle');
+    }
   }
   // Failed completion cannot celebrate; retry of the saved operation triggers once.
   await record(2300);

@@ -1,11 +1,8 @@
 {
-  "version": 2,
+  "version": 4,
   "method": "existing AI-generated clips, re-encoded with a 0.25s dissolve to the canonical idle first frame",
   "source": "User-provided idle and three Wan clips; previously generated free Wan target-met clip. No stock or paid assets added.",
-  "knownVisualIssues": [
-    "Below-target bowl appears and moves during the reaction; end dissolve only removes the final prop jump.",
-    "Above-target side glance and head shake are weak."
-  ],
+  "knownVisualIssues": [],
   "clips": {
     "idle": {
       "file": "idle.mp4",
@@ -24,23 +21,8 @@
     },
     "target-met": {
       "file": "target-met.mp4",
-      "bytes": 357422,
-      "sha256": "f3f01d1c4a00d675be92716757bd03dfb41388b3050399f850bd3ae2fea738bb",
-      "width": 640,
-      "height": 640,
-      "fps": "24/1",
-      "durationSeconds": 3.625,
-      "codec": "h264",
-      "profile": "Constrained Baseline",
-      "pixelFormat": "yuv420p",
-      "silent": true,
-      "sourceSha256": "63fc3d2d6805a7939db7d7f027987edf65cae5b14c73eb4aa8f0ec91b001d788",
-      "sourceBytes": 454934
-    },
-    "above-target": {
-      "file": "above-target.mp4",
-      "bytes": 253544,
-      "sha256": "4fbc509bedec93ad454b6b075a74233ca2217015c3f1bd73321803b938bebfbf",
+      "bytes": 295009,
+      "sha256": "e2bfb2222bf09477eca396424bca8db79ef036d2d460edd72707c5ab8a786907",
       "width": 640,
       "height": 640,
       "fps": "24/1",
@@ -49,8 +31,27 @@
       "profile": "Constrained Baseline",
       "pixelFormat": "yuv420p",
       "silent": true,
-      "sourceSha256": "51edceac79f3c9c2a455de5238109f44713c7e00bf665cbd4274c94fe6ee16bc",
-      "sourceBytes": 261405
+      "sourceSha256": "04e8c24cb2590437fafee0f26c3b9b4ad1d9e14b51fe2d3fd4b21a000b08e2dd",
+      "sourceBytes": 305725,
+      "sourceName": "tmpfyzysr6e (1).mp4",
+      "replacementDate": "2026-10-12"
+    },
+    "above-target": {
+      "file": "above-target.mp4",
+      "bytes": 254826,
+      "sha256": "cbef0cfde06e9312916703c03dfafe1596a6d1bd046c7fafeb2ebcc097f10920",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "e396d6153a8fd59cfccc2cb80d84e1e1bf1312927b35842c009f4c2fc7e8c26e",
+      "sourceBytes": 259523,
+      "sourceName": "07-hedef-asildi-alternatif.mp4",
+      "replacementDate": "2026-10-12"
     },
     "above-maintenance": {
       "file": "above-maintenance.mp4",
@@ -69,8 +70,8 @@
     },
     "below-target": {
       "file": "below-target.mp4",
-      "bytes": 304707,
-      "sha256": "cee16b2f7b71f0f4132993041409e61864431e469484d1482fbc88785f5c9017",
+      "bytes": 296332,
+      "sha256": "06ab52174d35a4507b659e70151ac3e1d749a1d4e6b803c91b869c380319fc5d",
       "width": 640,
       "height": 640,
       "fps": "24/1",
@@ -79,8 +80,10 @@
       "profile": "Constrained Baseline",
       "pixelFormat": "yuv420p",
       "silent": true,
-      "sourceSha256": "97415bea0b50f2b35c94a8a3067976101b5499c27e180a2dae50de363a3bda1e",
-      "sourceBytes": 289687
+      "sourceSha256": "88c79b394e8e8bc1e72d0ded80244cd22faeec95684ecdac6857c25d682a64f1",
+      "sourceBytes": 283585,
+      "sourceName": "06-planin-altinda-duzeltme.mp4",
+      "replacementDate": "2026-10-12"
     },
     "touch": {
       "file": "touch.mp4",
@@ -129,8 +132,8 @@
     },
     "sleep": {
       "file": "sleep.mp4",
-      "bytes": 315550,
-      "sha256": "d635f5a239e03f8c37948e7ba0b22563e1d6891bae0f618921def04a3be6317f",
+      "bytes": 286253,
+      "sha256": "92c7b5214b97573c837bc0576cc6dae81b8df0e680b3bb2ce5899e3dc5e38736",
       "width": 640,
       "height": 640,
       "fps": "24/1",
@@ -139,8 +142,44 @@
       "profile": "Constrained Baseline",
       "pixelFormat": "yuv420p",
       "silent": true,
-      "sourceSha256": "d83eb88cf134edbc1e94cb1c2246af1882dbf968d79120b792345eba1a7465a0",
-      "sourceBytes": 332429
+      "sourceSha256": "4cb21e343483167f45cde2f5caa00f91c1d4121e382ebe3ed29aed33f00cb30c",
+      "sourceBytes": 295601,
+      "sourceName": "tmp6hhgftdk (1).mp4",
+      "replacementDate": "2026-10-12"
+    },
+    "above-maintenance-alt": {
+      "file": "above-maintenance-alt.mp4",
+      "bytes": 340244,
+      "sha256": "77f474e30d2f9953c8cf9b88048a6022ec3ab95f5c8e23bc6ea257e25caee559",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "bbf5c4ab25c22dd3802e6e0a0b1ab9599b62fedae73d88115d863d54bca36d9e",
+      "sourceBytes": 332070,
+      "sourceName": "70918.mp4",
+      "replacementDate": "2026-10-12"
+    },
+    "below-target-alt": {
+      "file": "below-target-alt.mp4",
+      "bytes": 287107,
+      "sha256": "1f43189557e69da17cfc1cdcbb962fdf7c409db6ef683790436dacd516e8c070",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "ad684e9f92877b3197a1074b4c50e9a1a26276d89f322a7d14a8ac728a26a56e",
+      "sourceBytes": 287576,
+      "sourceName": "70920.mp4",
+      "replacementDate": "2026-10-12"
     }
   },
   "poster": {
@@ -150,12 +189,13 @@
     "bytes": 37542,
     "sha256": "97aa5025c9405decfa8d2c2331aa1a674c8b40a0a36eafa14fca87572e994675"
   },
-  "totalBytes": 2862938,
+  "totalBytes": 3391486,
   "initialBytes": 312844,
   "interactionSource": "Four user-provided free Wan clips: touch, tail play, stretch, seated doze. No new generation.",
   "knownInteractionVisualIssues": [
     "Play ends with a different tail position; the final dissolve restores the canonical idle frame.",
-    "Stretch moves forward before sitting; the final dissolve restores the canonical idle frame.",
-    "Sleep ears fold more than the prompt requested."
-  ]
+    "Stretch moves forward before sitting; the final dissolve restores the canonical idle frame."
+  ],
+  "replacementSource": "Four user uploads on 2026-10-12, mapped by visual review and approved production package; existing canonical idle and poster preserved.",
+  "alternativeSource": "User-provided 08 (70918.mp4) and 09 (70920.mp4); visual review confirms raised paws for maintenance and empty-rug look for below-target. Session rotation is defined in src/ui/cat-media.ts."
 }
