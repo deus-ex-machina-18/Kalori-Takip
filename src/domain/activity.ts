@@ -56,6 +56,7 @@ export function validateMovementDays(days: PlanVersion['movementDays']): void {
   }
 }
 export function suggestMovement(profile: Profile, weekdays: number[], kinds: ActivityKind[]): PlanVersion['movementDays'] {
+  if (weekdays.length === 0) return [];
   ensure(kinds.length>0,'En az bir sevdiğin hareketi seç.');
   const minutes=profile.baseline.pal<=1.4 ? 15 : profile.baseline.pal<=1.6 ? 20 : 30;
   const days=[...weekdays].sort((a,b)=>a-b).map((weekday,i)=>({weekday:weekday as 1|2|3|4|5|6|7,kind:kinds[i%kinds.length]!,minutes}));

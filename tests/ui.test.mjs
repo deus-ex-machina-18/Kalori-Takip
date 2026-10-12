@@ -426,3 +426,40 @@ test('fazla kalori kaydında gerçek dakika seçenekleri ve koruma ayrımı gör
     assert.deepEqual(app.errors, []);
   } finally { app.dom.window.close(); }
 });
+
+
+test('spor yapmadan plan kurulur; seçilmeyen günün geçersiz süresi kaydı engellemez', async () => {
+  const factory = new IDBFactory(), app = await launch('/planim', false, factory);
+  try {
+    assert.equal(app.document.getElementById('movement-mode').value, 'none');
+    assert.equal(app.document.querySelector('.movement-days').hidden, true);
+    assert.equal(app.document.querySelector('[name="movement-minutes-1"]').disabled, true);
+    assert.equal(app.document.getElementById('range-min').disabled, true);
+    fill(app,'birth-date','2000-08-21'); fill(app,'height-cm','180'); fill(app,'profile-weight','91');
+    fill(app,'formula-sex','male'); fill(app,'pal','1.2'); fill(app,'time-zone','Europe/Istanbul');
+    app.document.querySelector('[name="eligibility"][value="eligible"]').checked = true;
+    app.document.querySelector('[name="movement-minutes-1"]').value = '-10';
+    app.document.querySelector('#profile-form').requestSubmit();
+    await until(() => app.document.querySelector('.preview-card'));
+    assert.match(app.document.querySelector('.calculation-details').textContent, /1,2/);
+    assert.match(app.document.querySelector('.movement-plan').textContent, /Spor planı yok/);
+    app.document.querySelector('[data-action="save-profile"]').click();
+    await until(() => app.document.querySelector('.plan-summary') && app.document.querySelector('main').getAttribute('aria-busy') === 'false');
+    const reopened = await launch('/planim', false, factory);
+    try { assert.match(reopened.document.querySelector('main').textContent, /Spor planı yok/); }
+    finally { reopened.dom.window.close(); }
+    app.document.querySelector('[data-action="edit-profile"]').click();
+    fill(app,'movement-mode','manual'); app.document.getElementById('movement-mode').dispatchEvent(new app.window.Event('change', { bubbles: true }));
+    const day = app.document.querySelector('[name="movement-day"][value="2"]');
+    day.checked = true; day.dispatchEvent(new app.window.Event('change', { bubbles: true }));
+    assert.equal(app.document.querySelector('[name="movement-minutes-1"]').disabled, true);
+    assert.equal(app.document.querySelector('[name="movement-minutes-2"]').required, true);
+    app.document.querySelector('[name="movement-minutes-2"]').value = '45';
+    app.document.querySelector('[name="eligibility"][value="eligible"]').checked = true;
+    app.document.querySelector('#profile-form').requestSubmit();
+    await until(() => app.document.querySelector('.preview-card'));
+    assert.match(app.document.querySelector('.movement-plan').textContent, /Salı · Yürüyüş/);
+    assert.equal(app.document.querySelectorAll('.movement-plan .metric-row').length, 1);
+    assert.deepEqual(app.errors, []);
+  } finally { app.dom.window.close(); }
+});

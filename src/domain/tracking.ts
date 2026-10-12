@@ -4,7 +4,13 @@ import { validateMovementDays } from './activity.ts';
 import { ageOn, parseLocalDate } from './dates.ts';
 import { durationCalorieRange, validateDuration } from './timeline.ts';
 
-export const PAL_OPTIONS = Object.freeze([{pal:1.4,label:'Çoğunlukla oturarak'},{pal:1.6,label:'Hafif hareketli'},{pal:1.8,label:'Hareketli'},{pal:2,label:'Çok hareketli'}]);
+export const PAL_OPTIONS = Object.freeze([
+  {pal:1.2,label:'Çok az hareket · çoğunlukla oturarak, düzenli spor yok'},
+  {pal:1.4,label:'Az hareket · oturarak çalışma, kısa yürüyüşler'},
+  {pal:1.6,label:'Orta hareket · günlük yürüyüş / düzenli egzersiz'},
+  {pal:1.8,label:'Yüksek hareket · hareketli iş / sık egzersiz'},
+  {pal:2,label:'Çok yüksek hareket · ağır fiziksel iş / yoğun antrenman'},
+]);
 export const POLICY = Object.freeze({ pals: PAL_OPTIONS.map(option=>option.pal), minAge: 19, maxAge: 59, minBmi: 18.5, floorKcal: 1300, minDeficit: .1, maxDeficit: .2, maxDeficitKcal: 500 });
 export const nowUTC = (): UTCInstant => new Date().toISOString() as UTCInstant;
 export function uuid(): string {
@@ -102,6 +108,11 @@ export const intake = (day: DayLog | null): number | null => {
   if (!day?.calories) return null;
   return day.calories.mode === 'total' ? day.calories.totalKcal : day.calories.entries.length ? day.calories.entries.reduce((s,e) => s + e.kcal, 0) : null;
 };
+export function estimateEnergyNeeds(profile: Profile, date: LocalDate) {
+  const age = ageOn(profile.birthDate, date);
+  const restingKcal = 10 * profile.weightKg + 6.25 * profile.heightCm - 5 * age + (profile.formulaSex === 'male' ? 5 : -161);
+  return { age, restingKcal, maintenanceKcal: restingKcal * profile.baseline.pal };
+}
 export function planFor(plans: PlanVersion[], date: LocalDate): PlanVersion | null {
   return plans.filter(p => p.effectiveFrom <= date).sort((a,b) => b.effectiveFrom.localeCompare(a.effectiveFrom))[0] ?? null;
 }
@@ -117,8 +128,7 @@ export const engine: PlanEngine = {
         validWeight(options.targetWeightKg);
         if (options.targetWeightKg / (profile.heightCm / 100) ** 2 < POLICY.minBmi) return failure('out-of-scope', 'Hedef kilo otomatik plan kapsamının dışında. Daha düşük hedef önerilmiyor; plansız kayıt yapabilirsin.');
       }
-      const ree = 10 * profile.weightKg + 6.25 * profile.heightCm - 5 * age + (profile.formulaSex === 'male' ? 5 : -161);
-      const maintenance = ree * profile.baseline.pal;
+      const { maintenanceKcal: maintenance } = estimateEnergyNeeds(profile, effectiveFrom);
       ensure(Number.isFinite(maintenance) && maintenance > 0, 'Girdilerle hesap yapılamıyor.');
       const timed = options.goal === 'lose' && options.targetDurationWeeks !== undefined;
       if (timed) validateDuration(options.targetDurationWeeks!);

@@ -7,6 +7,15 @@ export async function checkTodayPlanFixes(browser, checks) {
   const ready = () => page.locator('main[data-ready="true"]').waitFor();
   try {
     await page.goto('http://127.0.0.1:4173/#/planim'); await ready();
+    assert.equal(await page.locator('#movement-mode').inputValue(), 'none');
+    assert.equal(await page.locator('.movement-days').isVisible(), false);
+    assert.equal(await page.locator('[name="movement-minutes-1"]').isDisabled(), true);
+    await page.locator('#movement-mode').selectOption('manual');
+    await page.locator('[name="movement-day"][value="2"]').check();
+    await page.locator('[name="movement-minutes-2"]').fill('45');
+    assert.equal(await page.locator('[name="movement-minutes-1"]').isDisabled(), true);
+    assert.equal(await page.locator('[name="movement-minutes-2"]').isEnabled(), true);
+    await page.locator('#movement-mode').selectOption('none');
     await page.locator('#birth-date').fill('2000-08-21'); await page.locator('#height-cm').fill('180');
     await page.locator('#profile-weight').fill('91'); await page.locator('#formula-sex').selectOption('male');
     await page.locator('#pal').selectOption('1.4'); await page.locator('#time-zone').fill('Europe/Istanbul');
@@ -22,6 +31,21 @@ export async function checkTodayPlanFixes(browser, checks) {
     await page.locator('#target-weeks').fill('40');
     await page.locator('#profile-form button[type="submit"]').click();
     assert.match(await page.locator('.plan-timeline').textContent(), /40 hafta/);
+    assert.match(await page.locator('.movement-plan').textContent(), /Spor planı yok/);
+    await page.locator('[data-action="cancel-profile"]').click();
+    await page.locator('#profile-weight').fill('92'); await page.locator('#pal').selectOption('1.6');
+    await page.locator('#target-weight').fill('84'); await page.locator('#target-weeks').fill('22');
+    await page.locator('#profile-form button[type="submit"]').click();
+    const timeline = await page.locator('.plan-timeline').textContent();
+    assert.match(timeline, /tahmini süre: 22 hafta/);
+    assert.doesNotMatch(timeline, /ulaşılamıyor|23 hafta/);
+    await page.locator('.calculation-details summary').click();
+    assert.match(await page.locator('.calculation-details').textContent(), /3.072 kcal/);
+    await page.screenshot({ path: 'browser-results/calorie-22-weeks-390.png', fullPage: true });
+    await page.locator('[data-action="cancel-profile"]').click();
+    await page.locator('#profile-weight').fill('91'); await page.locator('#pal').selectOption('1.4');
+    await page.locator('#target-weight').fill('80'); await page.locator('#target-weeks').fill('40');
+    await page.locator('#profile-form button[type="submit"]').click();
     await page.locator('[data-action="save-profile"]').click();
     await page.locator('.plan-summary').waitFor(); await page.locator('main[aria-busy="false"]').waitFor();
     await page.reload(); await ready(); assert.match(await page.locator('.plan-timeline').textContent(), /40 hafta/);
@@ -70,6 +94,7 @@ export async function checkTodayPlanFixes(browser, checks) {
     await page.locator('h1').focus();
     await page.screenshot({ path: 'browser-results/activity-equivalents-390.png', fullPage: true });
     assert.deepEqual(errors, []);
+    checks.push('Calories: optional no-sport setup, only selected manual day enabled, 22-week near-boundary target stays at 22, calculation breakdown: pass');
     checks.push('Today fixes: opaque video, enlarged scene, compact headings, centered settings and seamless background at five widths; duration cap/preview/back/save/reload; provisional and completed activity equivalents and separate maintenance basis: pass');
   } finally { await context.close(); }
 }

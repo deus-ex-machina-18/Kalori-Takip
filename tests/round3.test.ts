@@ -9,6 +9,10 @@ import { changeDay, engine, newDay, nowUTC, requireValue, uuid } from '../src/do
 import type { Profile, WeightMeasurement } from '../src/domain/models.ts';
 const today=localDateAt(new Date(),'Europe/Istanbul');
 function profile():Profile {return {userId:uuid(),birthDate:parseLocalDate('2000-08-21'),heightCm:180,weightKg:91,formulaSex:'male',timeZone:'Europe/Istanbul',baseline:{method:'inclusive-pal-v1',pal:1.4,includesLoggedExercise:true},automaticPlanEligibility:'eligible',updatedAt:nowUTC()};}
+test('boş spor takvimi aktivite tercihi gerektirmez',()=>{
+ assert.deepEqual(suggestMovement(profile(),[],[]),[]);
+ assert.throws(()=>suggestMovement(profile(),[1],[]));
+});
 async function fixture(){const factory=new IDBFactory(),name=uuid(),repo=new IndexedDbRepository(factory,name),p=profile(),plan=requireValue(engine.createInitialPlan(p,addLocalDays(today,-7),{goal:'lose',targetWeightKg:80}));const initial={...plan,effectiveFrom:today};requireValue(await repo.saveSetup({profile:p,plan:initial,weight:null,expectedProfileUpdatedAt:null},{operationId:uuid()}));return {factory,name,repo,p,plan:initial};}
 test('MET birimleri: 3.8 × 3.5 × 80 / 200 × 30; kilo ve süre doğrusal',()=>{
  const e=estimateActivity('walk','moderate',30,80);assert.equal(e.metCode,'17190');assert.ok(Math.abs(e.estimatedGrossKcal.min-159.6*.8)<1e-8);assert.ok(Math.abs(e.estimatedGrossKcal.max-159.6*1.2)<1e-8);
