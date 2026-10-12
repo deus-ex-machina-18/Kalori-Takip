@@ -1,0 +1,87 @@
+{
+  "verifiedAt": "2026-10-12T05:28:12.446305+00:00",
+  "sourceCommit": "ea6c1b278828317525f797b35979fef36d294c4e",
+  "mergeCommit": "c4e7e83bb2476e60e6b6422b3a6a1d09606631e4",
+  "liveUrl": "https://extraordinary-rolypoly-370c36.netlify.app/#/bugun",
+  "ciRun": "https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38207704112",
+  "tests": 69,
+  "chromium": "passed, including both new alternate media decode assertions",
+  "media": [
+    {
+      "file": "idle.mp4",
+      "bytes": 275302,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "target-met.mp4",
+      "bytes": 295009,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "above-target.mp4",
+      "bytes": 254826,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "above-maintenance.mp4",
+      "bytes": 311021,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "below-target.mp4",
+      "bytes": 296332,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "touch.mp4",
+      "bytes": 286197,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "play.mp4",
+      "bytes": 348567,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "stretch.mp4",
+      "bytes": 373086,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "sleep.mp4",
+      "bytes": 286253,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "above-maintenance-alt.mp4",
+      "bytes": 340244,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "below-target-alt.mp4",
+      "bytes": 287107,
+      "mime": "video/mp4",
+      "hashMatch": true
+    },
+    {
+      "file": "poster.webp",
+      "bytes": 37542,
+      "mime": "image/webp",
+      "hashMatch": true
+    }
+  ],
+  "bundle": "assets/index-B61imdmW.js",
+  "bundleEqual": true,
+  "initialBytes": 312844,
+  "physicalAndroid": "not tested"
+}

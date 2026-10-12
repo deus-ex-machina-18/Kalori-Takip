@@ -1,3 +1,11 @@
+# 12 Ekim 2026 — altı yeni Zilli videosu canlı
+
+PR #6 main’e birleşti (`c4e7e83`), canlı: https://extraordinary-rolypoly-370c36.netlify.app/#/bugun. Yeni uyuklama, sessiz takdir, mama kapsız 06, hedef aşımı 07, koruma aşımı alternatifi 08 ve düşük kalori alternatifi 09 bağlı. 08/09 oturum içinde kendi mevcut sonuç klipleriyle sıra ile seçilir. `src/ui/cat-media.ts` tek medya seçicidir; semantic sonuç/hesap/depo değişmedi.
+
+69 test/build ve Chromium CI 38207704112 geçti; canlı 11 MP4 + poster hash ve JS byte eşitliği doğrulandı. Kanıt `docs/verification/zilli-six-videos-live.json`. Fiziksel Android kabulü açık. Kullanıcı kalan klipleri gönderirse ayrı turda devam et; sosyal PR #4’e dokunulmadı.
+
+---
+
 # 11 Ekim 2026 — dört Zilli hareketi tamamlandı
 
 Kedi alanına dokunma sevme tepkisini; altın çerçeveli Oyun, Esneme, Uyuklama kontrolleri ilgili videoyu oynatır. Tek tepki bittiğinde idle; kalori tepkisini kesmez, veri yazmaz, sonuç etiketini değiştirmez. Statik/hareket azaltma ve hata durumunda kontroller kapalı. Mevcut beş MP4 ve poster aynı; yeni klipler tıklamada yüklenir. Orijinaller git dışındadır, kaynak/hash/provenance aktif manifesttedir. Kaynaklar: `tmp5db31o32` touch, `tmp74yqbwr6` play, `tmp9byihacv` stretch, `tmpjd43eswb` sleep.
