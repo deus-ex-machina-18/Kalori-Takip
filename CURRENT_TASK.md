@@ -1,11 +1,13 @@
-# Güncel görev — altı Zilli videosu tamamlandı
+# Güncel görev — iPhone ana ekran kurulumu
 
-12 Ekim 2026 · PR #6 · uygulama kaynağı `ea6c1b2` · main merge `c4e7e83`.
+12 Ekim 2026 · dal `feat/iphone-install` · başlangıç `1568ba5`.
 
-Tek çıktı tamamlandı: gönderilen altı video uygun tetikleyicilere bağlandı ve canlı Netlify sürümünde doğrulandı.
+Tek çıktı: iPhone/iPad için Safari ana ekran kurulum yönlendirmesi. Mevcut manifest kimliği ve 180 px Apple simgesi korunur. Apple uygulama başlığı/standalone meta ayarları ve çentik/kenar güvenli alanları eklenir. Bugün ekranındaki yardım düğmesi yalnız Apple mobil tarayıcısında görünür; ana ekrandan açılmış uygulamada gizlenir. Ayarlar’daki rehber profili olmayan kullanıcıya da açıktır.
 
-Uyuklama ve ağız kapalı hedef tuttu klibi yenilendi. 06 mama kaplı düşük kalori klibinin yerine, 07 hedef üstü/koruma altına bağlandı. 08 (`70918.mp4`) koruma aşımı, 09 (`70920.mp4`) planın altında alternatifi; ilgili mevcut klipler oturum içinde dönüşümlü oynar. Gün tamamlamada bir kez, bitince bekleme; yenileme sayacı sıfırlar. Sonuç/message, hesaplar, kullanıcı kayıtları, diğer ekranlar ve sosyal dal değişmedi.
+Kapsam: `index.html`, `src/ui/install.ts`, `src/main.ts`, `src/styles.css`. App Store paketi, çevrimdışı çalışma, video eşleşmeleri, kayıt şeması, hesaplar ve sosyal bağlantı bu görev kapsamında değildir.
 
-Kabul: 69 test/build; 11 medya hash/fast-start kontrolü; altı yeni videonun tam FFmpeg decode’u; Chromium CI 38207704112 başarılı (08/09 gerçek decode, idle’a dönüş, sınırlar, lazy-load, reload, görünürlük, hata/statik yedek). Canlı 11 MP4 + poster hash’leri ve JS bundle yerel build ile birebir aynı. İlk yük 312.844 bayt. Kanıt: `docs/verification/zilli-six-videos-live.json`.
+Kabul: üretim derlemesi ve mevcut 69 test geçti. Üretim bundle’ında dört cihaz senaryosu doğrulandı: iPhone Safari ve masaüstü kimlikli iPad yardım açma/kapatma; kurulu iPhone’da ve Android’de Bugün yardım düğmesinin gizlenmesi. Manifest/icon zaten mevcuttu. Fiziksel iPhone’da Safari kurulum işlemi bu ortamda test edilemedi.
 
-Kullanıcı public GitHub/uygulama yayınına açık izin verdi. PR #6 main’e birleştirildi ve canlı doğrulandı. Fiziksel Android kontrolü yapılmadı; kalan klipler bu görev kapsamı dışında.
+Kurulum: Safari → Paylaş → Ana Ekrana Ekle → görünüyorsa Web Uygulaması Olarak Aç → Ekle. Kaynak: https://support.apple.com/tr-tr/guide/iphone/iphea86e5236/ios
+
+Önceki altı video kabul kanıtı `docs/verification/zilli-six-videos-live.json` dosyasındadır. Sıradaki adım: dalı gönder, CI sonucunu kontrol et, güncel Netlify yayınının yeni bundle/meta ayarlarını sunduğunu doğrula.

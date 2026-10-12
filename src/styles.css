@@ -110,6 +110,9 @@ small {
   min-height: 100dvh;
   margin: 0 auto;
   padding: 18px 15px 100px;
+  padding-top: calc(18px + env(safe-area-inset-top));
+  padding-left: calc(15px + env(safe-area-inset-left));
+  padding-right: calc(15px + env(safe-area-inset-right));
   position: relative;
   background-image:
     url("../public/design/ribbon.webp"), url("../public/design/edge.webp"),
@@ -192,7 +195,16 @@ small {
 }
 .today-date {
   margin: 0 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
 }
+.iphone-install-shortcut { min-height: 44px; font-size: 12px; }
+.install-card .button { margin-top: 14px; }
+.install-guide ol { padding-left: 22px; }
+.install-guide li { margin: 12px 0; line-height: 1.5; }
 .today-date .date-chip {
   border: 0;
   background: none;

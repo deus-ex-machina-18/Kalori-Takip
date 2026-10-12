@@ -6,6 +6,7 @@ import { defaultCatPreferences } from "./domain/cat.ts";
 import { art, designUrl } from "./ui/design.ts";
 import { WaterTracker } from "./ui/water.ts";
 import { addLocalDays } from "./domain/dates.ts";
+import { iphoneInstallButton, iphoneInstallCard, iphoneInstallGuide } from "./ui/install.ts";
 
 type Screen =
   "bugun" | "kayitlar" | "planim" | "ilerlemem" | "sosyal" | "ayarlar";
@@ -47,6 +48,7 @@ function settings() {
   const p = preferences(),
     disabled = !tracker.profile ? "disabled" : "";
   return `${heading("Ayarlar", "Uygulamayı kendine göre düzenle.")}
+  ${iphoneInstallCard()}
   <section class="card settings-cat"><h2>Kedin</h2><div class="cat-settings-grid"><img class="settings-poster" src="${designUrl("zilli.webp")}" alt="Yeşil halıda gri-beyaz Zilli" width="256" height="256"><div><p class="muted">Gri-beyaz dostun.</p><form id="cat-settings-form"><label class="field" for="cat-name"><span>Kedinin adı</span><input id="cat-name" name="cat-name" value="${escape(p.name)}" maxlength="30" required ${disabled}></label><p class="hint">Varsayılan ad Zilli. İstediğin adı kullanabilirsin.</p><button type="submit" class="button primary" ${disabled}>Adı kaydet</button></form></div></div>${!tracker.profile ? '<p class="hint">Kalıcı ayarlar için Planım’dan profil oluştur.</p>' : ""}</section>
   <section class="card settings-card"><h2>Görünüm ve hareket</h2><label class="setting-row" for="motion">${icon("cat")}<span><strong>Hareketi azalt</strong><span class="muted">Animasyonları azaltır.</span></span><input id="motion" name="motion" form="cat-settings-form" type="checkbox" role="switch" ${p.reducedMotion ? "checked" : ""}></label><div class="ornate-divider"></div><label class="setting-row" for="static-mode">${icon("image")}<span><strong>Statik kedi görünümü</strong><span class="muted">Video yerine sabit görsel kullanır.</span></span><input id="static-mode" type="checkbox" role="switch" ${p.sceneMode === "static" ? "checked" : ""} ${disabled}></label><select id="scene-mode" name="scene-mode" form="cat-settings-form" class="sr-only" aria-label="Kedi görünümü" ${disabled}><option value="auto" ${p.sceneMode === "auto" ? "selected" : ""}>Animasyonlu</option><option value="static" ${p.sceneMode === "static" ? "selected" : ""}>Statik</option></select><p class="hint">Tercihlerini Adı kaydet düğmesiyle birlikte kaydedebilirsin.</p></section>
   <section class="card"><h2>Profil ve hedefler</h2><a class="link-row" href="#/planim">${icon("user")}<span><strong>Profil bilgilerim</strong><small>Boy, kilo ve diğer kişisel bilgiler.</small></span>${icon("arrow")}</a><div class="ornate-divider"></div><a class="link-row" href="#/planim">${art("target")}<span><strong>Kalori ve su planım</strong><small>Planım ekranından düzenleyebilirsin.</small></span>${icon("arrow")}</a></section>
@@ -113,12 +115,15 @@ function render(moveFocus = false) {
   tracker.enter(current);
   document.title = `Kalori Takip · ${navigation.find((n) => n.id === current)!.label}`;
   document.documentElement.dataset.reducedMotion = String(reducedMotion);
-  app.innerHTML = `<div class="app-shell" data-screen="${current}"><header class="topbar"><a class="brand" href="#/bugun" aria-label="Kalori Takip, Bugün">${art("cat")}<span>Kalori Takip</span></a>${["bugun", "ilerlemem", "sosyal"].includes(current) ? `<a class="settings-link small-frame" href="#/ayarlar" aria-label="Ayarlar">${icon("settings")}</a>` : dateChip()}</header>${current === "bugun" ? `<div class="today-date">${dateChip()}</div>` : ""}<main id="main" data-ready="${tracker.ready}"><div id="tracker-feedback">${tracker.messages()}</div>${screens[current]()}</main><nav class="navigation" aria-label="Ana navigasyon">${navigation.map((n) => `<a href="#/${n.id}" ${n.id === current ? 'aria-current="page"' : ""}>${icon(n.icon)}<span>${n.label}</span></a>`).join("")}</nav><dialog id="app-dialog" class="card"></dialog></div>`;
+  app.innerHTML = `<div class="app-shell" data-screen="${current}"><header class="topbar"><a class="brand" href="#/bugun" aria-label="Kalori Takip, Bugün">${art("cat")}<span>Kalori Takip</span></a>${["bugun", "ilerlemem", "sosyal"].includes(current) ? `<a class="settings-link small-frame" href="#/ayarlar" aria-label="Ayarlar">${icon("settings")}</a>` : dateChip()}</header>${current === "bugun" ? `<div class="today-date">${dateChip()}${iphoneInstallButton()}</div>` : ""}<main id="main" data-ready="${tracker.ready}"><div id="tracker-feedback">${tracker.messages()}</div>${screens[current]()}</main><nav class="navigation" aria-label="Ana navigasyon">${navigation.map((n) => `<a href="#/${n.id}" ${n.id === current ? 'aria-current="page"' : ""}>${icon(n.icon)}<span>${n.label}</span></a>`).join("")}</nav><dialog id="app-dialog" class="card"></dialog></div>`;
   if (editorOpen)
     document
       .querySelector<HTMLDetailsElement>(".calorie-details")
       ?.setAttribute("open", "");
   tracker.bind(current);
+  document.querySelectorAll('[data-install-help]').forEach(button =>
+    button.addEventListener('click', () => modal(iphoneInstallGuide())),
+  );
   const reaction = tracker.takeCatReaction(current);
   if (current === "bugun" && tracker.ready) {
     const host = document.querySelector<HTMLElement>(".cat-card")!;
