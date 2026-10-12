@@ -6,10 +6,32 @@ import { IndexedDbRepository } from '../src/data/indexeddb.ts';
 import { activityMinutesForKcal } from '../src/domain/activity.ts';
 import { localDateAt, parseLocalDate } from '../src/domain/dates.ts';
 import { engine, nowUTC, requireValue, uuid } from '../src/domain/tracking.ts';
-import { planTimeline } from '../src/domain/timeline.ts';
+import { durationCalorieRange, planTimeline } from '../src/domain/timeline.ts';
 
 const profile = (): Profile => ({ userId: uuid(), birthDate: parseLocalDate('2000-08-21'), heightCm: 180, weightKg: 91, formulaSex: 'male', timeZone: 'Europe/Istanbul', baseline: { method: 'inclusive-pal-v1', pal: 1.4, includesLoggedExercise: true }, automaticPlanEligibility: 'eligible', updatedAt: nowUTC() });
 const date = localDateAt(new Date(), 'Europe/Istanbul');
+
+test('sınıra yakın 22 hafta, tek taraflı aralık kesilmesiyle 23 haftaya uzamaz', () => {
+  const p = profile();
+  p.baseline.pal = 1.6;
+  p.weightKg = 92;
+  const plan = requireValue(engine.createInitialPlan(p, parseLocalDate('2026-10-12'), { goal: 'lose', targetWeightKg: 84, targetDurationWeeks: 22 }));
+  assert.equal(plan.estimatedMaintenanceKcal, 3072);
+  assert.ok(Math.abs(planTimeline(plan)!.estimatedWeeks! - 22) < 1e-9);
+  assert.equal(planTimeline(plan)!.limited, false);
+  const capped = requireValue(engine.createInitialPlan(p, parseLocalDate('2026-10-12'), { goal: 'lose', targetWeightKg: 84, targetDurationWeeks: 16 }));
+  assert.deepEqual(capped.calorieRangeKcal, { min: 2572, max: 2572 });
+  assert.equal(planTimeline(capped)!.limited, true);
+  assert.ok(planTimeline(capped)!.estimatedWeeks! < 21);
+});
+
+test('süre aralığı iki sınırda da merkezi korur', () => {
+  const low = durationCalorieRange(2000, 80, 75, 1.2, 12, 1500);
+  assert.equal((low.min + low.max) / 2, 2000 - 30 - 38500 / 84);
+  const high = durationCalorieRange(2000, 80, 79.9, 1.2, 156, 1500);
+  assert.equal(high.max, 1999);
+  assert.ok(Math.abs((high.min + high.max) / 2 - (2000 - 0.6 - 770 / 1092)) < 1e-8);
+});
 
 test('hedef süresi plan kalorilerini değiştirir; makul süre enerji hesabında karşılanır', () => {
   const p = profile();

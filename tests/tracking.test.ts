@@ -8,6 +8,18 @@ export function profile(): Profile {
   return {userId:uuid(),birthDate:parseLocalDate('2000-08-21'),heightCm:180,weightKg:91,formulaSex:'male',timeZone:'Europe/Istanbul',baseline:{method:'inclusive-pal-v1',pal:1.4,includesLoggedExercise:true},automaticPlanEligibility:'eligible',updatedAt:nowUTC()};
 }
 const date=localDateAt(new Date(),'Europe/Istanbul');
+test('az hareketli erkek ve kadın: bağımsız Mifflin örnekleri, spor zorunlu değil',()=>{
+  const p=profile(); p.baseline.pal=1.2;
+  const fixedDate=parseLocalDate('2026-10-12');
+  const male=requireValue(engine.createInitialPlan(p,fixedDate));
+  assert.equal(male.estimatedMaintenanceKcal,2292);
+  assert.deepEqual(male.movementDays,[]);
+  p.formulaSex='female';
+  assert.ok(Math.abs(requireValue(engine.createInitialPlan(p,fixedDate)).estimatedMaintenanceKcal-2092.8)<1e-9);
+  p.formulaSex='male';
+  const withSport=requireValue(engine.createInitialPlan(p,fixedDate,{goal:'maintain',targetWeightKg:null,movementDays:[{weekday:1,kind:'strength',minutes:45}]}));
+  assert.equal(withSport.estimatedMaintenanceKcal,male.estimatedMaintenanceKcal);
+});
 test('650 + 800 + 500 = 1950; boş gün sıfır değildir ve kısmi gün sonuç üretmez',()=>{
   const p=profile(); let d=newDay(p,date,[]);
   assert.equal(intake(d),null);

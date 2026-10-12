@@ -88,3 +88,7 @@ Kullanıcının gönderdiği dokunma, kuyrukla oyun, esneme ve oturarak uyuklama
 Dokunma kare kedi alanındaki gerçek düğmeden, diğer üç hareket kart altındaki altın çerçeveli kontrollerden tetiklenir. Hareketler otomatik döngü veya veri kaydı üretmez. Mevcut kalori tepkisi oynarken etkileşimler bekler; kayıtlı sonuç etiketi korunur. Sonunda idle oynar, tekrar dokunmalar sıraya alınmaz. Kontrol listesi tek kaynak `src/ui/cat-actions.ts`; medya bilgisi mevcut manifesttedir.
 
 Statik/hareket azaltma ve medya hatasında kontroller devre dışıdır; yeni MP4'ler yalnız kullanıcı seçince yüklenir. Gizli sahne/sekme durur, navigasyonla oynatıcı kaldırılır. İki video elemanı sınırı ve kare contain korunur. Yeni dört klibin son 0,25 saniyesi ortak idle ilk karesine çözünür; oyundaki kuyruk ve esnemedeki konum farkı üretim kusuru olarak manifestte kayıtlıdır.
+
+## 12 Ekim 2026 — plan hesapları
+
+Spor takvimi isteğe bağlıdır ve yeni profilde kapalı başlar. Günlük hareket mevcut yaşam düzenidir; gelecekte yapılması düşünülen spor koruma ihtiyacına eklenmez. Hareket çarpanlarının tek kaynağı `src/domain/tracking.ts` (çok az hareket 1,2 dahil). Formül hesabı `estimateEnergyNeeds` üzerinden paylaşılır. Süreli aralık sınırda simetrik daraltılır, tahmini süre bir ondalıkla gösterilir. Eski plan/günler yeniden hesaplanmaz.

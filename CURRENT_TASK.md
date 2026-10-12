@@ -1,13 +1,15 @@
-# Güncel görev — iPhone ana ekran kurulumu
+# Güncel görev — kalori, hedef haftası ve isteğe bağlı spor
 
-12 Ekim 2026 · dal `feat/iphone-install` · başlangıç `1568ba5`.
+12 Ekim 2026 · `fix/calorie-weeks-optional-exercise` · taban `e3354a4`.
 
-Tek çıktı: iPhone/iPad için Safari ana ekran kurulum yönlendirmesi. Mevcut manifest kimliği ve 180 px Apple simgesi korunur. Apple uygulama başlığı/standalone meta ayarları ve çentik/kenar güvenli alanları eklenir. Bugün ekranındaki yardım düğmesi yalnız Apple mobil tarayıcısında görünür; ana ekrandan açılmış uygulamada gizlenir. Ayarlar’daki rehber profili olmayan kullanıcıya da açıktır.
+Tek çıktı: kalori planını spor yapmadan kurabilmek ve hedef süresi hesabının aralık sınırlarında tutarlı kalması.
 
-Kapsam: `index.html`, `src/ui/install.ts`, `src/main.ts`, `src/styles.css`. App Store paketi, çevrimdışı çalışma, video eşleşmeleri, kayıt şeması, hesaplar ve sosyal bağlantı bu görev kapsamında değildir.
+Kapsam: domain hesapları, profil/plan formu, kabul testleri. Tasarım varlıkları, videolar, sosyal altyapı, geçmiş günlük kayıtlar ve mevcut plan sürümleri korunur.
 
-Kabul: üretim derlemesi ve mevcut 69 test geçti. Üretim bundle’ında dört cihaz senaryosu doğrulandı: iPhone Safari ve masaüstü kimlikli iPad yardım açma/kapatma; kurulu iPhone’da ve Android’de Bugün yardım düğmesinin gizlenmesi. Manifest/icon zaten mevcuttu. Fiziksel iPhone’da Safari kurulum işlemi bu ortamda test edilemedi.
+Kabul: çok az hareket seçeneği (1,2); spor takvimi varsayılan kapalı; sadece seçilen manuel günün alanları doğrulanır; boş otomatik takvim aktivite istemez; 22 haftalık sınır örneği 22 kalır; kısa süre sınırı açıkça gösterilir; hesap dökümü önizlemede görünür; kayıt/yeniden açılış çalışır. Kontrol sonucu `docs/verification/calorie-weeks-optional-exercise.md` içindedir.
 
-Kurulum: Safari → Paylaş → Ana Ekrana Ekle → görünüyorsa Web Uygulaması Olarak Aç → Ekle. Kaynak: https://support.apple.com/tr-tr/guide/iphone/iphea86e5236/ios
+Önceki iPhone kurulumu ve altı video geliştirmeleri ana dal tabanına dahildir. Sıradaki tek adım: CI kabulü ve Netlify yayınının yeni sürümü sunduğunu doğrulamak.
 
-Önceki altı video kabul kanıtı `docs/verification/zilli-six-videos-live.json` dosyasındadır. Sıradaki adım: dalı gönder, CI sonucunu kontrol et, güncel Netlify yayınının yeni bundle/meta ayarlarını sunduğunu doğrula.
+## Teslim durumu
+
+Üretim build, 49 domain/depo + 25 DOM testi ve 11 MP4/poster doğrulaması geçti. Kullanıcı 12 Ekim 2026'da “Canlı uygulamaya aktar” diyerek GitHub gönderimini ve yayını açıkça onayladı. Terminalde GitHub yazma kimliği bulunmadığından bağlı GitHub konektörü kullanılır. CI Chromium kabulünden sonra ana dal ve Netlify yayını doğrulanır.
