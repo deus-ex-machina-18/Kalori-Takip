@@ -5,7 +5,8 @@ const base = new URL('../public/cat-media/',import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('asset-manifest.json',base),'utf8'));
 const actions = await import('../src/ui/cat-actions.ts');
 const { CAT_REACTION_VARIANTS } = await import('../src/ui/cat-media.ts');
-const expected = new Set(['idle','target-met','above-target','above-maintenance','below-target',...actions.CAT_ACTIONS.map(action=>action.clip),...Object.values(CAT_REACTION_VARIANTS).flat()]);
+const { CAT_EVENTS } = await import('../src/ui/cat-events.ts');
+const expected = new Set(['idle','target-met','above-target','above-maintenance','below-target',...actions.CAT_ACTIONS.map(action=>action.clip),...Object.values(CAT_REACTION_VARIANTS).flat(),...Object.values(CAT_EVENTS).map(event=>event.file.replace('.mp4',''))]);
 assert.deepEqual(new Set(Object.keys(manifest.clips)), expected);
 let total = 0;
 for (const item of [...Object.values(manifest.clips),manifest.poster]) {
