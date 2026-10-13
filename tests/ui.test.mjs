@@ -4,6 +4,31 @@ import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { IDBFactory } from "fake-indexeddb";
 import { webcrypto } from "node:crypto";
+
+test('su ve spor başarılı kayıttan sonra tepki verir; tekrar su kaydı ve navigasyon tepkiyi tekrarlamaz', async () => {
+  const app = await launch('/planim', true);
+  try {
+    await createProfile(app);
+    await navigate(app.window, app.document.querySelector('nav a[href="#/bugun"]'));
+    app.document.querySelector('[data-water]').click();
+    app.document.querySelector('[name="water-amount"]').value = '2500';
+    app.document.querySelector('#water-form').requestSubmit();
+    assert.equal(app.document.querySelector('[data-cat-event]')?.dataset.catEvent, 'water-goal');
+    assert.equal(app.document.querySelector('[data-cat-event] video'), null);
+    app.document.querySelector('.cat-event-close').click();
+    app.document.querySelector('[data-water]').click();
+    app.document.querySelector('#water-form').requestSubmit();
+    assert.equal(app.document.querySelector('[data-cat-event]'), null);
+    await navigate(app.window, app.document.querySelector('nav a[href="#/kayitlar"]'));
+    fill(app, 'activity-minutes', '10');
+    app.document.querySelector('#activity-form').requestSubmit();
+    await until(() => app.document.querySelector('[data-cat-event]'));
+    assert.equal(app.document.querySelector('[data-cat-event]').dataset.catEvent, 'sport-recorded');
+    await navigate(app.window, app.document.querySelector('nav a[href="#/bugun"]'));
+    assert.equal(app.document.querySelector('[data-cat-event]'), null);
+    assert.deepEqual(app.errors, []);
+  } finally { app.dom.window.close(); }
+});
 const html = readFileSync(
   new URL("../dist/index.html", import.meta.url),
   "utf8",

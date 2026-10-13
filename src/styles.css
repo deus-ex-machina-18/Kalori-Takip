@@ -1336,3 +1336,13 @@ html[data-reduced-motion="true"] *:before {
     box-shadow: 0 -8px 30px #44331a18;
   }
 }
+/* Event clips retain the complete square frame and the existing dialog palette. */
+.cat-event { text-align: center; }
+.cat-event-media { position: relative; width: min(100%, 320px); aspect-ratio: 1; margin: 0 auto; }
+.cat-event-media img, .cat-event-media video { width: 100%; height: 100%; object-fit: contain; border-radius: 24px; }
+.cat-event-media video { position: absolute; inset: 0; opacity: 0; }
+.cat-event-media video[data-visible="true"] { opacity: 1; }
+.cat-event-status { color: var(--sage-dark); }
+.cat-event-toast { position: fixed; z-index: 50; top: max(12px, env(safe-area-inset-top)); right: 12px; width: min(230px, calc(100vw - 24px)); padding: 12px; pointer-events: none; box-shadow: 0 8px 28px color-mix(in srgb, var(--sage-dark) 20%, transparent); }
+.cat-event-close { position: absolute; z-index: 1; top: 0; right: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--surface); font-size: 24px; pointer-events: auto; }
+.cat-event-status { margin: 8px 0 0; font-weight: 600; }

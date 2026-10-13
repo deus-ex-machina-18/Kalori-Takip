@@ -1,15 +1,15 @@
-# Güncel görev — kalori, hedef haftası ve isteğe bağlı spor
+# Güncel görev — Zilli 12–18 olay videoları
 
-12 Ekim 2026 · `fix/calorie-weeks-optional-exercise` · taban `e3354a4`.
+13 Ekim 2026. Tek çıktı: kullanıcıdan gelen yedi videonun su/spor/sosyal başarı olaylarına bağlanması.
 
-Tek çıktı: kalori planını spor yapmadan kurabilmek ve hedef süresi hesabının aralık sınırlarında tutarlı kalması.
+Kapsam: olay seçimi, kısa bildirim oynatıcısı, medya ve kabul testleri. Hesap formülleri, günlük kayıt şeması ve mevcut 11 MP4 değişmedi. Yeni video üretimi yok.
 
-Kapsam: domain hesapları, profil/plan formu, kabul testleri. Tasarım varlıkları, videolar, sosyal altyapı, geçmiş günlük kayıtlar ve mevcut plan sürümleri korunur.
+Kullanıcı eşleştirmeyi doğruladı: 71009→12, …, 71015→18. 11 yok; su hedefine mevcut target-met kutlaması bağlandı.
 
-Kabul: çok az hareket seçeneği (1,2); spor takvimi varsayılan kapalı; sadece seçilen manuel günün alanları doğrulanır; boş otomatik takvim aktivite istemez; 22 haftalık sınır örneği 22 kalır; kısa süre sınırı açıkça gösterilir; hesap dökümü önizlemede görünür; kayıt/yeniden açılış çalışır. Kontrol sonucu `docs/verification/calorie-weeks-optional-exercise.md` içindedir.
+Ana dal: başarılı bugünkü yeni spor kaydı ve son 7 gün / haftalık plan hedefi geçişi; su miktarı hedefi geçince tepki. Spor düzenleme, geçmiş tarih, su hedefini düşürme, tekrar kayıt ve sayfa açılışı kutlamayı tekrarlamaz. Sporsuz planda yalnız kayıt tepkisi vardır.
 
-Önceki iPhone kurulumu ve altı video geliştirmeleri ana dal tabanına dahildir. Sıradaki tek adım: CI kabulü ve Netlify yayınının yeni sürümü sunduğunu doğrulamak.
+Sosyal bağlantılar ayrı social-infrastructure dalına hazırlanır. Bu dalın mevcut Auth/SMTP yayın engeli korunur; ana dala sosyal altyapı taşınmaz. Arkadaş kabulü, yeni gelen istek, grup kurma/katılım ve challenge oluşturma/katılım yalnız doğrulanmış sunucu durumu değişince kutlanır.
 
-## Teslim durumu
+Kabul: build, 52 domain + 26 DOM testi ve 18 MP4/poster hash/fast-start kontrolü geçti. Yerel Chromium bulunmuyor; gerçek decode/olay tarayıcı testi GitHub CI'da çalıştırılacak. Kaynak videolardaki açık ağız kusuru manifestte kayıtlıdır; ses yok.
 
-Üretim build, 49 domain/depo + 25 DOM testi ve 11 MP4/poster doğrulaması geçti. Kullanıcı 12 Ekim 2026'da “Canlı uygulamaya aktar” diyerek GitHub gönderimini ve yayını açıkça onayladı. Terminalde GitHub yazma kimliği bulunmadığından bağlı GitHub konektörü kullanılır. CI Chromium kabulünden sonra ana dal ve Netlify yayını doğrulanır.
+Sonraki tek iş: GitHub CI ve Netlify yayınının bu build'i sunduğunu doğrulamak.
