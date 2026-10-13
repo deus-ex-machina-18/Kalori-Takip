@@ -1,3 +1,11 @@
+# 13 Ekim 2026 — Zilli 12–18 olay videoları
+
+Yeni yedi video ve su için mevcut kutlama eklendi. Gerçek sunucu durum değişimleri arkadaş kabulü/yeni istek, grup kurma/davetle katılım ve challenge oluşturma/katılım için kısa Zilli tepkisi üretir. İlk hesap yükleme ve değişmeyen yenileme tepki üretmez. Aynı callback su/spor kaydına da bağlıdır. 11 numaralı kaynak eksiktir; kullanıcı 71009→12, …, 71015→18 eşleştirmesini doğruladı.
+
+Build, 42 domain + 22 DOM + 16 bulut/PostgreSQL testleri ve 7 sosyal DOM/HTTP/PostgreSQL senaryosu geçti. Beş sosyal tepki senaryo içinde ayrıca doğrulandı. 16 MP4/poster hash/fast-start doğrulaması geçti. Mevcut 9 video değişmedi. Gerçek e-posta/Android kabulü yapılmadı; aşağıdaki Auth/SMTP yayın kapısı halen geçerlidir. Ana dala sosyal altyapı bu turda aktarılmaz.
+
+---
+
 # Güncel görev — sosyal sistemin canlı bağlantısı
 
 11 Ekim 2026 · sosyal PR #4: https://github.com/deus-ex-machina-18/Kalori-Takip/pull/4

@@ -5,6 +5,8 @@ import { catCard, mountCat } from "./ui/cat-card.ts";
 import { defaultCatPreferences } from "./domain/cat.ts";
 import { art, designUrl } from "./ui/design.ts";
 import { WaterTracker } from "./ui/water.ts";
+import { waterGoalReached, type CatEvent } from "./ui/cat-events.ts";
+import { showCatEvent } from "./ui/cat-event-view.ts";
 import { SocialController } from "./ui/social.ts";
 import { addLocalDays } from "./domain/dates.ts";
 
@@ -28,6 +30,11 @@ let reducedMotion = window.matchMedia(
 let period: "7" | "30" | "all" = "7";
 let previousScreen = "";
 let mountedCat: { dispose(): void } | null = null;
+let disposeCatEvent: (() => void) | null = null;
+function celebrate(event: CatEvent) {
+  disposeCatEvent?.();
+  disposeCatEvent = showCatEvent(event, preferences());
+}
 const preferences = () =>
   tracker.catPreferences ??
   defaultCatPreferences(tracker.profile?.userId ?? "", reducedMotion);
@@ -96,6 +103,7 @@ function modal(content: string) {
   return dialog;
 }
 function render(moveFocus = false) {
+  disposeCatEvent?.(); disposeCatEvent = null;
   const requested = window.location.hash.replace("#/", "");
   const current: Screen = navigation.some((n) => n.id === requested)
     ? (requested as Screen)
@@ -165,6 +173,9 @@ function render(moveFocus = false) {
         ?.addEventListener("submit", async (event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget as HTMLFormElement);
+          const previous = water.read(userId);
+          const amount = Number(form.get("water-amount"));
+          const target = Number(form.get("water-target"));
           if (
             await water.saveConnected(
               userId,
@@ -175,6 +186,7 @@ function render(moveFocus = false) {
           ) {
             dialog.close?.();
             render();
+            if (date === tracker.today() && waterGoalReached(previous.days[date] ?? 0, amount, target, previous.target)) celebrate('water-goal');
           } else
             dialog.querySelector("#water-error")!.textContent = water.error;
         });
@@ -221,6 +233,9 @@ function render(moveFocus = false) {
     document.documentElement.dataset.reducedMotion = String(reducedMotion);
   });
   previousScreen = current;
+  const trackingEvent = tracker.takeCatEvent();
+  const socialEvent = socialController.takeCatEvent();
+  if (trackingEvent || socialEvent) celebrate((trackingEvent || socialEvent)!);
   if (moveFocus) {
     document
       .querySelector<HTMLElement>("#page-title")

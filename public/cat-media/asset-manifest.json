@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 5,
   "method": "existing AI-generated clips, re-encoded with a 0.25s dissolve to the canonical idle first frame",
   "source": "User-provided idle and three Wan clips; previously generated free Wan target-met clip. No stock or paid assets added.",
   "knownVisualIssues": [
@@ -141,6 +141,118 @@
       "silent": true,
       "sourceSha256": "d83eb88cf134edbc1e94cb1c2246af1882dbf968d79120b792345eba1a7465a0",
       "sourceBytes": 332429
+    },
+    "sport-recorded": {
+      "file": "sport-recorded.mp4",
+      "bytes": 317175,
+      "sha256": "cbbcfd3e988b848008d20647c6b15a4bcd66efcfc72a84869ae3f4e737e5f6c8",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "bb8e04a6818d5fd1d8cadf92d9ccf63dd3f6f9e912d7d7d423c14740c3a9e3aa",
+      "sourceBytes": 320034,
+      "sourceName": "71009.mp4"
+    },
+    "sport-goal": {
+      "file": "sport-goal.mp4",
+      "bytes": 319870,
+      "sha256": "1655a6f4c09912df30197a487ed7f0d15596fc24e464a38f2877e4fd911a1550",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "a968ebd76829bbdacc6647608aecd376617d89cad5c4e30fce1168b254adf08f",
+      "sourceBytes": 327172,
+      "sourceName": "71010.mp4"
+    },
+    "friend-added": {
+      "file": "friend-added.mp4",
+      "bytes": 335843,
+      "sha256": "fff806963e86f3ee9a291d85ceb35ab3fece4b8932b86d8142b9fea5dcb10d9a",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "b0c7a3a20ce0a9bd309ca26b84c9e1f95a15d69f460009a66f4c9e47285f2e73",
+      "sourceBytes": 338629,
+      "sourceName": "71011.mp4"
+    },
+    "friend-request": {
+      "file": "friend-request.mp4",
+      "bytes": 327448,
+      "sha256": "9fb06f7a95f2fbe69cf63f25a1faf49d50c737ccafcfa18c4dbbc747f2dea18e",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "fa8cb2892f8d7a4591c91259d362620ad29ffe40c83343795b606fcfa08542bd",
+      "sourceBytes": 335546,
+      "sourceName": "71012.mp4"
+    },
+    "group-created": {
+      "file": "group-created.mp4",
+      "bytes": 358890,
+      "sha256": "d30ffbb829188b88b30b71cebef06e22f785c0132a88792b65592444ad5d6c25",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "70619dc339c3e11d0faccddcd997e0007f0ab4193332878056670cc962b9b00f",
+      "sourceBytes": 342769,
+      "sourceName": "71013.mp4"
+    },
+    "group-joined": {
+      "file": "group-joined.mp4",
+      "bytes": 333065,
+      "sha256": "77ff870adeee0c526ea569d00f1f62ed767a28f6021e0baac831b6b60e627950",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "98e71259d7210c41c59803f76cfc7b7859099f7f6ef38ea782661ebf8514f6a5",
+      "sourceBytes": 331138,
+      "sourceName": "71014.mp4"
+    },
+    "challenge-started": {
+      "file": "challenge-started.mp4",
+      "bytes": 337345,
+      "sha256": "bc9e80ae2cb3f880365a9a7fc895b5e6ccbe5a468b317436d277eaf7b288754c",
+      "width": 640,
+      "height": 640,
+      "fps": "24/1",
+      "durationSeconds": 3.541667,
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "pixelFormat": "yuv420p",
+      "silent": true,
+      "sourceSha256": "2bac6552fe90f8db63fa53e41e9c60c5f7ed3a226ae2ed45666d7b6f0ebecc0c",
+      "sourceBytes": 312337,
+      "sourceName": "71015.mp4"
     }
   },
   "poster": {
@@ -150,12 +262,16 @@
     "bytes": 37542,
     "sha256": "97aa5025c9405decfa8d2c2331aa1a674c8b40a0a36eafa14fca87572e994675"
   },
-  "totalBytes": 2862938,
+  "totalBytes": 5192574,
   "initialBytes": 312844,
   "interactionSource": "Four user-provided free Wan clips: touch, tail play, stretch, seated doze. No new generation.",
   "knownInteractionVisualIssues": [
     "Play ends with a different tail position; the final dissolve restores the canonical idle frame.",
     "Stretch moves forward before sitting; the final dissolve restores the canonical idle frame.",
     "Sleep ears fold more than the prompt requested."
+  ],
+  "eventSource": "User uploads 71009–71015 on 2026-10-13. User confirmed they are videos 12–18. Missing video 11 uses target-met.mp4.",
+  "knownEventVisualIssues": [
+    "Some supplied event clips open the mouth despite the closed-mouth prompt. Source appearance was preserved; all output clips have no audio."
   ]
 }

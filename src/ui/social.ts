@@ -17,6 +17,7 @@ import type {
 import { remapSnapshot } from "../social/snapshot.ts";
 import { uuid, requireValue } from "../domain/tracking.ts";
 import { parseLocalDate } from "../domain/dates.ts";
+import { socialCatEvent, type CatEvent } from './cat-events.ts';
 const fields = [
   ["record", "Günlük kayıt durumu"],
   ["calories", "Tam kalori miktarı"],
@@ -57,6 +58,13 @@ export class SocialController {
   private modal!: (content: string) => HTMLDialogElement;
   private epoch = 0;
   private pendingInvite: string | null = null;
+  private pendingCatEvent: CatEvent | null = null;
+  takeCatEvent(): CatEvent | null {
+    if (this.busy) return null;
+    const event = this.pendingCatEvent;
+    this.pendingCatEvent = null;
+    return event;
+  }
   private disposed = false;
   private listener: ReturnType<
     SupabaseClient["auth"]["onAuthStateChange"]
@@ -108,6 +116,7 @@ export class SocialController {
     const epoch = ++this.epoch;
     this.ready = false;
     this.state = emptySocial();
+    this.pendingCatEvent = null;
     this.userId = id;
     this.retryCommand = null;
     this.cloud = null;
@@ -151,11 +160,15 @@ export class SocialController {
       this.render();
     }
   }
-  async reload() {
+  async reload(action: string | null = null) {
     if (this.rpc && this.userId) {
       const epoch = this.epoch;
       const state = await this.rpc.call<SocialState>("state");
-      if (epoch === this.epoch) this.state = state;
+      if (epoch === this.epoch) {
+        const event = socialCatEvent(this.state.account ? this.state : null, state, action);
+        this.state = state;
+        if (event) this.pendingCatEvent = event;
+      }
     }
   }
   accountLabel() {
@@ -679,7 +692,7 @@ export class SocialController {
         ? await this.rpc.call(action, payload, this.retryCommand.id)
         : {};
       this.retryCommand = null;
-      await this.reload();
+      await this.reload(action);
       this.notice = "Kaydedildi.";
       if (after && action !== "invite_create") await after(data);
       this.busy = false;

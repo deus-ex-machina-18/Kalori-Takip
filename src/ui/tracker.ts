@@ -1,6 +1,7 @@
 import { art, progressBar } from "./design.ts";
 import { icon } from "../icons.ts";
 import { catResult } from "./cat-result.ts";
+import { sportRecordEvent, type CatEvent } from "./cat-events.ts";
 import { IndexedDbRepository } from "../data/indexeddb.ts";
 import type { TrackingRepository } from "../data/cloud.ts";
 import type { SetupWrite } from "../data/indexeddb.ts";
@@ -108,6 +109,7 @@ export class Tracker {
   weights: WeightMeasurement[] = [];
   activities: Activity[] = [];
   catPreferences: CatPreferences | null = null;
+  private pendingCatEvent: CatEvent | null = null;
   private completedCatDay: { date: LocalDate; revision: number } | null = null;
   private editingActivity: Activity | null = null;
   private deletingActivity: Activity | null = null;
@@ -231,6 +233,11 @@ export class Tracker {
       day?.status === "completed" &&
       day.revision === event.revision
     );
+  }
+  takeCatEvent(): CatEvent | null {
+    const event = this.pendingCatEvent;
+    this.pendingCatEvent = null;
+    return this.ready ? event : null;
   }
   saveCatSettings(input: {
     name: string;
@@ -599,6 +606,7 @@ export class Tracker {
               old ?? undefined,
             ),
             operationId = uuid();
+          const event = sportRecordEvent(this.activities, activity, planFor(this.plans, date), this.today(), !!old);
           void this.persist(
             () =>
               this.repository.saveActivity(activity, {
@@ -607,6 +615,7 @@ export class Tracker {
               }),
             () => {
               this.editingActivity = null;
+              this.pendingCatEvent = event;
             },
             "Hareket kaydedildi. Günün kalori hedefi ve enerji dengesi değişmedi.",
           );

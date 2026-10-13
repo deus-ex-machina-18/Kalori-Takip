@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 const base = new URL('../public/cat-media/',import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('asset-manifest.json',base),'utf8'));
 const actions = await import('../src/ui/cat-actions.ts');
-assert.deepEqual(Object.keys(manifest.clips),['idle','target-met','above-target','above-maintenance','below-target',...actions.CAT_ACTIONS.map(action=>action.clip)]);
+const { CAT_EVENTS } = await import('../src/ui/cat-events.ts');
+assert.deepEqual(new Set(Object.keys(manifest.clips)),new Set(['idle','target-met','above-target','above-maintenance','below-target',...actions.CAT_ACTIONS.map(action=>action.clip),...Object.values(CAT_EVENTS).map(event=>event.file.replace('.mp4',''))]));
 let total = 0;
 for (const item of [...Object.values(manifest.clips),manifest.poster]) {
   const file = new URL(item.file,base), bytes = await readFile(file);

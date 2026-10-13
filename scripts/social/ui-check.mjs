@@ -225,8 +225,10 @@ try {
   await until(() => !a.doc.querySelector("dialog[open]"));
   await refresh(b);
   await until(() => b.doc.querySelector('[data-social-action="accept"]'));
+  assert.equal(b.doc.querySelector('[data-cat-event]')?.dataset.catEvent, 'friend-request');
   await click(b, "accept");
   await until(() => !b.doc.querySelector('[data-social-action="accept"]'));
+  assert.equal(b.doc.querySelector('[data-cat-event]')?.dataset.catEvent, 'friend-added');
   await refresh(a);
   assert.ok(a.doc.querySelector('[data-social-action="support"]'));
   checks.push(
@@ -235,6 +237,7 @@ try {
   await click(a, "group");
   await submit(a, "group", { name: "Bizim ekip" });
   await until(() => a.doc.querySelector('[data-social-action="group-detail"]'));
+  assert.equal(a.doc.querySelector('[data-cat-event]')?.dataset.catEvent, 'group-created');
   await click(a, "group-detail");
   await click(a, "invite");
   await until(() => a.doc.querySelector('[data-social-action="copy"]'));
@@ -245,6 +248,7 @@ try {
   await click(b, "redeem");
   await submit(b, "redeem", { token: link });
   await until(() => b.doc.querySelector('[data-social-action="group-detail"]'));
+  assert.equal(b.doc.querySelector('[data-cat-event]')?.dataset.catEvent, 'group-joined');
   checks.push(
     "private group creation and invite redemption work without automatic health sharing",
   );
@@ -263,6 +267,7 @@ try {
   await click(b, "challenge-detail");
   await click(b, "join");
   await until(() => !b.doc.querySelector("dialog[open]"));
+  assert.equal(b.doc.querySelector('[data-cat-event]')?.dataset.catEvent, 'challenge-started');
   assert.match(b.doc.querySelector("main").textContent, /0\/7 gün/);
   checks.push(
     "challenge creation and explicit participant consent work through UI",
