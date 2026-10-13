@@ -20,3 +20,5 @@ Yerel: build, 52 domain + 26 DOM testi ve 18 MP4/poster doğrulaması geçti. Ka
 ## GitHub ve yayın kabulü
 
 [Chromium CI](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38365160191) başarılı. 78 test + medya kabulü, gerçek su/spor olayı ve yedi yeni dosyanın sona kadar oynatımı geçti. PR #9 ana dala e610579 ile birleştirildi. Önizleme bundle assets/index-DBE3PB89.js test edilen yerel çıktıyla SHA256 düzeyinde aynı. Ana/sosyal önizlemede 14 yeni MP4 yanıtının tamamı doğru hash ve video/mp4 HTTP 200. Sosyal dal 359656b; üretime birleştirilmedi. Fiziksel Android/e-posta kabulü iddiası yok.
+
+Üretim kontrolü: 13 Ekim 07:58 UTC'de ana URL eski e3354a4 / index-93LtJA-u.js sürümünü sunuyordu. Netlify public deploy API yeni e610579/1aab1dc gönderimlerini state=error ve skipped=true olarak raporladı; önceki f6271b6 da atlanmıştı. Özel build kaydına erişim HTTP 401 verdi. Resmi https://docs.netlify.com/build/configure-builds/ignore-builds/ sözleşmesi kullanılarak netlify.toml içine command/publish ve ignore=exit 1 eklendi; TOML ayrıştırma geçti. Bu değişiklik hesap/veri/video kodunu değiştirmez; gerçek üretim yanıtı son kabul ölçütüdür.

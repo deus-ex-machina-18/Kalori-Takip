@@ -1,0 +1,5 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  # Treat every Git update as buildable; production pushes were being skipped.
+  ignore = "exit 1"
