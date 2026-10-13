@@ -16,3 +16,7 @@ Eşleştirme kullanıcı tarafından doğrulandı. Kısa, sessiz ve işlemleri e
 Ana dalın eski 11 MP4/poster hashleri korundu; toplam 5.721.122 bayt, ilk Bugün yükü 312.844 bayt. Klipler olay anında yüklenir. Statik/hareket azaltmada yalnız poster/metin; sayfa geçişinde/hatada medya kaldırılır, gizli sekmede durur. Kalori/su/aktivite verisi oynatıcı tarafından yazılmaz.
 
 Yerel: build, 52 domain + 26 DOM testi ve 18 MP4/poster doğrulaması geçti. Kaynak eski sosyal dalın 9 MP4'si korunarak beş gerçek sosyal tetikleyici ayrı sınanır; bu dalın Auth/SMTP kapısı nedeniyle üretimde sosyal oynatma iddiası yok. Chromium kurulu olmadığından scripts/cat-events-browser-check.mjs gerçek tarayıcı kabulü CI'a bırakılır.
+
+## GitHub ve yayın kabulü
+
+[Chromium CI](https://github.com/deus-ex-machina-18/Kalori-Takip/actions/runs/38365160191) başarılı. 78 test + medya kabulü, gerçek su/spor olayı ve yedi yeni dosyanın sona kadar oynatımı geçti. PR #9 ana dala e610579 ile birleştirildi. Önizleme bundle assets/index-DBE3PB89.js test edilen yerel çıktıyla SHA256 düzeyinde aynı. Ana/sosyal önizlemede 14 yeni MP4 yanıtının tamamı doğru hash ve video/mp4 HTTP 200. Sosyal dal 359656b; üretime birleştirilmedi. Fiziksel Android/e-posta kabulü iddiası yok.
